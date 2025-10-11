@@ -229,7 +229,7 @@ body {
 .bludok {
   overflow: hidden; 
   margin: auto;
-  max-width: 400px; /
+  max-width: 400px; 
 }
 
 .bludok img {
@@ -250,4 +250,23 @@ body {
 .bludok p:hover{
     background-color: #6a6a6a;
     color: white;
+}
+#top {
+  position: fixed;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+#top:hover {
+  background-color: #1f7d38;
+  transform: scale(1.2,1.5);
+}
+#top p {
+  font-size: 2rem; 
+  margin: 0;
 }
