@@ -1,0 +1,17 @@
+.survey-item{
+    border-radius: 10px;
+    border: 1px solid white;
+    padding: 5px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+.survey-item:hover{
+    background-color: grey;
+}
+
+.secondary-title{
+    margin-bottom: 25px;
+}
+.max-width-20{
+    max-width: 20%;
+}
