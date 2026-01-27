@@ -3,54 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitLife - Foglalás</title>
+    <title>FitLife-Edző</title>
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/edzo.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/edzo.js"></script>
 </head>
+
 <body class="bg-dark text-light">
-
-    <div class="container mt-5 pt-5">
-        
-        <div id="edzok-lista" class="row mb-5">
+    <nav class="alapNav">
+        <div class="nav">
+            <a href="index.html" class="home d-flex align-items-center text-decoration-none">
+                <div class="logo">F</div>
+                <div class="logoSzoveg">FITLIFE</div>
+            </a>
+            <div class="menu" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu">
+                <span>MENÜ</span>
+                <button class="navbar-toggler p-0 border-0 shadow-none">
+                    <span class="fas fa-bars text-white"></span>
+                </button>
             </div>
-
-        <div class="card bg-secondary text-white shadow-lg p-4 border-0 rounded-3">
-            <h2 class="text-center mb-4 text-uppercase">Időpontfoglalás</h2>
-
-            <div class="mb-4 text-center">
-                <label for="edzoSelect" class="form-label fs-5">Válassz Edzőt:</label>
-                <select id="edzoSelect" class="form-select form-select-lg bg-dark text-white border-secondary w-50 mx-auto">
-                    <option selected disabled>Kattints a választáshoz...</option>
-                    <option value="1">Pitypang Bálint</option>
-                    <option value="2">Dzsákó Dzsános</option>
-                    <option value="3">Berta Bottas</option>
-                    <option value="4">Varga NorBalls</option>
-                </select>
-            </div>
-
-            <div class="naptar-kontener">
-                <div class="nap-nev">H</div>
-                <div class="nap-nev">K</div>
-                <div class="nap-nev">Sze</div>
-                <div class="nap-nev">Cs</div>
-                <div class="nap-nev">P</div>
-                <div class="nap-nev">Szo</div>
-                <div class="nap-nev">V</div>
-
-                <div class="nap ures"></div> <div class="nap">1</div>
-                <div class="nap foglalt" title="Betelt">2</div>
-                <div class="nap">3</div>
-                <div class="nap ma">4</div> <div class="nap">5</div>
-                <div class="nap">6</div>
-                <div class="nap">7</div>
-                <div class="nap">8</div>
-                <div class="nap foglalt">9</div>
-                <div class="nap" data-bs-toggle="modal" data-bs-target="#foglalasModal">10</div>
-                </div>
         </div>
-    </div>
-
-
+        <div class="collapse doboz" id="fitlifeMenu">
+            <div class="linkek">
+                <a href="index.html">Főoldal</a>
+            </div>
+        </div>
+    </nav>
+    <div id="edzo"></div>
+    <br>
+    <div id="naptar"></div>
+    
 </body>
+
 </html>
