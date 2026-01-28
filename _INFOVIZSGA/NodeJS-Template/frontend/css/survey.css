@@ -4,6 +4,10 @@
     padding: 5px;
     margin-left: 10px;
     margin-bottom: 10px;
+    min-width: 40px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
 }
 .survey-item:hover{
     background-color: grey;
@@ -14,4 +18,20 @@
 }
 .max-width-20{
     max-width: 20%;
+}
+
+.selected{
+    background-color: grey;
+    color: white;
+    transform: scale(0.95);
+}
+
+.selected::after{
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -5px;
+    color: #00cc00;
+    font-size: 18px;
+    font-weight: bold;
 }

@@ -27,6 +27,15 @@ app.use(
 router.get('/', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/index.html'));
 });
+router.get('/bejelentkezes', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/bejelentkez.html'));
+});
+router.get('/regisztral', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/user_regisztralas.html'));
+});
+router.get('/userSurvey', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'));
+});
 
 //!API endpoints
 app.use('/', router);
