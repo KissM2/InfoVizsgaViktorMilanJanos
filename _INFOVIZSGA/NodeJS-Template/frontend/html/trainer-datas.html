@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FitLife – Edzői profil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+
+    <!-- Saját CSS -->
+    <link rel="stylesheet" href="../css/trainer-datas.css">
+    <!-- Saját JS -->
+     <script src="../javascript/trainer-datas.js"></script>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header class="fitlife-header">
+        <div class="header-inner container-fluid d-flex justify-content-between align-items-center">
+
+            <!-- LOGO -->
+            <a href="index.html" class="home d-flex align-items-center">
+                <div class="logo">F</div>
+                <span class="ms-2">FITLIFE</span>
+            </a>
+
+            <!-- JOBB OLDAL -->
+            <div class="profile-area position-relative">
+                <button id="profileBtn" class="profile-btn">
+                    <span>Profil</span>
+                    <span class="arrow">⌄</span>
+                </button>
+
+                <!-- DROPDOWN -->
+                <div id="profileMenu" class="profile-dropdown">
+                    <a href="#">Profil Szerkesztése</a>
+                    <a href="/edzonevjegyedit">Névjegy Szerkesztése</a>
+                    <a href="#">Edzői felület</a>
+                    <a href="/foglalasok">Foglalások</a>
+                    <hr>
+                    <a href="#" class="logout">Kijelentkezés</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- OVERLAY -->
+    <div id="overlay"></div>
+        <h1 class="text-center mb-5 text-success">Edzői Profil Kezelése</h1>
+        <div class="container mt-5 pt-5">
+
+
+            <!-- PROFIL ADATOK -->
+            <div class="card dark-card mb-4">
+                <div class="card-header">Profil adatok</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-12 col-md-6">
+                            <label class="label-color">Email</label>
+                            <input type="email" id="email" class="form-control dark-input" placeholder="janiedzo@email.hu">
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <label class="label-color">Felhasználónév</label>
+                            <input type="text" id="felh" class="form-control dark-input" placeholder="JaniEdzo">
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <label class="label-color">Jelszó</label>
+                            <input type="password" id="jelsz" class="form-control dark-input" placeholder="********">
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <label class="label-color">Telefonszám</label>
+                            <input type="text" id="telsz" class="form-control dark-input" placeholder="+36 30 123 4567">
+                        </div>
+                        
+                    </div>
+                    <button id="mentes" class="btn btn-success mt-4">Mentés</button>
+                </div>
+            </div>
+
+            <!-- BEMUTATKOZÁS -->
+            
+
+            <!-- EDZŐTERMek -->
+            <div class="card dark-card mb-4">
+                <div class="card-header">Edzőtermek</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-sm-12 col-md-6">
+                            <input id="iptermek" type="text" class="form-control dark-input" placeholder="Edzőterem neve">
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <input id="varos" type="text" class="form-control dark-input" placeholder="Város">
+                        </div>
+                    </div>
+                    <button id="hozzaad" class="btn btn-success mt-3">Hozzáadás</button>
+
+                    <ul id="lista" class="list-group mt-3">
+                        <li class="list-group-item dark-list">FitGym Budapest</li>
+                        <li class="list-group-item dark-list">PowerHouse Debrecen</li>
+                    </ul>
+                </div>
+            </div>
+    
+
+</body>
+
+</html>

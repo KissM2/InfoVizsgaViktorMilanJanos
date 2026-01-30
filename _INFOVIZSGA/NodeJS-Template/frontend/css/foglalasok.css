@@ -1,0 +1,168 @@
+:root {
+    --header-height: 80px;
+
+    --bg-main: #222;
+    --bg-card: #161616;
+    --bg-dark: #111;
+    --bg-input: #222;
+
+    --border-soft: #333;
+    --border-strong: #444;
+
+    --text-main: #ddd;
+    --text-muted: rgb(176,180,180);
+
+    --green: #28a745;
+    --green-dark: #1f7d38;
+
+    --red: crimson;
+    --yellow: gold;
+    --purple: #8b5cf6;
+
+    --calendar-width: 700px;
+}
+
+/* ================= BODY ================= */
+body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: system-ui, sans-serif;
+}
+
+/* ================= MAIN ================= */
+main {
+    padding-top: calc(var(--header-height) + 20px);
+}
+
+#calendar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ================= CALENDAR HEADER ================= */
+.calendar-header {
+    width: var(--calendar-width);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.calendar-header button {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.calendar-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* ================= CALENDAR ================= */
+.week {
+    display: flex;
+}
+
+.day,
+.hetnap {
+    width: 100px;
+    height: 90px;
+    border: 1px solid var(--border-soft);
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+/* DAY */
+.day {
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+
+.day:not(.noDay):hover {
+    background: #1f1f1f;
+    transform: scale(1.03);
+}
+
+.noDay {
+    background: #1b1b1b;
+    border: none;
+    cursor: default;
+}
+
+/* TODAY */
+.day.today {
+    box-shadow: inset 0 0 0 2px var(--green);
+    font-weight: bold;
+}
+
+/* WEEK HEADER */
+.hetnap {
+    background: var(--bg-dark);
+    color: var(--green);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* ================= IDŐPONT PANEL ================= */
+#idopontok {
+    width: var(--calendar-width);
+    margin-top: 20px;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+}
+
+/* IDŐPONT GOMBOK */
+.idopontBtn {
+    margin: 4px;
+    padding: 6px 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+
+.idopontBtn:hover {
+    background: #2f2f2f;
+    transform: scale(1.05);
+}
+
+/* ===== ÁLLAPOT SZÍNEK (ERŐSEK!) ===== */
+.idopontBtn.foglalt {
+    background: var(--red);
+    color: white;
+}
+
+.idopontBtn.teljes-egyedi {
+    background: var(--yellow);
+    color: black;
+}
+
+.idopontBtn.vegyes {
+    background: var(--purple);
+    color: white;
+}
+body {
+    padding-top: 100px; /* navbar magasság + kis tér */
+}
+/* KIJELENTKEZÉS – PIROS, MINDIG */
+.profile-dropdown a.logout {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.profile-dropdown a.logout:hover {
+    background-color: #330000;
+    color: #ff4d4d;
+}
