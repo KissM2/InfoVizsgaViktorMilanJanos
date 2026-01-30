@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,23 +19,30 @@
                 <div class="logo">F</div>
                 <div class="logoSzoveg">FITLIFE</div>
             </a>
-            <div class="menu" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu">
-                <span>MENÜ</span>
-                <button class="navbar-toggler p-0 border-0 shadow-none">
-                    <span class="fas fa-bars text-white"></span>
-                </button>
-            </div>
-        </div>
-        <div class="collapse doboz" id="fitlifeMenu">
-            <div class="linkek">
-                <a href="index.html">Főoldal</a>
+
+            <div class="menu-container" style="position: relative;">
+                <div class="menu" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu">
+                    <span>MENÜ</span>
+                    <button class="navbar-toggler p-0 border-0 shadow-none">
+                        <span class="fas fa-bars text-white"></span>
+                    </button>
+                </div>
+
+                <div class="collapse doboz" id="fitlifeMenu">
+                    <div class="linkek">
+                        <a href="index.html">Főoldal</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
     <div id="edzo"></div>
-    <br>
-    <div id="naptar"></div>
-    
+
+    <div id="calendar-wrapper">
+        <div id="naptar"></div>
+        <div id="idopontok"></div>
+    </div>
+
 </body>
 
 </html>
