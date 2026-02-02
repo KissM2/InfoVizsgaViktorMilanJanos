@@ -12,10 +12,10 @@ let aktualisMod = null;       // "nap" | "hetnap"
 let aktualisNap = null;       // { ev, honap, nap }
 let aktualisHetNapIndex = null;
 
-const napnevek = ["Hétfő","Kedd","Szerda","Csütörtök","Péntek","Szombat","Vasárnap"];
+const napnevek = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 const honapNevek = [
-    "Január","Február","Március","Április","Május","Június",
-    "Július","Augusztus","Szeptember","Október","November","December"
+    "Január", "Február", "Március", "Április", "Május", "Június",
+    "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 ];
 
 /******************** INIT ********************/
@@ -67,7 +67,7 @@ function calendarHeader() {
 function changeMonth(dir) {
     currentMonth += dir;
     if (currentMonth === 13) { currentMonth = 1; currentYear++; }
-    if (currentMonth === 0)  { currentMonth = 12; currentYear--; }
+    if (currentMonth === 0) { currentMonth = 12; currentYear--; }
 
     aktualisMod = null;
     aktualisNap = null;
@@ -173,7 +173,7 @@ function idopontPanel() {
     /* IDŐPONTOK */
     for (let h = 0; h < 24; h++) {
         for (let m of ["00", "30"]) {
-            const ido = `${String(h).padStart(2,"0")}:${m}`;
+            const ido = `${String(h).padStart(2, "0")}:${m}`;
             const btn = document.createElement("button");
             btn.className = "idopontBtn";
             btn.textContent = ido;
@@ -275,30 +275,36 @@ function hetnapIdoAllapot(ido) {
     });
 
     const osszesNap = napok.length;
-
-    if (egyedi === 0 && tomeges === 0) return null;
-
-    if (egyedi === osszesNap && tomeges === 0) {
-        return "teljes-egyedi";   // 🟡
+    let choice = null
+    if (egyedi === 0 && tomeges === 0) { }
+    else {
+        if (egyedi === osszesNap && tomeges === 0) {
+            choice = "teljes-egyedi";   // 🟡
+        }
+        else {
+            if (tomeges === osszesNap && egyedi === 0) {
+                choice = "foglalt";         // 🔴
+            }
+            else {
+                if (tomeges > 0) {
+                    choice = "vegyes";          // 🟣
+                }
+            }
+        }
     }
 
-    if (tomeges === osszesNap && egyedi === 0) {
-        return "foglalt";         // 🔴
-    }
 
-    if (tomeges > 0) {
-        return "vegyes";          // 🟣
-    }
 
-    return null;
+    return choice;
 }
 
 /******************** DEBUG ********************/
 function debugLog() {
-    if (!DEBUG) return;
-    console.clear();
-    console.log("📅 Foglalások:", foglalasok);
-    console.log("⭐ Egyedi napok:", [...egyediNapok]);
+    if (DEBUG) {
+        console.clear();
+        console.log("📅 Foglalások:", foglalasok);
+        console.log("⭐ Egyedi napok:", [...egyediNapok]);
+    }
 }
 
 /******************** SEGÉDEK ********************/
@@ -316,5 +322,5 @@ function osszesHetNap(ev, honap, idx) {
 }
 
 function datumKulcs(ev, honap, nap) {
-    return `${ev}-${String(honap).padStart(2,"0")}-${String(nap).padStart(2,"0")}`;
+    return `${ev}-${String(honap).padStart(2, "0")}-${String(nap).padStart(2, "0")}`;
 }
