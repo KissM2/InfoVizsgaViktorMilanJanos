@@ -139,6 +139,8 @@ main {
 }
 
 /* ===== ÁLLAPOT SZÍNEK (ERŐSEK!) ===== */
+
+/* TÖMEGES NÉZETBEN */
 .idopontBtn.foglalt {
     background: var(--red);
     color: white;
@@ -148,6 +150,22 @@ main {
     background: var(--yellow);
     color: black;
 }
+/* NAPI NÉZETBEN */
+.idopontBtn.egyedi {
+    background: var(--red);
+    color: white;
+}
+
+.idopontBtn.tomeges {
+    background: #1e90ff; /* kék */
+    color: white;
+}
+
+.idopontBtn.mindketto {
+    background: var(--purple); /* lila */
+    color: white;
+}
+
 
 .idopontBtn.vegyes {
     background: var(--purple);

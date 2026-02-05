@@ -5,8 +5,16 @@ const DEBUG = true;
 let currentYear, currentMonth;
 
 /******************** ÁLLAPOT ********************/
-let foglalasok = {};          // { "YYYY-MM-DD": ["HH:MM"] }
-let egyediNapok = new Set();  // csak az egyedileg módosított napok
+/*
+foglalasok:
+{
+  "YYYY-MM-DD": {
+      egyedi:  ["HH:MM"],
+      tomeges: ["HH:MM"]
+  }
+}
+*/
+let foglalasok = {};
 
 let aktualisMod = null;       // "nap" | "hetnap"
 let aktualisNap = null;       // { ev, honap, nap }
@@ -20,11 +28,9 @@ const honapNevek = [
 
 /******************** INIT ********************/
 document.addEventListener("DOMContentLoaded", () => {
-
     const now = new Date();
     currentYear = now.getFullYear();
     currentMonth = now.getMonth() + 1;
-
     renderCalendar();
 });
 
@@ -184,9 +190,10 @@ function idopontPanel() {
                     aktualisNap.honap,
                     aktualisNap.nap
                 );
-                if (foglalasok[key]?.includes(ido)) {
-                    btn.classList.add("foglalt");
-                }
+
+                const state = napIdoAllapot(key, ido);
+                if (state) btn.classList.add(state);
+
             } else {
                 const allapot = hetnapIdoAllapot(ido);
                 if (allapot) btn.classList.add(allapot);
@@ -204,7 +211,21 @@ function idopontPanel() {
     }
 }
 
-/******************** FOGLALÁS ********************/
+/******************** NAPI IDŐPONT ÁLLAPOT ********************/
+function napIdoAllapot(key, ido) {
+    const entry = foglalasok[key];
+    if (!entry) return null;
+
+    const isEgyedi = entry.egyedi?.includes(ido);
+    const isTomeges = entry.tomeges?.includes(ido);
+
+    if (isEgyedi && isTomeges) return "mindketto";
+    if (isEgyedi) return "egyedi";
+    if (isTomeges) return "tomeges";
+    return null;
+}
+
+/******************** FOGLALÁS – EGYEDI NAP ********************/
 function egyNapFoglal(ido) {
     const key = datumKulcs(
         aktualisNap.ev,
@@ -212,48 +233,70 @@ function egyNapFoglal(ido) {
         aktualisNap.nap
     );
 
-    foglalasok[key] = foglalasok[key] || [];
+    if (!foglalasok[key]) {
+        foglalasok[key] = { egyedi: [], tomeges: [] };
+    }
 
-    if (foglalasok[key].includes(ido)) {
-        foglalasok[key] = foglalasok[key].filter(i => i !== ido);
+    foglalasok[key].egyedi = foglalasok[key].egyedi || [];
+
+    if (foglalasok[key].egyedi.includes(ido)) {
+        foglalasok[key].egyedi = foglalasok[key].egyedi.filter(i => i !== ido);
     } else {
-        foglalasok[key].push(ido);
-        egyediNapok.add(key);
+        foglalasok[key].egyedi.push(ido);
     }
 
-    if (foglalasok[key].length === 0) {
-        delete foglalasok[key];
-        egyediNapok.delete(key);
-    }
-
+    cleanupDay(key);
     debugLog();
 }
 
+/******************** FOGLALÁS – TÖMEGES (HÉTNAP) ********************/
 function hetNapFoglal(ido) {
-    osszesHetNap(
+    const napok = osszesHetNap(
         aktualisNap.ev,
         aktualisNap.honap,
         aktualisHetNapIndex
-    ).forEach(key => {
-        if (egyediNapok.has(key)) return;
+    );
 
-        foglalasok[key] = foglalasok[key] || [];
+    napok.forEach(key => {
+        if (!foglalasok[key]) {
+            foglalasok[key] = { egyedi: [], tomeges: [] };
+        }
 
-        if (foglalasok[key].includes(ido)) {
-            foglalasok[key] = foglalasok[key].filter(i => i !== ido);
+        foglalasok[key].tomeges = foglalasok[key].tomeges || [];
+
+        // csak a TÖMEGES listát toggle-öljük
+        if (foglalasok[key].tomeges.includes(ido)) {
+            foglalasok[key].tomeges = foglalasok[key].tomeges.filter(i => i !== ido);
         } else {
-            foglalasok[key].push(ido);
+            foglalasok[key].tomeges.push(ido);
         }
 
-        if (foglalasok[key].length === 0) {
-            delete foglalasok[key];
-        }
+        cleanupDay(key);
     });
 
     debugLog();
 }
 
-/******************** SZÍNLOGIKA (CSS-HEZ IGAZÍTVA) ********************/
+/******************** NAP TAKARÍTÁS ********************/
+function cleanupDay(key) {
+    const entry = foglalasok[key];
+    if (!entry) return;
+
+    entry.egyedi = entry.egyedi || [];
+    entry.tomeges = entry.tomeges || [];
+
+    if (entry.egyedi.length === 0 && entry.tomeges.length === 0) {
+        delete foglalasok[key];
+    }
+}
+
+/******************** SZÍNLOGIKA – HÉTNAP MÓD ********************/
+/*
+CSS classok:
+- teljes-egyedi  (🟡)  minden nap EGYEDI (tomeges=0)
+- foglalt        (🔴)  minden nap TÖMEGES (egyedi=0)
+- vegyes         (🟣)  legalább 1 tömeges, de nem mind tiszta tömeges
+*/
 function hetnapIdoAllapot(ido) {
     const napok = osszesHetNap(
         aktualisNap.ev,
@@ -261,40 +304,46 @@ function hetnapIdoAllapot(ido) {
         aktualisHetNapIndex
     );
 
-    let egyedi = 0;
-    let tomeges = 0;
+    const osszesNap = napok.length;
+
+    let egyediCount = 0;
+    let tomegesCount = 0;
 
     napok.forEach(key => {
-        if (foglalasok[key]?.includes(ido)) {
-            if (egyediNapok.has(key)) {
-                egyedi++;
-            } else {
-                tomeges++;
-            }
+        const entry = foglalasok[key];
+        if (entry) {
+            if (entry.egyedi?.includes(ido)) egyediCount++;
+            if (entry.tomeges?.includes(ido)) tomegesCount++;
         }
     });
-
-    const osszesNap = napok.length;
-    let choice = null
-    if (egyedi === 0 && tomeges === 0) { }
+    let choice = null;
+    if (egyediCount === 0 && tomegesCount === 0) {
+        choice == null
+    }
     else {
-        if (egyedi === osszesNap && tomeges === 0) {
-            choice = "teljes-egyedi";   // 🟡
+        // 🟡 teljesen egyedi (minden nap egyedi, tömeges nincs)
+        if (egyediCount === osszesNap && tomegesCount === 0) {
+            choice = "teljes-egyedi";
         }
         else {
-            if (tomeges === osszesNap && egyedi === 0) {
-                choice = "foglalt";         // 🔴
+
+            // 🔴 teljesen tömeges (minden nap tömeges, egyedi nincs)
+            if (tomegesCount === osszesNap && egyediCount === 0) {
+                choice = "foglalt";
             }
             else {
-                if (tomeges > 0) {
-                    choice = "vegyes";          // 🟣
+
+                // 🟣 vegyes: ha legalább 1 tömeges van, de nem 100% tiszta tömeges
+                if (tomegesCount > 0) {
+                    choice = "vegyes";
                 }
             }
         }
     }
 
-
-
+    // ha nincs tömeges, de van egyedi részlegesen -> maradjon sárga?
+    // te logikád szerint a sárga csak akkor, ha MINDEN egyedi,
+    // tehát részleges egyedi esetén ne legyen szín
     return choice;
 }
 
@@ -303,7 +352,6 @@ function debugLog() {
     if (DEBUG) {
         console.clear();
         console.log("📅 Foglalások:", foglalasok);
-        console.log("⭐ Egyedi napok:", [...egyediNapok]);
     }
 }
 
