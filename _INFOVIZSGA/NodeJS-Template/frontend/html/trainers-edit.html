@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--!Bootstrap-->
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+  <!--?Popper: dropdowns, popovers, tooltips-->
+  <script src="../bootstrap/js/popper.min.js"></script>
+  <script src="../bootstrap/js/bootstrap.min.js"></script>
+  <!--!CSS-->
+  <link rel="stylesheet" href="../css/trainers-edit.css" />
+  <!--!JavaScript-->
+  <script src="../js/trainer-edit.js"></script>
+
+  <title>Pitypang Bálint</title>
+</head>
+
+<body class="bg-dark text-light">
+  <!-- HEADER -->
+  <header class="fitlife-header">
+    <div class="header-inner container-fluid d-flex justify-content-between align-items-center">
+
+      <!-- LOGO -->
+      <a href="index.html" class="home d-flex align-items-center">
+        <div class="logo">F</div>
+        <span class="ms-2">FITLIFE</span>
+      </a>
+
+      <!-- JOBB OLDAL -->
+      <div class="profile-area position-relative">
+        <button id="profileBtn" class="profile-btn">
+          <span>Profil</span>
+          <span class="arrow">⌄</span>
+        </button>
+
+        <!-- DROPDOWN -->
+        <div id="profileMenu" class="profile-dropdown">
+          <a href="/edzoadat.html">Profil Szerkesztése</a>
+          <a href="#">Edzői felület</a>
+          <a href="/foglalasok">Foglalások</a>
+          <hr>
+          <a href="#" class="logout">Kijelentkezés</a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- OVERLAY -->
+  <div id="overlay"></div>
+  <header class="py-5 text-center bg-success text-white">
+    <h1 class="display-4 fw-bold">Pitypang Bálint</h1>
+    <p class="lead">„Eskü 180 cm vagyok”</p>
+  </header>
+  <div class="container my-5">
+    <div class="row align-items-center">
+      <div class="col-lg-6 col-md-6 col-sm-12 text-center mb-4 mb-lg-0">
+        <img src="../images/Pitypang.jpg" alt="Pitypang" class="img-fluid rounded shadow border border-3 border-light">
+        <div class="col-sm-12">
+          <label class="label-color">Profilkép</label>
+          <input type="file" class="form-control dark-input">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card dark-card mb-4">
+          <div class="card-header">Edzői bemutatkozás</div>
+          <div class="card-body">
+            <textarea class="form-control dark-input" rows="4" placeholder="Írj pár szót magadról..."></textarea>
+          </div>
+          <div class="card-body">
+            <input type="text" class="form-control dark-input" rows="4" placeholder="Írj pár szót magadról...">
+          </div>
+        </div>
+        <button class="btn btn-outline-success mt-3">Mentés</button>
+      </div>
+    </div>
+  </div>
+  <footer class="text-center py-4 mt-5 border-top border-success">
+    <p class="mb-0"> 2025 FitTeam – Minden jog fenntartva.</p>
+  </footer>
+</body>
+
+</html>

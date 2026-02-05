@@ -27,6 +27,15 @@ app.use(
 router.get('/', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/index.html'));
 });
+router.get('/foglalasok', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
+});
+router.get('/traineradat', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/trainer-datas.html'));
+});
+router.get('/trainersedit', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/trainers-edit.html'));
+});
 
 //!API endpoints
 app.use('/', router);
