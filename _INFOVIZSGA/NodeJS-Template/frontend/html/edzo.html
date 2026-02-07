@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife-Edző</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../css/edzo.css">
+    <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/edzo.js"></script>
+</head>
+
+<body class="bg-dark text-light">
+    <nav class="alapNav">
+        <div class="nav">
+            <a href="index.html" class="home d-flex align-items-center text-decoration-none">
+                <div class="logo">F</div>
+                <div class="logoSzoveg">FITLIFE</div>
+            </a>
+
+            <div class="menu-container" style="position: relative;">
+                <div class="menu" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu">
+                    <span>MENÜ</span>
+                    <button class="navbar-toggler p-0 border-0 shadow-none">
+                        <span class="fas fa-bars text-white"></span>
+                    </button>
+                </div>
+
+                <div class="collapse doboz" id="fitlifeMenu">
+                    <div class="linkek">
+                        <a href="index.html">Főoldal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div id="edzo"></div>
+
+    <div id="calendar-wrapper">
+        <div id="naptar"></div>
+        <div id="idopontok"></div>
+    </div>
+
+</body>
+
+</html>

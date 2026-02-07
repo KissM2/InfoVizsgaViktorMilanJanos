@@ -13,28 +13,44 @@
     <link rel="stylesheet" href="../css/index.css" />
     <!--!JavaScript-->
     <script src="../js/index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><!--!CDN link ikonoknak-->
     <title>FitLife</title>
 </head>
 
 <body>
-    <div id="navbar">
-        <div class="navunk">
-            <a href="index.html" class="home d-flex">
-                <div class="logo">F</div>
-                <div>FITLIFE</div>
-            </a>
-            <div class="d-flex ">
-                <a href="/bejelentkezes"><button class="gomb btn btn-secondary">Bejelentkezés</button></a>
-                <a href="/regisztral" ><button class="gomb btn btn-secondary">Regisztrálj</button></a>
-            </div>
+<div id="navbar">
+    <div class="navunk">
+        <a href="index.html" class="home d-flex">
+            <div class="logo">F</div>
+            <div>FITLIFE</div>
+        </a>
+        <div class="d-flex align-items-center">
+            <a href="bejelentkez.html"><button class="gomb btn btn-secondary me-2">Bejelentkezés</button></a>
+            <a href="regisztral.html"><button class="gomb btn btn-secondary me-3">Regisztrálj</button></a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu" >
+                <span class="fas fa-bars fa-1x text-white"></span>
+            </button>
         </div>
     </div>
+    
+    <div class="menupontok collapse text-center bg-dark" id="fitlifeMenu">
+        <ul class="list-unstyled py-3">
+            <li><a href="#" class="nav-link text-white py-2">Árak</a></li>
+            <li><a href="#" class="nav-link text-white py-2">Edzésterv</a></li>
+            <li><a href="#" class="nav-link text-white py-2">Étrend</a></li>
+            <li><a href="#" class="nav-link text-white py-2">Galéria</a></li>
+            <li><a href="edzo.html" class="nav-link text-white py-2">Személyi Edzőink</a></li>
+        </ul>
+    </div>
+</div>
     <section class="hero">
         <div class="intro">
             <h1>ERŐD ÉS CÉLJAID EGY HELYEN</h1>
             <h3 class="my-4 mb-5">Lépj szintet a FITLIFE-fal.</h3>
             <div>
-                <a href="#" class="cta-gomb">KEZDÉS</a>
+                <a href="#" class="gombok" title="Étrend elkészitése">Étrend készítés</a>
+                <a href="#" class="gombok" title="Edzésterv elkészitése">Edzésterv készítés</a>
             </div>
         </div>
     </section>
@@ -61,8 +77,8 @@
         </div>
     </section>
     <section>
-        <div class="row csap">
-            <h1 class="text-center text-success" id="edzok">Edzőink</h1>
+        <div class="row edz">
+            <h1 class="text-center text-success" id="edzok">Leghíresebb Edzőink</h1>
 
             <div class="col-sm-12 col-md-6 col-lg-3 mt-5">
                 <a href="trainers.html" target="_blank" title="Pitypang Bálint">
@@ -103,6 +119,7 @@
                 
             </div>
         </div>
+        
     </section>
     <button id="top" title="Ugrás a tetejére">
         <p>👆</p>
@@ -121,10 +138,10 @@
                 <div class="col-md-4 col-sm-12 mb-4 mb-md-0 text-center">
                     <h5 class="cim">Kövess Minket</h5>
                     <div class="links d-flex justify-content-center mt-3">
-                        <a href="https://facebook.com" target="_blank" class="lasztik">
+                        <a href="https://facebook.com" target="_blank" class="social">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="https://instagram.com" target="_blank" class="lasztik ms-4">
+                        <a href="https://instagram.com" target="_blank" class="social ms-4">
                             <i class="fab fa-instagram"></i>
                         </a>
                     </div>
