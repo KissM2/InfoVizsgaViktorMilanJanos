@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--!Bootstrap-->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+    <!--?Popper: dropdowns, popovers, tooltips-->
+    <script src="../bootstrap/js/popper.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <!--!CSS-->
+    <link rel="stylesheet" href="../css/regisztral.css" />
+    <!--!JavaScript-->
+    <title>FitLife | Regisztráció</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="register-container">
+            <h1>Regisztráció</h1>
+            <form>
+                <div class="mb-3">
+                    <label for="fullname">Teljes név</label>
+                    <input type="text" id="fullname" name="fullname" placeholder="Add meg a teljes neved" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email">Email cím</label>
+                    <input type="email" id="email" name="email" placeholder="pl. pelda@fitlife.hu" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password">Jelszó</label>
+                    <input type="password" id="password" name="password" placeholder="Válassz egy jelszót" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm">Jelszó megerősítése</label>
+                    <input type="password" id="confirm" name="confirm" placeholder="Írd be újra a jelszót" required>
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate">Születési dátum</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone">Telefonszám</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+36..." required>
+                </div>
+                <div class="mb-3">
+                    <label for="cv">Önéletrajz</label>
+                    <input type="file" id="cv" name="cv" required>
+                </div>
+                <button type="submit" class="btn-fitlife">Regisztrálok</button>
+            </form>
+
+            <a href="index.html" class="vissza">← Vissza a főoldalra</a>
+        </div>
+    </div>
+</body>
+
+</html>
