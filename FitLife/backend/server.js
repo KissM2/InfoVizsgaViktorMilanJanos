@@ -30,14 +30,20 @@ router.get('/', (request, response) => {
 router.get('/bejelentkezes', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/bejelentkez.html'));
 });
-router.get('/regisztral', (request, response) => {
+router.get('/user_regisztral', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/user_regisztralas.html'));
 });
+router.get('/edzo_regisztral', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/trainer_regisztralas.html'));
+});
 router.get('/userSurvey', (request, response) => {
-    response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'
-));
+    response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'));
+});
 router.get('/foglalasok', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
+});
+router.get('/edzo', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/edzo.html'));
 });
 router.get('/traineradat', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/trainer-datas.html'));
