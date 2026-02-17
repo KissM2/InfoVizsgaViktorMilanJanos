@@ -44,7 +44,7 @@ router.get('/testsql', async (request, response) => {
     }
 });
 
-router.post('/register',validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
+router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
     try {
         const { name, email, password, role, szul_datum, tel_szam } = request.body;
 
@@ -78,7 +78,7 @@ router.post('/login', validator.validateEmailPassword, async (request, response)
 
         if (login.length === 0) {    
             return response.status(401).json({
-                message: 'Hibás email cím vagy jelszó.'
+                message: 'Hibás email cím.'
             });
         }
 
@@ -86,7 +86,7 @@ router.post('/login', validator.validateEmailPassword, async (request, response)
 
         if (!passwordMatch) {
                 return response.status(401).json({
-                    message: 'Hibás email cím vagy jelszó.'
+                    message: 'Hibás jelszó.'
                 });
             }
 
