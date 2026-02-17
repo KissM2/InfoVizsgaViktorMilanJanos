@@ -2,31 +2,52 @@ body {
     background: #222222;
     color: #FFFF;
 }
-
 .hero {
-    height: 820px;
+    height: 100vh;
     background: url("../images/laszti.png") no-repeat center center/cover;
     display: flex;
     align-items: center;
     justify-content: end;
+    min-height: 600px;
 }
-
 #navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    padding: 30px;
+    padding: 20px 0;
     background: transparent;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
 }
-
 #navbar.scrolled {
-    background: #161616;
-    padding: 20px;
-    box-shadow: 0 2px 6px rgba(55, 55, 55, 0.9);
-    opacity: 99%;
+    background: rgba(22, 22, 22, 0.95) !important;
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.menupontok {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: auto;
+    min-width: 200px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
+    z-index: 1100;
 }
 
+.menupontok ul li a:hover {
+    background-color: #28a745;
+    color: white !important;
+}
+
+@media (max-width: 576px) {
+    .navunk { font-size: 22px; padding: 0 15px; }
+    .logo { width: 35px; height: 35px; line-height: 28px; }
+    .menupontok {
+        width: 180px; 
+    }
+}
 .navunk {
     display: flex;
     justify-content: space-between;
@@ -73,11 +94,21 @@ body {
 }
 
 .intro {
-    margin-right: 100px;
+    margin: 0;
+    max-width: 800px;
     color: #6a6a6a;
     margin: 200px 150px 0 0;
 }
+.intro h1 {
+    font-size: clamp(2rem, 6vw, 4rem);
+}
+@media (min-width: 768px) {
+    .intro { margin-right: 10%; } 
+}
 
+@media (max-width: 576px) {
+    .hero { background-position: 20% center; }
+}
 .cta-gomb {
     padding: 15px 40px;
     margin-top: 20px;
@@ -129,7 +160,7 @@ body {
     font-size: 0.8em;
 }
 
-.lasztik {
+.social {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -143,7 +174,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.lasztik:hover {
+.social:hover {
     background-color: #CC0000;
     color: #FFFFFF;
 }
@@ -175,6 +206,7 @@ body {
 .fel {
     position: fixed;
 }
+
 #top {
     position: fixed;
     bottom: 20px;
@@ -191,83 +223,101 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     transition: 0.9s;
 }
-#top p{
+
+#top p {
     margin: 5px 0px;
 }
+
 #top:hover {
     background-color: #044913;
 }
-.csap{
-    display: flex;
-    justify-content: center;
-}
-.csap a{
-    text-decoration: none;
-    cursor: pointer;
-    color: white;
-    font-weight: bold;
-}
-.csap a:hover{
-    color: #878787;
-}
-.csap p{
-    background-color: white;
-    color: black;
-    border: 3px black solid;
-    margin: 5px 20px 0 20px;
-    font-size: 20px;
-    border-radius: 20px;
-}
-.csap img{
-    width: 400px;
-    height: 500px;
-    display: block;
+.edzokKartya {
+    overflow: hidden;
     margin: auto;
-    border: 4px white solid;
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 4px solid white;
     border-radius: 50px;
+    overflow: hidden;
+    background-color: grey;
+    transition: transform 0.3s ease;
 }
 
-.edzok {
-  overflow: hidden; 
-  margin: auto;
-  max-width: 400px; 
+.edzokKartya img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover; 
+    object-position: center;
 }
-
-.edzok img {
-  width: 100%;  
-  height: 500px; 
-  display: block;
-}
-
-.edzok p {
-  background-color: white;
-  color: black;
-  border-top: 3px solid black; 
-  margin: 0; 
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-}
-.edzok p:hover{
-    background-color: #6a6a6a;
+.edzokKartya p {
     color: white;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+    min-height: 100px;
+}
+.kartyak:hover .edzokKartya {
+    transform: translateY(-10px);
+    border-color: #28a745;
+}
+@media (max-width: 991px) {
+    .img-container {
+        height: 320px; 
+    }
+}
+@media (max-width: 576px) {
+    .img-container img {
+        height: 300px;
+    }
+    .kartyak h1 {
+        font-size: 1.8rem;
+    }
+}
+.img-container {
+    width: 100%;
+    height: 380px; 
+    overflow: hidden;
 }
 #top {
-  position: fixed;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
+
 #top:hover {
-  background-color: #1f7d38;
-  transform: scale(1.2,1.5);
+    background-color: #1f7d38;
+    transform: scale(1.2, 1.5);
 }
+
 #top p {
-  font-size: 2rem; 
-  margin: 0;
+    font-size: 2rem;
+    margin: 0;
+}
+h5{
+    color: white;
+    text-decoration: none;
+}
+.kartyak{
+    text-align: center;
+
+}
+.kartyak h1{
+    margin-bottom: 50px;
+}
+.kartyak a{
+    color: white;
+    text-decoration: none;
+}
+.kartyak a:hover{
+    color: grey;
 }

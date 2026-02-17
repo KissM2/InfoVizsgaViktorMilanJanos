@@ -1,21 +1,14 @@
+let ticking = false;
 window.addEventListener("scroll", () => {
-  let navbar = document.getElementById("navbar");
-  let top1 = document.getElementById("top");
-  if (window.scrollY > 10) {
-    navbar.classList.add("scrolled");
-  }
-  else {
-    navbar.classList.remove("scrolled");
-  }
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-      top1.style.display = "block";
-    } else {
-      top1.style.display = "none";
-    }
-  });
-  top1.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            const navbar = document.getElementById("navbar");
+            const topBtn = document.getElementById("top");
 
+            if (navbar) navbar.classList.toggle("scrolled", window.scrollY > 10);
+            if (topBtn) topBtn.style.display = window.scrollY > 300 ? "block" : "none";
+            ticking = false;
+        });
+        ticking = true;
+    }
 });

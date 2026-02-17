@@ -13,42 +13,49 @@
     <link rel="stylesheet" href="../css/index.css" />
     <!--!JavaScript-->
     <script src="../js/index.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><!--!CDN link ikonoknak-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!--Ikonok LE KELL TOLTENI-->
     <title>FitLife</title>
 </head>
-
 <body>
-<div id="navbar">
-    <div class="navunk">
-        <div class="home d-flex">
+    <div id="navbar">
+    <div class="navunk container-fluid">
+        <div class="home d-flex align-items-center">
             <div class="logo">F</div>
-            <div>FITLIFE</div>
+            <div class="ms-2">FITLIFE</div>
         </div>
         <div class="d-flex align-items-center">
-            <a href="bejelentkez"><button class="gomb btn btn-secondary me-2">Bejelentkezés</button></a>
-            <a href="user_regisztral"><button class="gomb btn btn-secondary me-3">Regisztrálj</button></a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#fitlifeMenu" >
+            <a href="../html/bejelentkez.html" class="d-none d-sm-inline">
+                <button class="gomb btn btn-secondary me-2">Bejelentkezés</button>
+            </a>
+            <a href="../html/user_regisztralas.html" class="d-none d-sm-inline">
+                <button class="gomb btn btn-secondary me-3">Regisztrálj</button>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#fitlifeMenu">
                 <span class="fas fa-bars fa-1x text-white"></span>
             </button>
         </div>
     </div>
-    
+
     <div class="menupontok collapse text-center bg-dark" id="fitlifeMenu">
-        <ul class="list-unstyled py-3">
+        <ul class="list-unstyled py-3 m-0">
+            <li class="d-sm-none"><a href="../html/bejelentkez.html" class="nav-link text-white py-2">Bejelentkezés</a></li>
+            <li class="d-sm-none"><a href="../html/user_regisztralas.html" class="nav-link text-white py-2">Regisztráció</a></li>
+            <li class="d-sm-none"><hr class="text-white mx-5"></li>
+
             <li><a href="#" class="nav-link text-white py-2">Edzésterv</a></li>
             <li><a href="#" class="nav-link text-white py-2">Étrend</a></li>
             <li><a href="edzo" class="nav-link text-white py-2">Személyi Edzőink</a></li>
         </ul>
     </div>
 </div>
-    <section class="hero">
-        <div class="intro">
-            <h1>ERŐD ÉS CÉLJAID EGY HELYEN</h1>
-            <h3 class="my-4 mb-5">Lépj szintet a FITLIFE-fal.</h3>
-            <div>
-                <a href="#" class="gombok" title="Étrend elkészitése">Étrend készítés</a>
-                <a href="#" class="gombok" title="Edzésterv elkészitése">Edzésterv készítés</a>
+    <section class="hero d-flex align-items-center justify-content-center justify-content-md-end">
+        <div class="intro text-center text-md-end p-3">
+            <h1 class="display-4 fw-bold">ERŐD ÉS CÉLJAID EGY HELYEN</h1>
+            <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-md-end gap-3">
+                <a href="#" class="cta-gomb">Étrend készítés</a>
+                <a href="#" class="cta-gomb">Edzésterv készítés</a>
             </div>
         </div>
     </section>
@@ -76,48 +83,48 @@
     </section>
     <section>
         <div class="row edz">
-            <h1 class="text-center text-success" id="edzok">Leghíresebb Edzőink</h1>
+            <h1 class="text-center text-success mb-5" id="edzok">Leghíresebb Edzőink</h1>
 
-            <div class="col-sm-12 col-md-6 col-lg-3 mt-5">
+            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
                 <a href="trainers.html" target="_blank" title="Pitypang Bálint">
-                    <h1 class="text-center mb-5">Pitypang</h1>
+                    <h1>Pitypang</h1>
                 </a>
-                <div class="edzok">
-                    <img src="../images/Pitypang.jpg" alt="">
+                <div class="edzokKartya">
+                    <div class="img-containe"><img src="../images/Pitypang.jpg" alt=""></div>
                     <p>Pitypang Bálint: <br> 120cm <br> Steroidos minipekka</p>
                 </div>
             </div>
-
-            <div class="col-sm-12 col-md-6 col-lg-3 mt-5">
+            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
                 <a href="trainers.html" target="_blank" title="Dzsákó Dzsános">
-                    <h1 class="text-center mb-5">Dzsákó</h1>
+                    <h1>Dzsákó</h1>
                 </a>
-                <div class="edzok">
-                    <img src="../images/dzsako.jpg" alt="">
+                <div class="edzokKartya">
+                    <div class="img-container">
+                        <div class="img-containe"><img src="../images/dzsako.jpg" alt=""></div>
+                    </div>
                     <p>Dzsákó Zsángó: <br> fater <br> Megáttíthatatlan dömper</p>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 mt-5">
+            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
                 <a href="trainers.html" target="_blank" title="Berta Bottas">
-                    <h1 class="text-center mb-5">Bottas</h1>
+                    <h1>Bottas</h1>
                 </a>
-                <div class="edzok">
-                    <img src="../images/bottas.jpg" alt="">
+                <div class="edzokKartya">
+                    <div class="img-containe"><img src="../images/bottas.jpg" alt=""></div>
                     <p>Berta Bottas: <br> *munka* <br> Szerencsejáték függő</p>
                 </div>
             </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 mt-5">
-                <a href="trainers.html" target="_blank" title="NorBalls Varga">
-                    <h1 class="text-center mb-5">NorBalls</h1>
+            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
+                <a href="trainers.html" target="_blank" title="Norbi Varga">
+                    <h1>Norbi</h1>
                 </a>
-                <div class="edzok">
-                    <img src="../images/NoBalls.jpg" alt="">
-                    <p>Varga NorBalls: <br> ízesített levegő <br> Pottyantó putri élvező</p>
+                <div class="edzokKartya">
+                    <div class="img-containe"><img src="../images/Norbi.jpg" alt=""></div>
+                    <p>Varga Norbi: <br> ízesített levegő <br> Pottyantó putri élvező</p>
                 </div>
-                
             </div>
         </div>
-        
+
     </section>
     <button id="top" title="Ugrás a tetejére">
         <p>👆</p>
@@ -157,4 +164,5 @@
     </footer>
 
 </body>
+
 </html>
