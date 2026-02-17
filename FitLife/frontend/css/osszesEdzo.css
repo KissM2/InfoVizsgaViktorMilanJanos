@@ -1,0 +1,65 @@
+body {
+    background: #222222;
+    color: #FFFF;
+}
+.edzo-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+    gap: 25px;
+    justify-content: center;
+}
+.edzo-card-wrapper {
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s ease;
+}
+.edzo-card-wrapper:hover {
+    transform: translateY(-10px);
+}
+.edzo-belso {
+    background-color: #333;
+    border: 2px solid #555;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transition: border-color 0.3s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.edzo-card-wrapper:hover .edzo-belso {
+    border-color: #28a745;
+}
+.edzo-kep-tarolo {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    border-bottom: 2px solid #555;
+}
+
+.edzo-kep-tarolo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+.edzo-info {
+    padding: 15px;
+    text-align: center;
+    flex-grow: 1; 
+}
+.edzo-nev {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+}
+.edzo-komp {
+    color: #aaa;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+.kiemelt-szoveg {
+    color: #28a745;
+    font-weight: bold;
+}
