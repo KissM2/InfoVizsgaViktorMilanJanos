@@ -16,7 +16,7 @@ app.set('trust proxy', 1); //?Middleware Proxy
 //!Session beállítása:
 app.use(
     session({
-        secret: 'titkos_kulcs', //?Ezt generálni kell a későbbiekben
+        secret: 'vR9$kP7!xL3#qT8^mZ2@fH5&bD1*eW4!tQ6^sN8#rJ5$yL2@pX7&dK9*mV0!gB3^uS1#jF8$qW6&pL4@hM2*zY9', //?Ezt generálni kell a későbbiekben
         resave: false,
         saveUninitialized: true
     })
