@@ -54,8 +54,11 @@ router.get('/trainersedit', (request, response) => {
 
 //!API endpoints
 app.use('/', router);
-const endpoints = require('./api/api.js');
-app.use('/api', endpoints);
+const authEndpoints = require('./api/auth.js');
+const userDataEndpoints = require('./api/userData.js');
+
+app.use('/api', authEndpoints);
+app.use('/api', userDataEndpoints);
 
 //!Szerver futtatása
 app.use(express.static(path.join(__dirname, '../frontend'))); //?frontend mappa tartalmának betöltése az oldal működéséhez
