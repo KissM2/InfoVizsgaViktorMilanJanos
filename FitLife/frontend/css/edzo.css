@@ -11,10 +11,14 @@
     --calendar-width: 700px;
 }
 body {
+    height: 100%;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: system-ui, -apple-system, sans-serif;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 /*NAVBAR*/
 .alapNav {
@@ -71,7 +75,7 @@ body {
 .menu {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     cursor: pointer;
     color: white;
     padding: 10px 0; 
@@ -236,3 +240,70 @@ body {
     font-weight: bold;
     text-transform: uppercase;
 }
+/*footernek*/
+.lab {
+    background-color: #111111;
+    color: #DDDDDD;
+    border-top: 1px solid #333333;
+    font-family: Arial, sans-serif;
+    margin-top: auto !important;
+    
+}
+
+.cim {
+    color: #FFFFFF;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.menu a {
+    color: #AAAAAA;
+    text-decoration: none;
+    line-height: 2;
+    transition: color 0.2s;
+}
+
+.menu a:hover {
+    color: #CC0000;
+}
+
+.copyright {
+    color: #6a6a6a;
+    font-size: 0.8em;
+}
+
+.social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #333333;
+    color: #FFFFFF;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.social:hover {
+    background-color: #CC0000;
+    color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+
+    .text-md-end,
+    .cim {
+        text-align: start;
+        margin-top: 20px;
+    }
+
+    .links {
+        justify-content: start !important;
+    }
+
+}
+/*footernek vége*/

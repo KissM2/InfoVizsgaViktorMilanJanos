@@ -63,3 +63,156 @@ body {
     color: #28a745;
     font-weight: bold;
 }
+/*footernek*/
+.lab {
+    background-color: #111111;
+    color: #DDDDDD;
+    border-top: 1px solid #333333;
+    font-family: Arial, sans-serif;
+    margin-top: auto !important;
+    
+}
+
+.cim {
+    color: #FFFFFF;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.menu a {
+    color: #AAAAAA;
+    text-decoration: none;
+    line-height: 2;
+    transition: color 0.2s;
+}
+
+.menu a:hover {
+    color: #CC0000;
+}
+
+.copyright {
+    color: #6a6a6a;
+    font-size: 0.8em;
+}
+
+.social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #333333;
+    color: #FFFFFF;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.social:hover {
+    background-color: #CC0000;
+    color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+
+    .text-md-end,
+    .cim {
+        text-align: start;
+        margin-top: 20px;
+    }
+
+    .links {
+        justify-content: start !important;
+    }
+
+}
+/*footernek vége*/
+/*NAVBAR*/
+.alapNav {
+    background-color: #1a1d20;
+    padding: 0 20px;
+    height: 80px;    
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+.logoSzoveg {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-left: 5px;
+}
+.logo {
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    margin: 3.5px 2px 0 0;
+    width: 40px;
+    height: 40px;
+    border: 3.5px solid white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+}
+.home {
+    flex-shrink: 0; 
+}
+.home:hover {
+    color: #6a6a6a;
+    cursor: pointer;
+}
+.menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    color: white;
+    padding: 10px 0; 
+}
+.doboz {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1001;
+    min-width: 150px;
+}
+.linkek {
+    background: #212529;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    gap: 12px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+.linkek a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+}
+.linkek a:hover { color: #aaa; }
+
+/*navbarnak vége*/
