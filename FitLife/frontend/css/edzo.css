@@ -307,3 +307,55 @@ body {
 
 }
 /*footernek vége*/
+/* Táblázatho */
+#teljes{
+    width: 95%;
+    margin: 20px auto;
+    text-align: center;
+}
+.datum{
+    color: #28a745;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+.tabla{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+}
+.elso, .napok{
+    background-color: #1a1d20;
+    padding: 15px;
+    border: 1px solid #444;
+}
+.tdek{
+    padding: 10px;
+    border: 1px solid #444;
+    vertical-align: top;
+    min-width: 150px;
+}
+.etkez{
+    font-weight: bold;
+    background-color: #222;
+    border: 1px solid #444;
+}
+.etelNev{
+    color: #28a745;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.leiras{
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-bottom: 8px;
+}
+.adatok{
+    font-size: 0.75rem;
+    background-color: #555;
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
