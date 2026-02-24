@@ -55,4 +55,18 @@ router.get('/edzoProfil?id=:id', async (request, response) => {
     }
 });
 
+router.get('/topNegyEdzo', async (request, response) => {
+    try {
+        const edzok = await database.selectTopFourTrainers();
+        response.status(200).json({
+            message: 'Sikeres lekérdezés.',
+            results: edzok
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Hiba történt a szerver oldalon.'
+        });
+    }
+});
+
 module.exports = router;
