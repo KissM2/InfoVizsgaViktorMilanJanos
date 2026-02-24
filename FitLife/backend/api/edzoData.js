@@ -21,6 +21,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+//!Edző adatainak frissítése
+//? POST /api/edzoData
 router.post('/edzoData', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
     try {
         const {nem,
