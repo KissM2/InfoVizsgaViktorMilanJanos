@@ -35,7 +35,7 @@ router.get('/osszesEdzo', async (request, response) => {
 
 
 //?GET /api/edzoProfil?id=:id
-router.get('/edzoProfil?id=:id', async (request, response) => {
+router.get('/edzoProfil', async (request, response) => {
     try {
         if (!request.params.id) {
             return response.status(400).json({
