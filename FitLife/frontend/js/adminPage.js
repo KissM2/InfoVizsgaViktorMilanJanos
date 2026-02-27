@@ -183,23 +183,27 @@ document.addEventListener("DOMContentLoaded", function(){
 function userTablaFeltoltes(){
     let tbody = document.getElementById('userTableBody');
     tbody.innerHTML = '';
+
     pelda.forEach(user => {
         let sor = document.createElement('tr');
+
         for (const key in user) {
             let cella = document.createElement('td');
             cella.textContent = user[key];
             sor.appendChild(cella);
         }
-        
+
         let torlesCella = document.createElement('td');
+
         let torles = document.createElement('button');
         torles.textContent = 'Törlés';
-        torles.onclick = function() {
-            torlesFunkcio(user.id);
-        };
+        torles.classList.add('btn', 'btn-danger', 'btn-sm');
+        torles.addEventListener('click', function () {
+            //ide jön majd a törlés funkció
+        });
 
         torlesCella.appendChild(torles);
-        sor.appendChild(torlesCella );
+        sor.appendChild(torlesCella);
         tbody.appendChild(sor);
     });
 }
