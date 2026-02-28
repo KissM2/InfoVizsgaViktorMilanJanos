@@ -32,7 +32,6 @@ body {
     top: 0;
     z-index: 1000;
 }
-
 .nav {
     display: flex;
     justify-content: space-between;
@@ -59,13 +58,11 @@ body {
     text-align: center;
     line-height: 30px;
 }
-.home {
-    flex-shrink: 0; 
-}
 .home:hover {
     color: #6a6a6a;
     cursor: pointer;
 }
+/*Menu*/
 .menu-container {
     position: relative;
     display: flex;
@@ -117,6 +114,7 @@ body {
     color: var(--text-main) !important;
     border: none !important;
     padding-left: 0;
+    font-size: 1.1rem;
 }
 
 #calendar-wrapper {
@@ -235,7 +233,6 @@ body {
 }
 
 .hero-section h1 {
-    margin: 0;
     font-size: clamp(1.5rem, 5vw, 3rem); 
     font-weight: bold;
     text-transform: uppercase;
@@ -294,7 +291,7 @@ body {
 }
 
 @media (max-width: 768px) {
-
+    .calendar-header, .naptar-grid, #idopontok { width: 95vw; }
     .text-md-end,
     .cim {
         text-align: start;
@@ -304,58 +301,140 @@ body {
     .links {
         justify-content: start !important;
     }
+    .hero-section { padding: 30px 10px; }
 
 }
 /*footernek vége*/
 /* Táblázatho */
-#teljes{
+#teljes, #egesz{
     width: 95%;
     margin: 20px auto;
     text-align: center;
-}
-.datum{
-    color: #28a745;
-    margin-bottom: 20px;
-    font-weight: bold;
+    overflow-x: auto;/* Mobilon görgetheto lesz */
 }
 .tabla{
     width: 100%;
     border-collapse: collapse;
-    background-color: #333;
+    background-color: #121212;
     color: white;
     border: 1px solid #444;
+    font-size: 27px;
+    margin-bottom: 20px;
 }
-.elso, .napok{
-    background-color: #1a1d20;
-    padding: 15px;
-    border: 1px solid #444;
-}
-.tdek{
-    padding: 10px;
-    border: 1px solid #444;
+.tabla th {
+    background-color: #141414;
+    padding: 15px 5px;
+    border: 1px solid #282727;
     vertical-align: top;
-    min-width: 150px;
 }
-.etkez{
+.tabla td {
+    padding: 10px;
+    border: 1px solid #282727;
+    vertical-align: top;
+    min-width: 140px;
+    height: 190px;
+    width: 280px;
+}
+.tabla td:first-child{
     font-weight: bold;
-    background-color: #222;
-    border: 1px solid #444;
+    color: green;
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
 }
 .etelNev{
-    color: #28a745;
+    color: white;
     font-weight: bold;
     margin-bottom: 5px;
-}
-
-.leiras{
-    font-size: 0.85rem;
-    color: #ccc;
-    margin-bottom: 8px;
+    font-size: 0.95rem;
+    padding-right: 15px;
 }
 .adatok{
     font-size: 0.75rem;
     background-color: #555;
     padding: 3px 6px;
+    margin-top: 8px;
     border-radius: 4px;
+    display: block;
+    border-top: 1px solid #4a4a4a;
+}
+.vezerlo-sav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.vezerlo-sav button {
+    width: auto;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-color: green;
+}
+button {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #282727;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    width: 100%;
+
+}
+.napi-gombok {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: green;
+    border-color: green;
+    color: white;
+}
+.kaja-kartya {
+    position: relative;
+    background-color: var(--bg-main);
+    border-left: 4px solid var(--green); 
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.torles-x {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px !important; /* Fix méret az X-nek */
+    height: 20px;
+    padding: 0 !important;
+    line-height: 18px;
+    background: none !important;
+    border: none !important;
+    color: #666 !important;
+}
+.torles-x:hover {
+    color: var(--red) !important;
+}
+.kcal-badge {
     display: inline-block;
+    background-color: green;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.recept-valaszto {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid green;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
