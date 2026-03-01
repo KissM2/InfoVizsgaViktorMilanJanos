@@ -310,10 +310,17 @@ body {
     width: 95%;
     margin: 20px auto;
     text-align: center;
-    overflow-x: auto;/* Mobilon görgetheto lesz */
+}
+.tabla-container {
+    width: 100%;
+    overflow-x: auto;/* görgetés mobilon */
+    margin-bottom: 30px;
+    border-radius: 8px;
+    border: 1px solid 121212;
 }
 .tabla{
     width: 100%;
+    min-width: 800px;
     border-collapse: collapse;
     background-color: #121212;
     color: white;
@@ -391,7 +398,7 @@ button {
 }
 
 button:hover {
-    background-color: green;
+    background-color: var(--green);
     border-color: green;
     color: white;
 }
@@ -408,13 +415,13 @@ button:hover {
     position: absolute;
     top: 5px;
     right: 5px;
-    width: 20px !important; /* Fix méret az X-nek */
     height: 20px;
     padding: 0 !important;
     line-height: 18px;
     background: none !important;
     border: none !important;
     color: #666 !important;
+    width: 10px;
 }
 .torles-x:hover {
     color: var(--red) !important;
@@ -437,4 +444,53 @@ button:hover {
     padding: 6px;
     border-radius: 4px;
     margin-bottom: 10px;
+}
+.heti-resz {
+    margin-bottom: 40px;
+    animation: fadeIn 0.3s ease;
+}
+
+.het-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-dark);
+    padding: 15px 20px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border-soft);
+    border-bottom: none;
+}
+
+.het-fejlec h3 {
+    margin: 0;
+    color: var(--green);
+    font-size: 1.2rem;
+}
+
+.het-vezerlok {
+    display: flex;
+    gap: 10px;
+}
+
+.het-vezerlok button {
+    width: auto !important;
+    font-size: 0.8rem !important;
+    padding: 6px 15px !important;
+}
+
+.btn-torol-het:hover {
+    background-color: var(--red) !important;
+    border-color: var(--red) !important;
+}
+
+.tabla-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: 0 0 8px 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

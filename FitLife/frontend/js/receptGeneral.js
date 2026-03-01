@@ -27,7 +27,7 @@ function vezerloSavKeszites() {
     ujHetBtn.addEventListener("click",alapTablaGeneralas)
 
     const generalBtn = document.createElement("button");
-    generalBtn.textContent = "Étrend generálás";
+    generalBtn.textContent = "Étrendek generálása";
     generalBtn.addEventListener("click",etrendFeltoltes)
 
 
@@ -45,9 +45,34 @@ function alapTablaGeneralas() {
             tipusok.push(receptek[i].etkezes_tipus);
         }
     }
+    const hetiResz = document.createElement("div");
+    hetiResz.classList.add("heti-resz");
+    const hetFejlec = document.createElement("div");
+    hetFejlec.classList.add("het-fejlec");
+    const h3 = document.createElement("h3");
+    h3.textContent = "Heti étrend";
+    const vezerloGombok = document.createElement("div");
+    vezerloGombok.classList.add("het-vezerlok");
 
+    const genBtn = document.createElement("button");
+    genBtn.textContent = "Hét generálása";
+    genBtn.classList.add("btn-gen-het");
+
+    const torolBtn = document.createElement("button");
+    torolBtn.textContent = "Hét eltávolítása";
+    torolBtn.classList.add("btn-torol-het");
+
+    vezerloGombok.append(genBtn, torolBtn);
+    hetFejlec.append(h3, vezerloGombok);
+    hetiResz.appendChild(hetFejlec);
+
+
+    const container = document.createElement("div");
+    container.classList.add("tabla-container");
     const table = document.createElement("table");
     table.classList.add("tabla");
+    torolBtn.addEventListener("click",function(){hetiResz.remove();});
+    genBtn.addEventListener("click",function() {etrendFeltoltes(table);})
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
 
@@ -86,17 +111,19 @@ function alapTablaGeneralas() {
         for (let j = 0; j < 7; j++) {
             const td = document.createElement("td");
             td.classList.add("kaja-cella");
-            td.dataset.nap = j;
+            td.dataset.nap = j;//Megkapja a data-nap=0(hetfo)(1=kedd...)ertéket
             td.dataset.tipus = tipusok[i];
             tr.appendChild(td);
         }
         tbody.appendChild(tr);
     }
     table.appendChild(tbody);
-    teljes.appendChild(table);
+    container.appendChild(table);
+    hetiResz.appendChild(container)
+    teljes.appendChild(hetiResz);
 }
 function napTorlese(napIndex,szuloTabla) {
-    const cellak = szuloTabla.querySelectorAll('.kaja-cella[data-nap="' + napIndex + '"]');//szuloTabla.querySelectorAll hogy CSAK a szuloTablaba keresse
+    const cellak = szuloTabla.querySelectorAll('.kaja-cella[data-nap="' + napIndex + '"]');//szuloTabla.querySelectorAll hogy CSAK a szuloTablaba keresse,data-nap=89sorban kapja az erteket
     for (let i = 0; i < cellak.length; i++) {
         while (cellak[i].firstChild) {
             cellak[i].removeChild(cellak[i].firstChild);
@@ -140,8 +167,8 @@ function napiUjFelvetel(napIndex,szuloTabla) {
         }
     }
 }
-function etrendFeltoltes() {
-    const cellak = document.querySelectorAll(".kaja-cella");
+function etrendFeltoltes(Szulo) {
+    const cellak = Szulo.querySelectorAll(".kaja-cella");
     for (let i = 0; i < cellak.length; i++) {
         const td = cellak[i];
         
@@ -171,9 +198,7 @@ function kajaKartyaKeszites(kaja) {
     const xBtn = document.createElement("button");
     xBtn.textContent = "X";
     xBtn.classList.add("torles-x");
-    xBtn.onclick = function() {
-        doboz.remove();
-    };
+    xBtn.addEventListener("click", doboz.remove());
 
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
