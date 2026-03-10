@@ -1,4 +1,4 @@
-let pelda = [
+let peldaFelh = [
 {
     id: 1,
     nev: "Példa Lajos",
@@ -175,16 +175,85 @@ let pelda = [
     szuletesiDatum: "1990-12-24",
     szerep: "edzo"
 }]
+let peldaKomm = [
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma ssssssssssssssss sssssssssssssssssssssssssssssss sssssssss sss ssssss ssssssss ssssssss ssssssssssssss sssssssssssssssssssss!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+},
+{
+    id: 1,
+    felhasznaloNev: "Példa Lajos",
+    komment: "Nagyon jó edzés volt ma!",
+    datum: "2024-06-01 14:30"
+}
+]
 
 document.addEventListener("DOMContentLoaded", function(){
     userTablaFeltoltes();
+    kommentKiiras();
 });
 
 function userTablaFeltoltes(){
     let tbody = document.getElementById('userTableBody');
     tbody.innerHTML = '';
 
-    pelda.forEach(user => {
+    peldaFelh.forEach(user => {
         let sor = document.createElement('tr');
 
         for (const key in user) {
@@ -206,4 +275,38 @@ function userTablaFeltoltes(){
         sor.appendChild(torlesCella);
         tbody.appendChild(sor);
     });
+}
+
+function kommentKiiras(){
+    let kommentDiv = document.getElementById('kommentek');
+    kommentDiv.innerHTML = '';
+
+    peldaKomm.forEach(komment =>{
+        let card = document.createElement('div');
+        card.classList.add('card', 'mb-3', 'col-lg-4', 'col-md-6', 'col-sm-12');
+        let cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+        let title = document.createElement('h5');
+        title.textContent = komment.felhasznaloNev;
+        title.classList.add('card-title');
+        cardBody.appendChild(title);
+
+        let kommentText = document.createElement('p');
+        kommentText.textContent = komment.komment;
+        kommentText.classList.add('card-text');
+        cardBody.appendChild(kommentText);
+
+        let ertekeles = document.createElement('p');
+        ertekeles.textContent = "Értékelés: 4/5";
+        ertekeles.classList.add('card-text');
+        cardBody.appendChild(ertekeles);
+
+        let datum = document.createElement('small');
+        datum.textContent = komment.datum;
+        datum.classList.add('text-muted');
+        cardBody.appendChild(datum);
+
+        card.appendChild(cardBody);
+        kommentDiv.appendChild(card);
+    })
 }
