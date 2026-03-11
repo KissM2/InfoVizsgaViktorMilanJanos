@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/edzo.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="../js/edzo.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-IocJTKb7QYrnZ2tYWnO31aCgBhjeVHI&loading=async" async defer></script>
 </head>
 
 <body class="bg-dark text-light">
@@ -37,6 +38,12 @@
         </div>
     </nav>
     <div id="edzo"></div>
+
+    <div id="googleMap" style="display: flex; justify-content: center; margin: 20px 0;">
+        <gmp-map center="40.7128,-74.0060" zoom="4" map-id="DEMO_MAP_ID" style="height: 800px; width: 1400px;">
+            <gmp-marker position="40.7128,-74.0060" title="New York" label="NY">a</gmp-marker>
+        </gmp-map>
+    </div>
 
     <div id="calendar-wrapper">
         <div id="naptar"></div>
