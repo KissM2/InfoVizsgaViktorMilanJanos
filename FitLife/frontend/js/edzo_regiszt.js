@@ -1,29 +1,13 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const trainerForm = document.getElementById('trainerForm');
+import { postKeres } from '../js/kozosFetch.js';
 
-    trainerForm.addEventListener('submit', async () => {
-        const password = document.getElementById('password').value;
-        const confirm = document.getElementById('confirm').value;
+document.getElementById('trainerForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (document.getElementById('password').value !== document.getElementById('confirm').value) {
+        alert("A jelszavak nem egyeznek!");
+    }
+    else {
+        const formData = new FormData(e.target);
+        postKeres('/api/register/trainer', formData, '../html/index.html');
+    }
 
-        if (password != confirm) {
-            alert("A jelszavak nem egyeznek!");
-        }
-        else {
-            const formData = new FormData(trainerForm);
-            try {
-                const response = await fetch('/api/register', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                alert(result.message);
-                if (response.ok) {
-                    window.location.href = '../html/index.html';
-                }
-            } catch (error) {
-                console.error('Hiba:', error);
-                alert("Hálózati hiba!");
-            }
-        }
-    });
 });
