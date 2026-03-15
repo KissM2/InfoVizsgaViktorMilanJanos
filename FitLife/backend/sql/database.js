@@ -16,7 +16,12 @@ async function selectall() {
     const [rows] = await pool.execute(query);
     return rows;
 }
+async function selectTrainerById(id) {
+    const query = "SELECT login.felh_nev, login.email, login.tel_szam, login.nem, login.szul_datum, edzo.edzoterm_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
+    const [rows] = await pool.execute(query,[id]);
+    return rows;
+}
 //!Export
 module.exports = {
-    selectall
+    selectall, selectTrainerById
 };
