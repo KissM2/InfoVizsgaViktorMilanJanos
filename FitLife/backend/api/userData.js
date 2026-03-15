@@ -24,27 +24,21 @@ const upload = multer({ storage });
 //?Post /api/userData
 router.post('/userData', checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
     try {
-        const {
-            allergiak, 
-            preferenciak, 
+        const { 
             cel_testsuly, 
-            cel_alkat, 
+            cel_alak, 
             uzott_sport, 
             magassag, 
             testsuly, 
-            nem, 
             edzesen_kivuli_mozgas
         } = request.body;
 
         database.updateUser(
-            allergiak, 
-            preferenciak, 
-            cel_testsuly, 
-            cel_alkat, 
-            uzott_sport, 
-            magassag, 
-            testsuly, 
-            nem, 
+            cel_testsuly,
+            cel_alak,
+            uzott_sport,
+            magassag,
+            testsuly,
             edzesen_kivuli_mozgas,
             request.session.email
         );
