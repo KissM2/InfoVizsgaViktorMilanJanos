@@ -1,18 +1,16 @@
 <!DOCTYPE html>
 <html lang="hu">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitLife-Edző</title>
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../css/edzo.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/edzo.js"></script>
+    <script src="../js/edzesTervGeneral.js"></script>
+    <title>Document</title>
 </head>
-
-<body class="bg-dark text-light">
+<body>
     <nav class="alapNav">
         <div class="nav">
             <a href="index.html" class="home d-flex align-items-center text-decoration-none">
@@ -30,28 +28,25 @@
 
                 <div class="collapse doboz" id="fitlifeMenu">
                     <div class="linkek">
-                        <a href="index.html">Főoldal</a>
+                        <a href="../html/index.html">Főoldal</a>
+                        <a href="../html/osszesEdzo.html">Személyi edzők</a>
+                        <a href="../html/etrendek.html">Receptek</a>
                     </div>
                 </div>
             </div>
         </div>
     </nav>
-    <div id="edzo"></div>
 
-    <div id="calendar-wrapper">
-        <div id="naptar"></div>
-        <div id="idopontok"></div>
-    </div>
-
+    <div id="teljes"></div>
     <footer class="lab pt-5 pb-3 mt-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 col-sm-12 mb-4 mb-md-0">
+                <div class="elerhetoseg col-md-4 col-sm-12 mb-4 mb-md-0">
                     <h5 class="cim">Elérhetőségek</h5>
-                    <p class="mb-3">FITLIFE Edzőterem</p>
-                    <p class="mb-3">1234 Budapest, Csapó utca 12.</p>
-                    <p class="mb-3">Telefon: +36 30 123 4567</p>
-                    <p class="mb-2">Email: info@fitlife.hu</p>
+                    <p class="mb-1">FITLIFE Edzőterem</p>
+                    <p class="mb-1">1234 Budapest, Csapó utca 12.</p>
+                    <p class="mb-1">Telefon: +36 30 123 4567</p>
+                    <p class="mb-0">Email: info@fitlife.hu</p>
                 </div>
                 <div class="col-md-4 col-sm-12 mb-4 mb-md-0 text-center">
                     <h5 class="cim">Kövess Minket</h5>
@@ -67,7 +62,6 @@
                 <div class="col-md-4 col-sm-12 text-md-end text-sm-start">
                     <h5 class="cim">Gyorsmenü</h5>
                     <div class="menu d-flex flex-column align-items-md-end align-items-start">
-                        <a href="../html/edzesterv.html">Edzéstervek</a>
                         <a href="../html/osszesEdzo.html">Személyi Edzők</a>
                         <a href="../html/etrendek.html">Receptek</a>
                         <a href="../html/index.html">Főoldal</a>
