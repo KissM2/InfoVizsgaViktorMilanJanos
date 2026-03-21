@@ -10,6 +10,6 @@ document.getElementById('regForm').addEventListener('submit', (e) => {
     }
     else {
         const formData = new FormData(e.target);
-        postKeres('/api/register', formData, '../html/surveyTemplate.html');
+        postKeres('/api/register', formData);
     }
 });
