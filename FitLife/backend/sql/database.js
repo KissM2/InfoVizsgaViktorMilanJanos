@@ -31,10 +31,16 @@ async function selectTrainerById(id) {
     const [rows] = await pool.execute(query,[id]);
     return rows;
 }
+async function login(email) {
+    const query = "SELECT id, email, jelszo, role FROM login WHERE email = ? LIMIT 1";
+    const [rows] = await pool.execute(query, [email]);
+    return rows;
+}
 //!Export
 module.exports = {
     updateEdzo,
     selectAllTrainers,
     updateUser,
-    selectTrainerById
+    selectTrainerById,
+    login
 };

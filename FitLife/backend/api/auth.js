@@ -72,7 +72,7 @@ router.post('/register', validator.validateEmailPassword ,validator.validateRegi
 });
 
 //?Post /api/login
-router.post('/login', validator.validateEmailPassword, async (request, response) => {
+router.post('/login', upload.none(), validator.validateEmailPassword, async (request, response) => {
     try {
         const { email, password } = request.body;
 
@@ -84,7 +84,7 @@ router.post('/login', validator.validateEmailPassword, async (request, response)
             });
         }
 
-        const passwordMatch = await bcrypt.compare(password, login[0].password);
+        const passwordMatch = await bcrypt.compare(password, login[0].jelszo);
 
         if (!passwordMatch) {
                 return response.status(401).json({
