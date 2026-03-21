@@ -17,7 +17,7 @@ async function updateEdzo(nem,leiras, kompetenciak, kep, idezet,edzőterem_cím,
     return rows;
 }
 async function selectAllTrainers() {
-    const query = 'SELECT edzo.*, komment.ertekeles,komment.szoveg from edzo left join komment on edzo.edzo_id=komment.edzo_id';
+    const query = 'SELECT *, komment.ertekeles,komment.szoveg from edzo left join komment on edzo.edzo_id=komment.edzo_id';
     const [rows] = await pool.execute(query);
     return rows;
 }
