@@ -11,8 +11,13 @@ const pool = mysql.createPool({
 });
 
 //!SQL Queries
-async function selectall() {
-    const query = 'SELECT * FROM exampletable;';
+async function updateEdzo(nem,leiras, kompetenciak, kep, idezet,edzőterem_cím,email,id) {
+    const query = 'UPDATE edzo inner JOIN login ON login.id = edzo.edzo_id SET edzo.leiras = ?, edzo.kep = ?, edzo.idezet = ?, edzo.edzoterm_cim = ?, login.nem = ?,login.email=? WHERE login.id = ?;';
+    const [rows] = await pool.execute(query,[nem,leiras, kompetenciak, kep, idezet,edzőterem_cím,email,id]);
+    return rows;
+}
+async function selectAllTrainers() {
+    const query = 'SELECT *, komment.ertekeles,komment.szoveg from edzo left join komment on edzo.edzo_id=komment.edzo_id';
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -27,5 +32,8 @@ async function selectTrainerById(id) {
 }
 //!Export
 module.exports = {
-    selectall, updateUser, selectTrainerById
+    updateEdzo,
+  selectAllTrainers,
+  updateUser,
+  electTrainerById
 };
