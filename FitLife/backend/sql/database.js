@@ -4,7 +4,7 @@ const pool = mysql.createPool({
     host: '127.0.0.1',
     user: 'root',
     password: '',
-    database: 'exampledb',
+    database: 'fitlife',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -24,6 +24,7 @@ async function selectAllTrainers() {
 async function updateUser(cel_testsuly, cel_alak, uzott_sport, magassag, testsuly, edzesen_kivuli_mozgas, email) {
     const query = "UPDATE felhasznalo INNER JOIN login ON felhasznalo.felhasznalo_id = login.id SET felhasznalo.cel_testsuly = ?, felhasznalo.cel_alak = ?, felhasznalo.uzott_sport = ?, felhasznalo.magassag = ?, felhasznalo.testsuly = ?, felhasznalo.edzesen_kivuli_mozgas = ? WHERE login.email = ?";
     const [rows] = await pool.execute(query, [cel_testsuly, cel_alak, uzott_sport, magassag, testsuly, edzesen_kivuli_mozgas, email]);
+    return rows;
 }
 async function selectTrainerById(id) {
     const query = "SELECT login.felh_nev, login.email, login.tel_szam, login.nem, login.szul_datum, edzo.edzoterm_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
@@ -33,7 +34,7 @@ async function selectTrainerById(id) {
 //!Export
 module.exports = {
     updateEdzo,
-  selectAllTrainers,
-  updateUser,
-  electTrainerById
+    selectAllTrainers,
+    updateUser,
+    selectTrainerById
 };
