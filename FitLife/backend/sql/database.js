@@ -39,7 +39,13 @@ async function insertUser(felh_nev, jelszo, email, telszam, nem, role, szul_datu
 }
 
 async function login(email) {
-    const query = 'SELECT login.jelszo FROM exampletable where login.email = ?;';
+    const query = 'SELECT login.jelszo FROM login where login.email = ?;';
+    const [rows] = await pool.execute(query, [email]);
+    return rows;
+}
+
+async function checkUser(email) {
+    const query = 'SELECT login.id FROM login where login.email = ?;';
     const [rows] = await pool.execute(query, [email]);
     return rows;
 }
@@ -51,5 +57,6 @@ module.exports = {
     updateUser,
     selectTrainerById,
     login,
-    insertUser
+    insertUser,
+    checkUser
 };

@@ -47,11 +47,11 @@ router.get('/testsql', async (request, response) => {
 //?Post /api/userRegister
 router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
-        const { fullname, email, password, birthdate, phone } = request.body;
+        const { fullname, email, password, birthdate, phone, nem} = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, hashedPassword, email, "felhasznalo", birthdate, phone);
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "felhasznalo", birthdate, );
 
         request.session.user = {
             email: email,
@@ -60,7 +60,6 @@ router.post('/userRegister', upload.none(), validator.validateEmailPassword ,val
 
         return response.status(201).json({
             message: 'Sikeres felhasználó rögzítés.',
-            results: insertUser
         });
 
     } catch (error) {
@@ -74,11 +73,11 @@ router.post('/userRegister', upload.none(), validator.validateEmailPassword ,val
 //?Post /api/edzoRegister
 router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
     try {
-        const { fullname, email, password, birthdate, phone } = request.body;
+        const { fullname, email, password, birthdate, nem ,phone } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, hashedPassword, email, "edzo", birthdate, phone);
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "edzo", birthdate, );
 
         request.session.user = {
             email: email,
@@ -87,7 +86,6 @@ router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPasswor
 
         return response.status(201).json({
             message: 'Sikeres edző rögzítés.',
-            results: insertUser
         });
 
     } catch (error) {

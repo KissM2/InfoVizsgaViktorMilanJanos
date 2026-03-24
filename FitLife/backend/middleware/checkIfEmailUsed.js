@@ -5,7 +5,7 @@ async function checkIfEmailUsed(request, response, next) {
         const { email } = request.body;
         const checkUser = await db.checkUser(email);
 
-        if(checkUser > 0){
+        if(checkUser.length > 0){
             return response.status(409).json({
                 message: 'Ez az email cím már használatban van.'
             });
