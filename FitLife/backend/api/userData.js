@@ -22,23 +22,26 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //?Post /api/userData
-router.post('/userData', checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/userData', upload.single("file") ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
     try {
+
         const { 
-            cel_testsuly, 
+            celTestsuly, 
             cel_alak, 
             uzott_sport, 
             magassag, 
             testsuly, 
+            edzesIdo,
             edzesen_kivuli_mozgas
         } = request.body;
 
         database.updateUser(
-            cel_testsuly,
+            celTestsuly,
             cel_alak,
             uzott_sport,
             magassag,
             testsuly,
+            edzesIdo,
             edzesen_kivuli_mozgas,
             request.session.email
         );

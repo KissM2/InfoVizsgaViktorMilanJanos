@@ -37,7 +37,7 @@ router.get('/edzo_regisztral', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/trainer_regisztralas.html'));
 });
 router.get('/userSurvey', (request, response) => {
-    response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'));
+    response.sendFile(path.join(__dirname, '../frontend/html/userSurvey.html'));
 });
 router.get('/foglalasok', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
