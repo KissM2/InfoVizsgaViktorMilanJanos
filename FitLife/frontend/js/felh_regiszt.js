@@ -1,6 +1,6 @@
 import { postKeres } from '../js/kozosFetch.js';
 
-document.getElementById('regForm').addEventListener('submit', (e) => {
+document.getElementById('regForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const password = document.getElementById('password').value;
     const confirm = document.getElementById('confirm').value;
@@ -10,6 +10,9 @@ document.getElementById('regForm').addEventListener('submit', (e) => {
     }
     else {
         const formData = new FormData(e.target);
-        postKeres('/api/register', formData);
+        let result = await postKeres('/api/userRegister', formData);
+        if(result.message = "Sikeres felhasználó rögzítés."){
+            window.location.href = ".."
+        };
     }
 });
