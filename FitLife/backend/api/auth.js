@@ -44,6 +44,7 @@ router.get('/testsql', async (request, response) => {
     }
 });
 
+//?Post /api/register
 router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
     try {
         const { name, email, password, role, szul_datum, tel_szam } = request.body;
@@ -70,6 +71,7 @@ router.post('/register', validator.validateEmailPassword ,validator.validateRegi
     }
 });
 
+//?Post /api/login
 router.post('/login', validator.validateEmailPassword, async (request, response) => {
     try {
         const { email, password } = request.body;

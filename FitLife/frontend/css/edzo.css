@@ -11,10 +11,14 @@
     --calendar-width: 700px;
 }
 body {
+    height: 100%;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: system-ui, -apple-system, sans-serif;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 /*NAVBAR*/
 .alapNav {
@@ -28,7 +32,6 @@ body {
     top: 0;
     z-index: 1000;
 }
-
 .nav {
     display: flex;
     justify-content: space-between;
@@ -55,13 +58,11 @@ body {
     text-align: center;
     line-height: 30px;
 }
-.home {
-    flex-shrink: 0; 
-}
 .home:hover {
     color: #6a6a6a;
     cursor: pointer;
 }
+/*Menu*/
 .menu-container {
     position: relative;
     display: flex;
@@ -71,7 +72,7 @@ body {
 .menu {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     cursor: pointer;
     color: white;
     padding: 10px 0; 
@@ -113,6 +114,7 @@ body {
     color: var(--text-main) !important;
     border: none !important;
     padding-left: 0;
+    font-size: 1.1rem;
 }
 
 #calendar-wrapper {
@@ -231,8 +233,264 @@ body {
 }
 
 .hero-section h1 {
-    margin: 0;
     font-size: clamp(1.5rem, 5vw, 3rem); 
     font-weight: bold;
     text-transform: uppercase;
+}
+/*footernek*/
+.lab {
+    background-color: #111111;
+    color: #DDDDDD;
+    border-top: 1px solid #333333;
+    font-family: Arial, sans-serif;
+    margin-top: auto !important;
+    
+}
+
+.cim {
+    color: #FFFFFF;
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.menu a {
+    color: #AAAAAA;
+    text-decoration: none;
+    line-height: 2;
+    transition: color 0.2s;
+}
+
+.menu a:hover {
+    color: #CC0000;
+}
+
+.copyright {
+    color: #6a6a6a;
+    font-size: 0.8em;
+}
+
+.social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #333333;
+    color: #FFFFFF;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.social:hover {
+    background-color: #CC0000;
+    color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+    .calendar-header, .naptar-grid, #idopontok { width: 95vw; }
+    .text-md-end,
+    .cim {
+        text-align: start;
+        margin-top: 20px;
+    }
+
+    .links {
+        justify-content: start !important;
+    }
+    .hero-section { padding: 30px 10px; }
+
+}
+/*footernek vége*/
+/* Táblázatho */
+#teljes, #egesz{
+    width: 95%;
+    margin: 20px auto;
+    text-align: center;
+}
+.tabla-container {
+    width: 100%;
+    overflow-x: auto;/* görgetés mobilon */
+    margin-bottom: 30px;
+    border-radius: 8px;
+    border: 1px solid 121212;
+}
+.tabla{
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    background-color: #121212;
+    color: white;
+    border: 1px solid #444;
+    font-size: 27px;
+    margin-bottom: 20px;
+}
+.tabla th {
+    background-color: #141414;
+    padding: 15px 5px;
+    border: 1px solid #282727;
+    vertical-align: top;
+}
+.tabla td {
+    padding: 10px;
+    border: 1px solid #282727;
+    vertical-align: top;
+    min-width: 140px;
+    height: 190px;
+    width: 280px;
+}
+.tabla td:first-child{
+    font-weight: bold;
+    color: green;
+    width: 100px;
+    text-align: center;
+    vertical-align: middle;
+}
+.etelNev{
+    color: white;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    padding-right: 15px;
+}
+.adatok{
+    font-size: 0.75rem;
+    background-color: #555;
+    padding: 3px 6px;
+    margin-top: 8px;
+    border-radius: 4px;
+    display: block;
+    border-top: 1px solid #4a4a4a;
+}
+.vezerlo-sav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.vezerlo-sav button {
+    width: auto;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-color: green;
+}
+button {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #282727;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    width: 100%;
+
+}
+.napi-gombok {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--green);
+    border-color: green;
+    color: white;
+}
+.kaja-kartya {
+    position: relative;
+    background-color: var(--bg-main);
+    border-left: 4px solid var(--green); 
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.torles-x {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 20px;
+    padding: 0 !important;
+    line-height: 18px;
+    background: none !important;
+    border: none !important;
+    color: #666 !important;
+    width: 10px;
+}
+.torles-x:hover {
+    color: var(--red) !important;
+}
+.kcal-badge {
+    display: inline-block;
+    background-color: green;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.recept-valaszto {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid green;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+.heti-resz {
+    margin-bottom: 40px;
+    animation: fadeIn 0.3s ease;
+}
+
+.het-fejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-dark);
+    padding: 15px 20px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--border-soft);
+    border-bottom: none;
+}
+
+.het-fejlec h3 {
+    margin: 0;
+    color: var(--green);
+    font-size: 1.2rem;
+}
+
+.het-vezerlok {
+    display: flex;
+    gap: 10px;
+}
+
+.het-vezerlok button {
+    width: auto !important;
+    font-size: 0.8rem !important;
+    padding: 6px 15px !important;
+}
+
+.btn-torol-het:hover {
+    background-color: var(--red) !important;
+    border-color: var(--red) !important;
+}
+
+.tabla-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: 0 0 8px 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
