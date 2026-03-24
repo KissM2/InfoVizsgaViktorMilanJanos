@@ -26,13 +26,8 @@ function vezerloSavKeszites() {
     ujHetBtn.textContent = "Új hét (Üres tábla)";
     ujHetBtn.addEventListener("click",alapTablaGeneralas)
 
-    const generalBtn = document.createElement("button");
-    generalBtn.textContent = "Étrendek generálása";
-    generalBtn.addEventListener("click",etrendFeltoltes)
-
 
     sav.appendChild(ujHetBtn);
-    sav.appendChild(generalBtn);
     teljes.appendChild(sav);
 }
 function alapTablaGeneralas() {
@@ -198,7 +193,9 @@ function kajaKartyaKeszites(kaja) {
     const xBtn = document.createElement("button");
     xBtn.textContent = "X";
     xBtn.classList.add("torles-x");
-    xBtn.addEventListener("click", doboz.remove());
+    xBtn.addEventListener("click",function() {
+        doboz.remove();
+    });
 
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
