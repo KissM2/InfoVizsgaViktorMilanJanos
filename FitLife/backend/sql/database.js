@@ -21,6 +21,20 @@ async function selectAllTrainers() {
     const [rows] = await pool.execute(query);
     return rows;
 }
+
+async function insertUser(felh_nev, jelszo, email, telszam, nem, role, szul_datum){
+    const query = 'INSERT INTO login(felh_nev, jelszo, email, telszam, nem, role, szul_datum) values (?, ?, ?, ?, ?, ?, ?)';
+    const [rows] = await pool.execute(query, [felh_nev, jelszo, email, telszam, nem, role, szul_datum]);
+    return rows;
+}
+
+async function login(email) {
+    const query = 'SELECT login.jelszo FROM exampletable where login.email = ?;';
+    const [rows] = await pool.execute(query, [email]);
+    return rows;
+}
+
+
 async function updateUser(cel_testsuly, cel_alak, uzott_sport, magassag, testsuly, edzesen_kivuli_mozgas, email) {
     const query = "UPDATE felhasznalo INNER JOIN login ON felhasznalo.felhasznalo_id = login.id SET felhasznalo.cel_testsuly = ?, felhasznalo.cel_alak = ?, felhasznalo.uzott_sport = ?, felhasznalo.magassag = ?, felhasznalo.testsuly = ?, felhasznalo.edzesen_kivuli_mozgas = ? WHERE login.email = ?";
     const [rows] = await pool.execute(query, [cel_testsuly, cel_alak, uzott_sport, magassag, testsuly, edzesen_kivuli_mozgas, email]);
