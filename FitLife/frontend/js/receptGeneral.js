@@ -1,16 +1,16 @@
-const receptek = [
-    { nev: "Zabkása", leiras: "Zabpehely tejjel és bogyós gyümölcsökkel.", etkezes_tipus: "Reggeli", zsir: 5, protein: 12, szenhidrat: 45 },
-    { nev: "Tojásrántotta", leiras: "3 tojásból készült rántotta zöldségekkel.", etkezes_tipus: "Reggeli", zsir: 15, protein: 18, szenhidrat: 2 },
-    { nev: "Roston csirke", leiras: "Csirkemell rizzsel és brokkolival.", etkezes_tipus: "Ebéd", zsir: 8, protein: 35, szenhidrat: 40 },
-    { nev: "Marhapörkölt", leiras: "Szaftos marhahús édesburgonyával.", etkezes_tipus: "Ebéd", zsir: 18, protein: 40, szenhidrat: 35 },
-    { nev: "Lazac saláta", leiras: "Friss kevert saláta grillezett lazaccal.", etkezes_tipus: "Vacsora", zsir: 20, protein: 25, szenhidrat: 10 },
-    { nev: "Túrókrém", leiras: "Zsírszegény túró natúr joghurttal.", etkezes_tipus: "Vacsora", zsir: 4, protein: 30, szenhidrat: 8 }
-];
-
-document.addEventListener("DOMContentLoaded", function () {
+import { getKeres } from '../js/kozosFetch.js';
+let receptek=[]
+document.addEventListener("DOMContentLoaded", async function () {
+    const adatok = await getKeres('/api/receptek');
+    if (adatok) {
+        receptek = adatok;
     vezerloSavKeszites();
     //1szer alapbolmegvan hivva az alapTablaGeneralas
     alapTablaGeneralas();
+    }
+    else{
+        console.error("Nem sikerült betölteni a recepteket.");
+    }
 });
 // 1. Kalória számoló (P*4 + Sz*4 + Zs*9)
 function szamolKcal(protein, szenhidrat, zsir) {

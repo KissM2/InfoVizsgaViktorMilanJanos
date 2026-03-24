@@ -45,10 +45,16 @@ async function selectTrainerById(id) {
     const [rows] = await pool.execute(query,[id]);
     return rows;
 }
+async function selectAllReceptek() {
+    const query = "SELECT * FROM recept";
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 //!Export
 module.exports = {
     updateEdzo,
     selectAllTrainers,
     updateUser,
-    selectTrainerById
+    selectTrainerById,
+    selectAllReceptek
 };
