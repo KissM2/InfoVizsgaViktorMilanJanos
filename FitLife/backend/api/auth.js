@@ -45,13 +45,13 @@ router.get('/testsql', async (request, response) => {
 });
 
 //?Post /api/userRegister
-router.post('/userRegister', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.none(), async (request, response) => {
+router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
         const { fullname, email, password, birthdate, phone } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, email, hashedPassword, "felhasznalo", birthdate, phone);
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, "felhasznalo", birthdate, phone);
 
         request.session.user = {
             email: email,
@@ -72,13 +72,13 @@ router.post('/userRegister', validator.validateEmailPassword ,validator.validate
 });
 
 //?Post /api/edzoRegister
-router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
+router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
     try {
         const { fullname, email, password, birthdate, phone } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, email, hashedPassword, "edzo", birthdate, phone);
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, "edzo", birthdate, phone);
 
         request.session.user = {
             email: email,
