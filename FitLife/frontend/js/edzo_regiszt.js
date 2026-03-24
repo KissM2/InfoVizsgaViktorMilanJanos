@@ -7,7 +7,7 @@ document.getElementById('trainerForm').addEventListener('submit', (e) => {
     }
     else {
         const formData = new FormData(e.target);
-        postKeres('/api/register/trainer', formData);
+        postKeres('/api/edzoRegister', formData);
     }
 
 });

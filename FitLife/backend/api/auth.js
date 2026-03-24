@@ -44,22 +44,49 @@ router.get('/testsql', async (request, response) => {
     }
 });
 
-//?Post /api/register
-router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
+//?Post /api/userRegister
+router.post('/userRegister', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.none(), async (request, response) => {
     try {
-        const { name, email, password, role, szul_datum, tel_szam } = request.body;
+        const { fullname, email, password, birthdate, phone } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(name, email, hashedPassword, role, szul_datum, tel_szam);
+        const insertUser = await database.insertUser(fullname, email, hashedPassword, "felhasznalo", birthdate, phone);
 
         request.session.user = {
             email: email,
-            role: role
+            role: "felhasznalo"
         }
 
         return response.status(201).json({
             message: 'Sikeres felhasználó rögzítés.',
+            results: insertUser
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).json({
+            message: 'Ez a végpont nem működik: '
+        });
+    }
+});
+
+//?Post /api/edzoRegister
+router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
+    try {
+        const { fullname, email, password, birthdate, phone } = request.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const insertUser = await database.insertUser(fullname, email, hashedPassword, "edzo", birthdate, phone);
+
+        request.session.user = {
+            email: email,
+            role: "edzo"
+        }
+
+        return response.status(201).json({
+            message: 'Sikeres edző rögzítés.',
             results: insertUser
         });
 
