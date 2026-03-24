@@ -45,10 +45,32 @@ async function selectTrainerById(id) {
     const [rows] = await pool.execute(query,[id]);
     return rows;
 }
+
+async function insertUser(felh_nev, jelszo, email, telszam, nem, role, szul_datum){
+    const query = 'INSERT INTO login(felh_nev, jelszo, email, telszam, nem, role, szul_datum) values (?, ?, ?, ?, ?, ?, ?)';
+    const [rows] = await pool.execute(query, [felh_nev, jelszo, email, telszam, nem, role, szul_datum]);
+    return rows;
+}
+
+async function login(email) {
+    const query = 'SELECT login.jelszo FROM login where login.email = ?;';
+    const [rows] = await pool.execute(query, [email]);
+    return rows;
+}
+
+async function checkUser(email) {
+    const query = 'SELECT login.id FROM login where login.email = ?;';
+    const [rows] = await pool.execute(query, [email]);
+    return rows;
+}
+
 //!Export
 module.exports = {
     updateEdzo,
     selectAllTrainers,
     updateUser,
-    selectTrainerById
+    selectTrainerById,
+    login,
+    insertUser,
+    checkUser
 };
