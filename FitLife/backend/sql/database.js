@@ -58,7 +58,11 @@ async function selectAllReceptek() {
     const [rows] = await pool.execute(query);
     return rows;
 }
-
+async function selectAllGyakorlatok() {
+    const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 //!Export
 module.exports = {
     updateEdzo,
@@ -68,5 +72,6 @@ module.exports = {
     selectAllReceptek,
     login,
     insertUser,
-    checkUser
+    checkUser,
+    selectAllGyakorlatok
 };
