@@ -12,6 +12,7 @@
   <!--!CSS-->
   <link rel="stylesheet" href="../css/regisztral.css" />
   <!--!JavaScript-->
+  <script type="module" src="../js/felh_regiszt.js"></script>
   <title>FitLife | Regisztráció</title>
 </head>
 
@@ -19,7 +20,7 @@
   <div class="container">
     <div class="register-container">
       <h1>Regisztráció</h1>
-      <form>
+      <form id="regForm">
         <div class="mb-3">
           <label for="fullname">Teljes név</label>
           <input type="text" id="fullname" name="fullname" placeholder="Add meg a teljes neved" required>
@@ -37,6 +38,10 @@
           <input type="password" id="confirm" name="confirm" placeholder="Írd be újra a jelszót" required>
         </div>
         <div class="mb-3">
+          <label for="nem">Nem</label>
+          <input type="text" id="nem" name="nem" required>
+        </div>
+        <div class="mb-3">
           <label for="birthdate">Születési dátum</label>
           <input type="date" id="birthdate" name="birthdate" required>
         </div>
@@ -44,7 +49,7 @@
           <label for="phone">Telefonszám</label>
           <input type="tel" id="phone" name="phone" placeholder="+36..." required>
         </div>
-        <a href="../html/surveyTemplate.html"><button type="submit" class="btn-fitlife">Regisztrálok</button></a>
+        <button type="submit" class="btn-fitlife">Regisztrálok</button>
       </form>
 
       <a href="../html/index.html" class="vissza">← Vissza a főoldalra</a>

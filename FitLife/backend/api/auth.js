@@ -44,23 +44,48 @@ router.get('/testsql', async (request, response) => {
     }
 });
 
-//?Post /api/register
-router.post('/register', validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, upload.single('cv'), async (request, response) => {
+//?Post /api/userRegister
+router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
-        const { name, email, password, role, szul_datum, tel_szam } = request.body;
+        const { fullname, email, password, birthdate, phone, nem} = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(name, email, hashedPassword, role, szul_datum, tel_szam);
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "felhasznalo", birthdate, );
 
         request.session.user = {
             email: email,
-            role: role
+            role: "felhasznalo"
         }
 
         return response.status(201).json({
             message: 'Sikeres felhasználó rögzítés.',
-            results: insertUser
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).json({
+            message: 'Ez a végpont nem működik: '
+        });
+    }
+});
+
+//?Post /api/edzoRegister
+router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
+    try {
+        const { fullname, email, password, birthdate, nem ,phone } = request.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "edzo", birthdate, );
+
+        request.session.user = {
+            email: email,
+            role: "edzo"
+        }
+
+        return response.status(201).json({
+            message: 'Sikeres edző rögzítés.',
         });
 
     } catch (error) {
@@ -72,7 +97,7 @@ router.post('/register', validator.validateEmailPassword ,validator.validateRegi
 });
 
 //?Post /api/login
-router.post('/login', validator.validateEmailPassword, async (request, response) => {
+router.post('/login', upload.none(), validator.validateEmailPassword, async (request, response) => {
     try {
         const { email, password } = request.body;
 
@@ -84,7 +109,7 @@ router.post('/login', validator.validateEmailPassword, async (request, response)
             });
         }
 
-        const passwordMatch = await bcrypt.compare(password, login[0].password);
+        const passwordMatch = await bcrypt.compare(password, login[0].jelszo);
 
         if (!passwordMatch) {
                 return response.status(401).json({

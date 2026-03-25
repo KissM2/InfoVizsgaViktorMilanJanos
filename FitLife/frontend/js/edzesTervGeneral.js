@@ -1,24 +1,14 @@
-const edzestervek = [
-    { weekday: "Hétfő", nev: "Fekvőtámasz", leiras: "Széles fogású karhajlítás.", kor: 3, ismetles: 15, megmozgatott_izmok: "Mell, Tricepsz", kellekek: "Nincs" },
-    { weekday: "Hétfő", nev: "Tolódzkodás", leiras: "Pad szélén végzett tricepsz gyakorlat.", kor: 3, ismetles: 12, megmozgatott_izmok: "Tricepsz, Váll", kellekek: "Szék vagy pad" },
-    { weekday: "Hétfő", nev: "Kézisúlyzós nyomás", leiras: "Fekvenyomás kézisúlyzóval.", kor: 4, ismetles: 10, megmozgatott_izmok: "Mell, Váll", kellekek: "Kézisúlyzó" },
-    { weekday: "Hétfő", nev: "Tárogatás", leiras: "Mellizom nyújtása súlyzóval.", kor: 3, ismetles: 12, megmozgatott_izmok: "Mellizom", kellekek: "Kézisúlyzó, pad" },
-    { weekday: "Hétfő", nev: "Plank", leiras: "Alkartámaszos kitartás.", kor: 3, ismetles: 60, megmozgatott_izmok: "Törzs, Has", kellekek: "Matrac" },
+import { getKeres } from '../js/kozosFetch.js';
 
-    { weekday: "Szerda", nev: "Húzódzkodás", leiras: "Széles fogású függeszkedés.", kor: 3, ismetles: 8, megmozgatott_izmok: "Hát, Bicepsz", kellekek: "Húzódzkodó rúd" },
-    { weekday: "Szerda", nev: "Guggolás", leiras: "Saját testsúlyos guggolás.", kor: 4, ismetles: 20, megmozgatott_izmok: "Comb, Farizom", kellekek: "Nincs" },
-    { weekday: "Szerda", nev: "Kitörés", leiras: "Váltott lábas előrelépés.", kor: 3, ismetles: 12, megmozgatott_izmok: "Comb, Egyensúly", kellekek: "Nincs" },
-    { weekday: "Szerda", nev: "Evezés", leiras: "Döntött törzsű evezés súlyzóval.", kor: 4, ismetles: 10, megmozgatott_izmok: "Széles hátizom", kellekek: "Kézisúlyzó" },
-
-    { weekday: "Péntek", nev: "Burpee", leiras: "Négyütemű fekvőtámasz ugrással.", kor: 3, ismetles: 10, megmozgatott_izmok: "Teljes test", kellekek: "Nincs" },
-    { weekday: "Péntek", nev: "Hegymászó", leiras: "Fekvőtámaszban térdhúzás mellkashoz.", kor: 3, ismetles: 30, megmozgatott_izmok: "Has, Váll", kellekek: "Nincs" },
-    { weekday: "Péntek", nev: "Vállból nyomás", leiras: "Súlyzók kitolása fej fölé.", kor: 3, ismetles: 12, megmozgatott_izmok: "Váll, Tricepsz", kellekek: "Kézisúlyzó" }
-];
-
-document.addEventListener("DOMContentLoaded", function () {
-    const container = document.getElementById("teljes");
+let gyakorlatok = [];
+document.addEventListener("DOMContentLoaded",async function () {
+    const adatok = await getKeres('/api/gyakorlatok');
+    if (adatok) {
+        gyakorlatok = adatok;
+        console.log("Gyakorlatok betöltve:", gyakorlatok);
     vezerloSavKeszites();
     alapTablaGeneralas();
+    }
 });
 
 function vezerloSavKeszites() {
@@ -114,20 +104,15 @@ function edzestervFeltoltes(szuloTabla) {
     for (let i = 0; i < cellak.length; i++) {
         cellak[i].innerHTML = "";
     }
-    const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
-    for (let j = 0; j < 7; j++) {
-        const aktualisNap = napok[j];
-        let napiSzamlalo = 0;
-        for (let k = 0; k < edzestervek.length; k++) {
-            if (edzestervek[k].weekday === aktualisNap) {
-                let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + napiSzamlalo + "']");
-                if (!td) {
-                    ujSorHozzaadasa(szuloTabla);
-                    td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + napiSzamlalo + "']");
-                }
-                td.appendChild(gyakorlatKartyaKeszites(edzestervek[k]));
-                napiSzamlalo++;
+   for (let j = 0; j < 7; j++) {
+        for (let sorszam = 0; sorszam < 3; sorszam++) {
+            let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
+            if (!td) {
+                ujSorHozzaadasa(szuloTabla);
+                td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
             }
+            const rnd = gyakorlatok[Math.floor(Math.random() * gyakorlatok.length)];
+            td.appendChild(gyakorlatKartyaKeszites(rnd));
         }
     }
 }
@@ -152,24 +137,17 @@ function napiUjFelvetel(napIndex, szuloTabla) {
         defaultOpt.textContent = "-- Válassz --";
         select.appendChild(defaultOpt);
 
-        const egyediNevek = [];
-        for (let i = 0; i < edzestervek.length; i++) {
-            if (egyediNevek.indexOf(edzestervek[i].nev) === -1) {
-                egyediNevek.push(edzestervek[i].nev);
-            }
-        }
-        for (let i = 0; i < egyediNevek.length; i++) {
+        for (let i = 0; i < gyakorlatok.length; i++) {
             const opt = document.createElement("option");
-            opt.value = egyediNevek[i];
-            opt.textContent = egyediNevek[i];
+            opt.value = gyakorlatok[i].gyakorlat_id;
+            opt.textContent = gyakorlatok[i].gyakorlat_nev;
             select.appendChild(opt);
         }
         select.addEventListener("change", function () {
             let talalt = null;
-            for (let i = 0; i < edzestervek.length; i++) {
-                if (edzestervek[i].nev === select.value) {
-                    talalt = edzestervek[i];
-                    break;
+            for (let i = 0; i < gyakorlatok.length; i++) {
+                if (gyakorlatok[i].gyakorlat_id == select.value) {
+                    talalt = gyakorlatok[i];
                 }
             }
             if (talalt) {
@@ -199,7 +177,7 @@ function gyakorlatKartyaKeszites(gyakorlat) {
 
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
-    nev.textContent = gyakorlat.nev;
+    nev.textContent = gyakorlat.gyakorlat_nev;
 
     const badge = document.createElement("div");
     badge.classList.add("kcal-badge");
@@ -207,7 +185,7 @@ function gyakorlatKartyaKeszites(gyakorlat) {
 
     const info = document.createElement("div");
     info.classList.add("adatok");
-    info.textContent = gyakorlat.megmozgatott_izmok + " | " + gyakorlat.kellekek;
+    info.textContent = gyakorlat.izomcsoport_nev || "Általános"
 
     doboz.appendChild(xBtn);
     doboz.appendChild(nev);

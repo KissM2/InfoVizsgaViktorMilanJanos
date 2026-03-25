@@ -30,7 +30,8 @@ router.post('/edzoData', checkEdzoData.checkEdzoData, loginCheck.loginCheck, asy
             kompetenciak, 
             kep, 
             idezet, 
-            edzőterem_cím
+            edzőterem_cím,
+            email
         } = request.body;
 
         database.updateEdzo(
@@ -40,7 +41,8 @@ router.post('/edzoData', checkEdzoData.checkEdzoData, loginCheck.loginCheck, asy
             kep, 
             idezet, 
             edzőterem_cím,
-            request.session.email
+            email,
+            request.session.id
         );
 
         response.status(200).json({
