@@ -1,9 +1,12 @@
-import { edzokLista } from './edzokAdatok.js';
+import { getKeres } from '../js/kozosFetch.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const gridContainer = document.getElementById("edzo-grid");
     if (gridContainer) {
+        const edzokLista = await getKeres('/api/edzok');
+        if (edzokLista) {
         renderGrid(gridContainer, edzokLista);
+        }
     }
 });
 function renderGrid(container, lista) {
@@ -20,7 +23,7 @@ function renderGrid(container, lista) {
         const imgDiv = document.createElement("div");
         imgDiv.className = "edzo-kep-tarolo";
         const img = document.createElement("img");
-        img.src = edzo.kep;
+        img.src = "../images/"+edzo.kep;
         img.alt = edzo.nev;
         imgDiv.appendChild(img);
 
@@ -29,12 +32,24 @@ function renderGrid(container, lista) {
         const nevDiv = document.createElement("div");
         nevDiv.className = "edzo-nev";
         nevDiv.textContent = edzo.nev;
+
+        const idezetDiv = document.createElement("div");
+        idezetDiv.className = "edzo-idezet";
+        idezetDiv.textContent = edzo.idezet;
+
         const kompDiv = document.createElement("div");
         kompDiv.className = "edzo-komp";
-        kompDiv.textContent = edzo.kompetenciak.slice(0, 3).join(", ");
+        const kompetenciakTomb = edzo.kompetenciak ? edzo.kompetenciak.split(',') : [];
+        kompDiv.textContent = kompetenciakTomb.slice(0, 3).join(", ");
+
+        const cimDiv = document.createElement("div");
+        cimDiv.className = "edzo-helyszin";
+        cimDiv.textContent = edzo.edzoterm_cim;
 
         infoDiv.appendChild(nevDiv);
         infoDiv.appendChild(kompDiv);
+        infoDiv.appendChild(idezetDiv);
+        infoDiv.appendChild(cimDiv);
         kartyaDiv.appendChild(imgDiv);
         kartyaDiv.appendChild(infoDiv);
         link.appendChild(kartyaDiv);
