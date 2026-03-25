@@ -63,6 +63,11 @@ async function selectAllGyakorlatok() {
     const [rows] = await pool.execute(query);
     return rows;
 }
+async function selectEdzoTerem(id) {
+    const query = "select edzo.edzoterm_cim from edzo where edzo.edzo_id LIKE ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 //!Export
 module.exports = {
     updateEdzo,
@@ -73,5 +78,6 @@ module.exports = {
     login,
     insertUser,
     checkUser,
-    selectAllGyakorlatok
+    selectAllGyakorlatok,
+    selectEdzoTerem
 };
