@@ -1,5 +1,14 @@
 import { getKeres } from '../js/kozosFetch.js';
+import { navbarGeneralas } from './navbar.js';
+
+const menuLinkek = [
+    { nev: "Főoldal", url: "../html/index.html" },
+    { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
+    { nev: "Edzéstervek", url: "../html/edzesterv.html" }
+];
+
 let receptek=[]
+
 document.addEventListener("DOMContentLoaded", async function () {
     const adatok = await getKeres('/api/receptek');
     if (adatok) {
@@ -11,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     else{
         console.error("Nem sikerült betölteni a recepteket.");
     }
+    navbarGeneralas(menuLinkek);
 });
 // 1. Kalória számoló (P*4 + Sz*4 + Zs*9)
 function szamolKcal(protein, szenhidrat, zsir) {
