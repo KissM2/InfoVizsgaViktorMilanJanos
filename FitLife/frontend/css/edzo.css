@@ -20,55 +20,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
 }
-/*NAVBAR*/
-.alapNav {
-    background-color: #1a1d20;
-    padding: 0 20px;
-    height: 80px;    
-    border-bottom: 1px solid #333;
-    display: flex;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-.nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1300px;
-    margin: 0 auto;
-}
-.logoSzoveg {
-    color: white;
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-left: 5px;
-}
-.logo {
-    color: white;
-    font-weight: bold;
-    font-size: 25px;
-    margin: 3.5px 2px 0 0;
-    width: 40px;
-    height: 40px;
-    border: 3.5px solid white;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 30px;
-}
-.home:hover {
-    color: #6a6a6a;
-    cursor: pointer;
-}
 /*Menu*/
-.menu-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
 .menu {
     display: flex;
     align-items: center;
@@ -84,24 +36,6 @@ body {
     z-index: 1001;
     min-width: 150px;
 }
-.linkek {
-    background: #212529;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; 
-    gap: 12px;
-    border: 1px solid #333;
-    border-radius: 5px;
-    margin-top: 5px;
-}
-.linkek a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-}
-.linkek a:hover { color: #aaa; }
-
 /*EDZŐ PROFIL */
 .profilKep {
     max-height: 500px;
