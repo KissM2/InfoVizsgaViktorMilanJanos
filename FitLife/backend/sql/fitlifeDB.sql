@@ -850,3 +850,17 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (89, 9), (90, 9), (91, 9), (92, 9), (93, 9), (94, 9),
 -- Vádli (10)
 (95, 10), (96, 10), (97, 10), (98, 10), (99, 10), (100, 10);
+-- 4 alap edző adatai 
+INSERT INTO login (id, felh_nev, jelszo, email, role) VALUES 
+(101, 'Togi', 'trustedSource', 'togi@fitlife.hu', 'edzo'),
+(102, 'Chris Tren', 'pr_vagy_er', 'chris@fitlife.hu', 'edzo'),
+(103, 'Mike Tren', 'heavyweight', 'mike@fitlife.hu', 'edzo'),
+(104, 'Sara Saffari', 'vloglife', 'sara@fitlife.hu', 'edzo'),
+(105, 'Rich Piana', '5percent', 'rich@fitlife.hu', 'edzo');
+
+INSERT INTO edzo (edzo_id, edzoterm_cim, kep, idezet, leiras) VALUES 
+(101, 'USA, Erica Cliff, West Johnside', 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
+(102, 'USA, Gainz Blvd 666.', 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
+(103, 'USA, Gainz Blvd 667.', 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
+(104, 'California, Zoo Culture', 'sara.jpg', '"Várj, ezt le kell videóznom a YouTube-ra!"', 'Influenszer tréning, hogyan éld túl Bradley Martynt, tartalomgyártás edzés közben.'),
+(105, 'California, 5% Gym', 'rich.jpg', '"Mi lenne, ha több kiba***** kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% mentalitás, legenda.');
