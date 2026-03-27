@@ -1,0 +1,100 @@
+.alapNav {
+    background-color: #1a1d20;
+    padding: 0 20px;
+    height: 80px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.logo {
+    color: white;
+    font-weight: bold;
+    font-size: 25px;
+    width: 40px;
+    height: 40px;
+    border: 3.5px solid white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 5px;
+}
+
+.logoSzoveg {
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.menu-container {
+    position: relative;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+}
+.doboz {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background-color: #1a1d20;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 1100;
+    width: auto; 
+    min-width: fit-content;
+}
+.linkek {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+}
+.linkek a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 150px;
+    height: 40px;
+    padding: 2px; 
+    transition: background 0.2s;
+    border-bottom: none;
+}
+
+.linkek a:hover {
+    background-color: green;
+    color: black;
+}
+
+.linkek a:last-child {
+    border-bottom: none;
+}
+.collapse.show {
+    display: block !important;
+}
+.home:hover .logo, .home:hover .logoSzoveg {
+    color: #6a6a6a;
+    border-color: #6a6a6a;
+}

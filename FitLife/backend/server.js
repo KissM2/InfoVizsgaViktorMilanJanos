@@ -37,7 +37,10 @@ router.get('/edzo_regisztral', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/trainer_regisztralas.html'));
 });
 router.get('/userSurvey', (request, response) => {
-    response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'));
+    response.sendFile(path.join(__dirname, '../frontend/html/userSurvey.html'));
+});
+router.get('/edzoSurvey', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/edzoSurvey.html'));
 });
 router.get('/foglalasok', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
@@ -58,12 +61,17 @@ const authEndpoints = require('./api/auth.js');
 const userDataEndpoints = require('./api/userData.js');
 const edzoDataEndpoints = require('./api/edzoData.js');
 const edzoProfilEndpoints = require('./api/edzoProfil.js');
+const receptekApi = require('./api/receptekApi.js');
+const edzestervApi = require('./api/edzestervApi.js');
+const mapApi = require('./api/mapVegpontok.js');
 
 app.use('/api', authEndpoints);
 app.use('/api', userDataEndpoints);
 app.use('/api', edzoDataEndpoints);
 app.use('/api', edzoProfilEndpoints);
-
+app.use('/api', receptekApi);
+app.use('/api', edzestervApi);
+app.use('/api', mapApi);
 //!Szerver futtatása
 app.use(express.static(path.join(__dirname, '../frontend'))); //?frontend mappa tartalmának betöltése az oldal működéséhez
 app.listen(port, ip, () => {
