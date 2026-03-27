@@ -66,6 +66,10 @@ async function selectAllGyakorlatok() {
 async function selectAllTrainers() {
     const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterm_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
     const [rows] = await pool.execute(query);
+}
+async function selectEdzoTerem(id) {
+    const query = "select edzo.edzoterm_cim from edzo where edzo.edzo_id LIKE ?";
+    const [rows] = await pool.execute(query, [id]);
     return rows;
 }
 //!Export
@@ -79,5 +83,6 @@ module.exports = {
     insertUser,
     checkUser,
     selectAllGyakorlatok,
-    selectAllTrainers
+    selectAllTrainers,
+    selectEdzoTerem
 };

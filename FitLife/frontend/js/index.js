@@ -12,3 +12,14 @@ window.addEventListener("scroll", () => {
         ticking = true;
     }
 });
+document.addEventListener("DOMContentLoaded", () => {
+    const topBtn = document.getElementById("top");
+    if (topBtn) {
+        topBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    }
+});

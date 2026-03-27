@@ -39,6 +39,9 @@ router.get('/edzo_regisztral', (request, response) => {
 router.get('/userSurvey', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/userSurvey.html'));
 });
+router.get('/edzoSurvey', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/edzoSurvey.html'));
+});
 router.get('/foglalasok', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
 });
@@ -69,7 +72,7 @@ app.use('/api', edzoProfilEndpoints);
 app.use('/api', receptekApi);
 app.use('/api', edzestervApi);
 app.use('/api', osszesEdz);
-
+app.use('/api', mapApi);
 //!Szerver futtatása
 app.use(express.static(path.join(__dirname, '../frontend'))); //?frontend mappa tartalmának betöltése az oldal működéséhez
 app.listen(port, ip, () => {
