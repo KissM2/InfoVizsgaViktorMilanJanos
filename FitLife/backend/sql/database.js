@@ -16,13 +16,6 @@ async function updateEdzo(nem, leiras, kompetenciak, kep, idezet, edzőterem_cí
     const [rows] = await pool.execute(query, [nem, leiras, kompetenciak, kep, idezet, edzőterem_cím, email, id]);
     return rows;
 }
-
-async function selectAllTrainers() {
-    const query = 'SELECT *, komment.ertekeles, komment.szoveg FROM edzo LEFT JOIN komment ON edzo.edzo_id=komment.edzo_id';
-    const [rows] = await pool.execute(query);
-    return rows;
-}
-
 async function insertUser(felh_nev, jelszo, email, telszam, nem, role, szul_datum) {
     const query = 'INSERT INTO login(felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES (?, ?, ?, ?, ?, ?, ?)';
     const [rows] = await pool.execute(query, [felh_nev, jelszo, email, telszam, nem, role, szul_datum]);
@@ -60,6 +53,11 @@ async function selectAllReceptek() {
 }
 async function selectAllGyakorlatok() {
     const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectAllTrainers() {
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterm_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
     const [rows] = await pool.execute(query);
     return rows;
 }

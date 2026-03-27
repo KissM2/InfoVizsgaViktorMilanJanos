@@ -63,6 +63,7 @@ const edzoDataEndpoints = require('./api/edzoData.js');
 const edzoProfilEndpoints = require('./api/edzoProfil.js');
 const receptekApi = require('./api/receptekApi.js');
 const edzestervApi = require('./api/edzestervApi.js');
+const osszesEdz = require('./api/osszesEdzo.js');
 const mapApi = require('./api/mapVegpontok.js');
 
 app.use('/api', authEndpoints);
@@ -71,6 +72,7 @@ app.use('/api', edzoDataEndpoints);
 app.use('/api', edzoProfilEndpoints);
 app.use('/api', receptekApi);
 app.use('/api', edzestervApi);
+app.use('/api', osszesEdz);
 app.use('/api', mapApi);
 //!Szerver futtatása
 app.use(express.static(path.join(__dirname, '../frontend'))); //?frontend mappa tartalmának betöltése az oldal működéséhez
