@@ -1,5 +1,11 @@
 import { getKeres } from '../js/kozosFetch.js';
+import { navbarGeneralas } from './navbar.js';
 
+const menuLinkek = [
+    { nev: "Főoldal", url: "../html/index.html" },
+    { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
+    { nev: "Receptek", url: "../html/etrendek.html" }
+];
 let gyakorlatok = [];
 document.addEventListener("DOMContentLoaded",async function () {
     const adatok = await getKeres('/api/gyakorlatok');
@@ -9,6 +15,7 @@ document.addEventListener("DOMContentLoaded",async function () {
     vezerloSavKeszites();
     alapTablaGeneralas();
     }
+    navbarGeneralas(menuLinkek);
 });
 
 function vezerloSavKeszites() {
