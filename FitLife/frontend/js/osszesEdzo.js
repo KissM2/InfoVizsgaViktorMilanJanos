@@ -9,9 +9,9 @@ const menuLinkek = [
 document.addEventListener("DOMContentLoaded", async () => {
     const gridContainer = document.getElementById("edzo-grid");
     if (gridContainer) {
-        const edzokLista = await getKeres('/api/edzok');
-        if (edzokLista) {
-        renderGrid(gridContainer, edzokLista);
+        const edzokLista = await getKeres('/api/osszesEdzo');
+        if (edzokLista && edzokLista.results) {
+        renderGrid(gridContainer, edzokLista.results);
         }
     }
     navbarGeneralas(menuLinkek);
