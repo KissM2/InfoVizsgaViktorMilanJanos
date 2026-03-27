@@ -34,7 +34,7 @@ const etelPrefferenciak = [
   "kén-dioxid és szulfitok"
 ];
 
-import {postKeres} from('./kozosFetch.js');
+import {postKeres} from './kozosFetch.js';
 
 document.addEventListener('DOMContentLoaded', function(){
     let etelAllergiakValasztott = [];
@@ -68,14 +68,4 @@ function valasztoGeneralasa(id, lista, valasztott) {
             }
         });
     }
-}
-
-function osszeszedAdatok(allergiakValasztott, preferenciakValasztott) {
-    const sulySuly = document.getElementById('celTestsulyInput').value;
-
-    return {
-        celTestsuly: parseInt(sulySuly),
-        allergiak: allergiakValasztott,
-        nemPrefferaltEtelek: preferenciakValasztott
-    };
 }
