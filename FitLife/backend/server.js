@@ -64,6 +64,7 @@ const edzoProfilEndpoints = require('./api/edzoProfil.js');
 const receptekApi = require('./api/receptekApi.js');
 const edzestervApi = require('./api/edzestervApi.js');
 const osszesEdz = require('./api/osszesEdzo.js');
+const mapApi = require('./api/mapVegpontok.js');
 
 app.use('/api', authEndpoints);
 app.use('/api', userDataEndpoints);

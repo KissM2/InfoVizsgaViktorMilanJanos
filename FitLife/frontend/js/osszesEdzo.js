@@ -1,5 +1,11 @@
 import { getKeres } from '../js/kozosFetch.js';
+import { navbarGeneralas } from './navbar.js';
 
+const menuLinkek = [
+    { nev: "Főoldal", url: "../html/index.html" },
+    { nev: "Edzéstervek", url: "../html/edzesterv.html" },
+    { nev: "Receptek", url: "../html/etrendek.html" }
+];
 document.addEventListener("DOMContentLoaded", async () => {
     const gridContainer = document.getElementById("edzo-grid");
     if (gridContainer) {
@@ -8,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderGrid(gridContainer, edzokLista);
         }
     }
+    navbarGeneralas(menuLinkek);
 });
 function renderGrid(container, lista) {
     container.replaceChildren(); 
