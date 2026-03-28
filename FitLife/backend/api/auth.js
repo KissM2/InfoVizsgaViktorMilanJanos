@@ -51,9 +51,10 @@ router.post('/userRegister', upload.none(), validator.validateEmailPassword ,val
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "felhasznalo", birthdate, );
+        const insertLogin = await database.insertLogin(fullname, hashedPassword, email, phone, nem, "felhasznalo", birthdate, );
 
         request.session.user = {
+            id: insertLogin.insertId,
             email: email,
             role: "felhasznalo"
         }
@@ -77,9 +78,10 @@ router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPasswor
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertUser = await database.insertUser(fullname, hashedPassword, email, phone, nem, "edzo", birthdate, );
+        const insertLogin = await database.insertLogin(fullname, hashedPassword, email, phone, nem, "edzo", birthdate, );
 
         request.session.user = {
+            id: insertLogin.insertId,
             email: email,
             role: "edzo"
         }
@@ -118,6 +120,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
             }
 
         request.session.user = {
+            id: login[0].id,
             email: email,
             role : login[0].role
         }
