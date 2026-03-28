@@ -216,3 +216,15 @@ body {
 .linkek a:hover { color: #aaa; }
 
 /*navbarnak vége*/
+.edzo-idezet {
+    font-style: italic;
+    font-size: 0.9em;
+    margin: 5px 0;
+    color: #00e01e;
+}
+
+.edzo-helyszin {
+    font-size: 0.85em;
+    margin-top: 8px;
+    font-weight: bold;
+}
