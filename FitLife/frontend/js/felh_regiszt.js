@@ -12,7 +12,7 @@ document.getElementById('regForm').addEventListener('submit', async (e) => {
         const formData = new FormData(e.target);
         let result = await postKeres('/api/userRegister', formData);
         if(result.message = "Sikeres felhasználó rögzítés."){
-            window.location.href = ".."
+            window.location.href = "../userSurvey";
         };
     }
 });

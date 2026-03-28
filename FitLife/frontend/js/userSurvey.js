@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function(){
     valasztoGeneralasa('etelAllergiak', etelAllergiak, etelAllergiakValasztott);
     valasztoGeneralasa('etelPrefferenciak', etelPrefferenciak, etelPrefferenciakValasztott);
 
-    document.getElementById('submit').addEventListener('click', function(){
+    document.getElementById('submit').addEventListener('click', function(e){
+        e.preventDefault();
         const formData = new FormData(document.getElementById('surveyForm'));
         formData.append("etelAllergiak", JSON.stringify(etelAllergiakValasztott));
         formData.append("etelPreferenciak", JSON.stringify(etelPrefferenciakValasztott));
