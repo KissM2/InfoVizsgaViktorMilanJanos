@@ -16,13 +16,6 @@ async function updateEdzo(edzőterem_cím, kep, idezet, leiras, id) {
     const [rows] = await pool.execute(query, [edzőterem_cím, kep, idezet, leiras, id]);
     return rows;
 }
-
-async function selectAllTrainers() {
-    const query = 'SELECT *, komment.ertekeles, komment.szoveg FROM edzo LEFT JOIN komment ON edzo.edzo_id=komment.edzo_id';
-    const [rows] = await pool.execute(query);
-    return rows;
-}
-
 async function insertLogin(felh_nev, jelszo, email, telszam, nem, role, szul_datum) {
     const query = 'INSERT INTO login(felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES (?, ?, ?, ?, ?, ?, ?)';
     const [rows] = await pool.execute(query, [felh_nev, jelszo, email, telszam, nem, role, szul_datum]);
@@ -48,7 +41,7 @@ async function updateUser(testsuly ,magassag ,edzesre_forditott_ido , cel_alak, 
 }
 
 async function selectTrainerById(id) {
-    const query = "SELECT login.felh_nev, login.email, login.tel_szam, login.nem, login.szul_datum, edzo.edzoterm_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
+    const query = "SELECT login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterm_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
