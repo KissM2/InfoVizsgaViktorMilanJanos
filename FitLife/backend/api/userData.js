@@ -22,25 +22,66 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //?Post /api/userData
-router.post('/userData', checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/userDataInsert', upload.single("file") ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
     try {
+
         const { 
-            cel_testsuly, 
-            cel_alak, 
-            uzott_sport, 
-            magassag, 
-            testsuly, 
+            testsuly,
+            magassag,
+            edzesIdo,
+            cel_alak,
+            celTestsuly,
+            uzott_sport,
+            edzesen_kivuli_mozgas
+        } = request.body;
+
+        database.insertUser(
+            testsuly,
+            testsuly,
+            magassag,
+            edzesIdo,
+            cel_alak,
+            celTestsuly,
+            uzott_sport,
+            edzesen_kivuli_mozgas,
+            request.session.id
+        );
+
+        response.status(200).json({
+            message: "adatok sikeresen mentve",
+        })
+
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Hiba a végponton."
+        });
+    }
+});
+
+//?Post /api/userDataUpdate
+router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+    try {
+
+        const { 
+            testsuly,
+            magassag,
+            edzesIdo,
+            cel_alak,
+            celTestsuly,
+            uzott_sport,
             edzesen_kivuli_mozgas
         } = request.body;
 
         database.updateUser(
-            cel_testsuly,
-            cel_alak,
-            uzott_sport,
-            magassag,
             testsuly,
+            magassag,
+            edzesIdo,
+            cel_alak,
+            celTestsuly,
+            uzott_sport,
             edzesen_kivuli_mozgas,
-            request.session.email
+            request.session.id
         );
 
         response.status(200).json({
@@ -54,6 +95,5 @@ router.post('/userData', checkUser.checkUserData, loginCheck.loginCheck, async (
         });
     }
 });
-
 
 module.exports = router;

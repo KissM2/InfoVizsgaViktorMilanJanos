@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--!Bootstrap-->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <!--?Popper: dropdowns, popovers, tooltips-->
+    <script src="../bootstrap/js/popper.min.js"></script>
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script type="module" src="../js/edzoteremValasztoMap.js"></script>
+    <script type="module" src="../js/edzoSurvey.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=Your_key&loading=async&v=weekly&libraries=places"></script>
+    <!--!CSS-->
+    <link rel="stylesheet" href="../css/regisztral.css">
+    <link rel="stylesheet" href="../css/survey.css">
+    <link rel="stylesheet" href="../css/map.css">
+    <!--!JavaScript-->
+    <title>FitLife | kérdőív</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="">Kérdőív</h1>
+        <hr>
+        <form id="edzoSurveyForm">
+            <div class="row">
+                <h3 class="secondary-title">Edzőterem kiválasztása</h3>
+                <div class="col" id="mapBefogo">
+                    <gmp-place-autocomplete id="autocomplete"></gmp-place-autocomplete>
+                    <div id="map"></div>
+                </div>
+            </div>
+            <hr class="mt-5">
+            <div class="row">
+                <h3 class="secondary-title">Hogyan írnád le magad?</h3>
+                <div><input type="text" id="leirasInput" name="leiras" placeholder="János vagyok, szeretek edzeni..."></div>
+            </div>
+            <hr>
+            <div class="row">
+                <h3 class="secondary-title">Adj meg egy idézetet</h3>
+                <div class="col mb-3">
+                    <div><input type="text" id="idezetInput" name="idezet" placeholder='"Bátraké a szerencse"'></div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <h3 class="secondary-title">Milyen kompetenciákkal és végzettségekkel rendelkezel?</h3>
+                <div class="col mb-3">
+                    <div><input type="text" id="kompetenciakInput" name="kompetenciak" placeholder='Pl. Erő, kitartás, okj-s személyi edző'></div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <h3 class="secondary-title">Tölts fel magadról egy képet</h3>
+                <div class="col mb-3 max-width-20">
+                    <div><input type="file" id="kepInput" name="kep"></div>
+                </div>
+            </div>
+            <hr>
+            <button type="submit" class="btn-fitlife" id="submit">adatok mentése</button>
+        </form>
+        
+    </div>
+</body>
+</html>

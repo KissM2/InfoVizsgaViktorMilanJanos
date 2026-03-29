@@ -17,3 +17,14 @@ export async function postKeres(url, formData) {
         alert("Hálózati hiba!");
     }
 }
+export async function getKeres(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Szerver hiba: "+response.status);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Lekérdezési hiba:", error);
+    }
+}

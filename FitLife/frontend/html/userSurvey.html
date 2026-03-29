@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--!Bootstrap-->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+    <!--?Popper: dropdowns, popovers, tooltips-->
+    <script type="module" src="../bootstrap/js/popper.min.js"></script>
+    <script type="module" src="../bootstrap/js/bootstrap.min.js"></script>
+    <script type="module" src="../js/userSurvey.js"></script>
+    <!--!CSS-->
+    <link rel="stylesheet" href="../css/regisztral.css" />
+    <link rel="stylesheet" href="../css/survey.css">
+    <link rel="stylesheet" href="../css/userSurvey.css">
+    <!--!JavaScript-->
+    <title>FitLife | kérdőív</title>
+</head>
+
+<body>
+    <div class="container">
+        <form id="surveyForm">
+            <h1>Kérdőív</h1>
+
+            <hr>
+
+            <h3 class="secondary-title d-flex space-evenly">Testi adottságok</h3>
+            <div class="row">
+                <div class="col-12"><label class="labelWidth" for="testsulyInput">Testsúly(kg):<input class="inputWidth " type="number" value="80" min="40" max="500" id="testsulyInput" name="testsuly"></label></div>
+                <div class="col-12"><label class="labelWidth" for="celTestsulyInput">Cél testsúly(kg):<input class="inputWidth" type="number" value="80" min="40" max="120" id="celTestsulyInput" name="celTestsuly"></label></div>
+                <div class="col-12"><label class="labelWidth" for="magassagInput">magassag(cm):<input class="inputWidth" type="number" value="140" min="80" max="250" id="magassagInput" name="magassag"></label></div>
+                <div class="col-12"><label class="labelWidth" for="edzesIdoInput">Edzésre fordított idő naponta(min): <input class="inputWidth" type="number" value="60" min="0" max="1440" id="edzesIdoInput" name="edzesIdo"></label></div>
+            </div>
+            <hr>
+
+            <div class="row">
+                <h3 class="secondary-title">Alergiák</h3>
+                <div class="col mb-3 d-flex flex-wrap" id="etelAllergiak"> </div>
+            </div>
+            <hr>
+            <div class="row">
+                <h3 class="secondary-title">Nem preferált ételek</h3>
+                <div class="col mb-3 d-flex flex-wrap" id="etelPrefferenciak"> </div>
+            </div>
+            <hr>
+            <button type="submit" class="btn-fitlife" id="submit">adatok mentése</button>
+        </form>
+    </div>
+    
+</body>
+</html>

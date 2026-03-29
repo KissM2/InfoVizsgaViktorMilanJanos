@@ -29,7 +29,6 @@ edzesre_forditott_ido INT,
 napi_kaloria_bevitel INT,
 cel_alak VARCHAR(100),
 cel_testsuly FLOAT,
-uzott_sport VARCHAR(100),
 edzesen_kivuli_mozgas VARCHAR(100),
 FOREIGN KEY (felhasznalo_id) REFERENCES login(id)
 );
@@ -41,6 +40,7 @@ edzoterm_cim VARCHAR(255),
 kep TEXT,
 idezet TEXT,
 leiras TEXT,
+kompetenciak TEXT,
 FOREIGN KEY (edzo_id) REFERENCES login(id)
 );
 
@@ -58,8 +58,7 @@ gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
 nev VARCHAR(150),
 leiras TEXT,
 kor INT,
-ismetles INT,
-megmozgatott_izmok VARCHAR(255)
+ismetles INT
 );
 INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES 
 -- MELL (15 gyakorlat)
@@ -94,7 +93,8 @@ INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES
 ( 'Áthúzás csigán egyenes karral', 'Széleshátizom izoláció csigán.', 4, 15),
 ( 'Fordított tárogatás gépen', 'Hátsó delták és lapocka környéke.', 4, 12),
 ( 'Evezés padon (Seal Row)', 'Vízszintes padon fekve végzett evezés.', 4, 10),
-( 'Jóreggelt gyakorlat', 'Alsóhát rúd a nyakban.', 3, 12)
+( 'Jóreggelt gyakorlat', 'Alsóhát rúd a nyakban.', 3, 12),
+
 -- VÁLL (12 gyakorlat)
 ('Mellből nyomás rúddal', 'Klasszikus vállnyomás állva vagy ülve.', 4, 10),
 ('Vállnyomás egykezes súlyzóval', 'Ülő nyomás egykezesekkel.', 4, 10),
@@ -130,7 +130,7 @@ INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES
 ('Köteles nyomás fej felett csigán', 'Hosszú fej fókusz kábelen.', 4, 12),
 ('Egykezes fordított letolás', 'Alsó fogásos izoláció csigán.', 3, 15),
 ('Tricepsz fekvőtámasz (Gyémánt)', 'Szűk kéztartásos fekvőtámasz.', 3, 15),
--- ALKAR (8 gyakorlat)
+-- ALKAR
 ('Csuklóbehúzás rúddal', 'Alkar hajlító izmai padon támasztva.', 4, 15),
 ('Csuklófeszítés rúddal', 'Alkar feszítő izmai padon támasztva.', 4, 15),
 ('Fordított fogású bicepsz', 'Brachioradialis (alkar) és bicepsz.', 4, 12),
@@ -138,8 +138,9 @@ INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES
 ('Farmer séta', 'Nehéz súlyok cipelése a szorítás javításáért.', 4, 1),
 ('Tárcsa csípés (Pinch Grip)', 'Tárcsák ujjheggyel tartása.', 3, 1),
 ('Csuklóbehúzás egykezesekkel', 'Egykezes izoláció padon.', 3, 15),
-('Csavarás rúddal (Wrist roller)', 'Súly feltekerése rúdra.', 3, 1)
--- QUADRICEPS (10 gyakorlat)
+('Csavarás rúddal (Wrist roller)', 'Súly feltekerése rúdra.', 3, 1),
+
+-- QUADRICEPS
 ('Guggolás rúddal', 'Összetett alapgyakorlat a teljes combra.', 4, 8),
 ('Elölguggolás', 'Rúd a kulcscsonton, domináns Quadriceps terhelés.', 4, 10),
 ('Lábtolás gépen', 'Nagy súlyos nyomás háttámasszal.', 4, 12),
@@ -413,38 +414,40 @@ INSERT INTO kellekek_kivalasztasa (gyakorlat_id, kellek_id) VALUES
 -- ALLERGEN
 CREATE TABLE IF NOT EXISTS allergen (
 allergen_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150)
+nev VARCHAR(150),
+tipus ENUM('a', 'p') DEFAULT 'p'
 );
+INSERT INTO allergen(nev,tipus) VALUES
+('búza', 'a'),
+('rozs','a'),
+('árpa','a'),
+('zab','a'),
+('rákfélék','a'),
+('tojás','a'),
+('hal','a'),
+('földimogyoró','a'),
+('szójabab','a'),
+('tej','a'),
+('laktóz','a'),
+('mandula','a'),
+('mogyoró','a'),
+('dió','a'),
+('kesudió','a'),
+('pekándió','a'),
+('brazil dió','a'),
+('pisztácia','a'),
+('makadámdió','a'),
+('zeller','a'),
+('mustár','a'),
+('szezámmag','a'),
+('kén-dioxid és szulfitok','a'),
+('csillagfürt','a'),
+('puhatestűek','a'),
+('kagyló','a'),
+('osztriga','a'),
+('csiga','a'),
+('tintahal','a');
 INSERT INTO allergen(nev) VALUES
-('búza'),
-('rozs'),
-('árpa'),
-('zab'),
-('rákfélék'),
-('tojás'),
-('hal'),
-('földimogyoró'),
-('szójabab'),
-('tej'),
-('laktóz'),
-('mandula'),
-('mogyoró'),
-('dió'),
-('kesudió'),
-('pekándió'),
-('brazil dió'),
-('pisztácia'),
-('makadámdió'),
-('zeller'),
-('mustár'),
-('szezámmag'),
-('kén-dioxid és szulfitok'),
-('csillagfürt'),
-('puhatestűek'),
-('kagyló'),
-('osztriga'),
-('csiga'),
-('tintahal'),
 ('gomba'),
 ('tök'),
 ('cukkini'),
@@ -531,7 +534,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Lazac brokkolival','Hozzávalók: lazacfilé, brokkoli, citrom. Elkészítés: süsd meg a lazacot sütőben, párold a brokkolit.','vacsora',14,34,6), -- hal, brokkoli
 ('Csirkés wrap','Hozzávalók: tortilla, csirkemell, saláta, joghurtos öntet. Elkészítés: süsd meg a csirkét, töltsd a tortillába a salátával együtt.','ebed',7,32,40), -- búza, tej
 ('Zöldséges omlett','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel együtt.','reggeli',9,22,6), -- tojás, spenót, hagyma
-
 ('Csirkés bulgur','Hozzávalók: bulgur, csirkemell, paprika. Elkészítés: főzd meg a bulgurt, a csirkét kockázva pirítsd meg és keverd össze.','ebed',5,35,45), -- búza
 ('Pulyka burger','Hozzávalók: darált pulykahús, teljes kiőrlésű zsemle, saláta. Elkészítés: süsd meg a húspogácsát, majd rakd össze a burgert.','ebed',8,32,40), -- búza
 ('Túrós zabkása','Hozzávalók: zabpehely, túró, méz. Elkészítés: főzd meg a zabkását, majd keverd bele a túrót.','reggeli',6,25,50), -- zab, tej
@@ -542,7 +544,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Tonhalas tészta','Hozzávalók: teljes kiőrlésű tészta, tonhal, paradicsom. Elkészítés: főzd meg a tésztát és keverd össze tonhallal.','ebed',7,32,65), -- búza, tonhal
 ('Protein joghurt gyümölccsel','Hozzávalók: natúr joghurt, fehérjepor, bogyós gyümölcs. Elkészítés: keverd össze egy tálban.','csemege',3,24,15), -- tej
 ('Csirkés zöldségleves','Hozzávalók: csirkemell, sárgarépa, zeller. Elkészítés: főzd össze alaplében.','vacsora',3,20,10), -- zeller
-
 ('Pulykás rizottó','Hozzávalók: rizs, pulykamell, hagyma. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',6,34,55), -- hagyma
 ('Tofu stir fry','Hozzávalók: tofu, brokkoli, szójaszósz. Elkészítés: pirítsd össze wokban.','ebed',9,20,18), -- tofu, szójabab, brokkoli
 ('Zab muffin','Hozzávalók: zabpehely, tojás, banán. Elkészítés: keverd össze és süsd muffin formában.','csemege',5,10,30), -- zab, tojás
@@ -552,8 +553,7 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Tojásos rizs','Hozzávalók: rizs, tojás, szójaszósz. Elkészítés: pirítsd össze serpenyőben.','ebed',9,20,45), -- tojás, szójabab
 ('Mandulás zabkása','Hozzávalók: zabpehely, mandula, méz. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',10,15,50), -- zab, mandula
 ('Csirkés brokkoli rizs','Hozzávalók: csirkemell, rizs, brokkoli. Elkészítés: párold a brokkolit és keverd a csirkével.','ebed',5,38,55), -- brokkoli
-('Protein zabgolyó','Hozzávalók: zabpehely, fehérjepor, mogyoróvaj. Elkészítés: keverd össze és formázz golyókat.','csemege',8,20,25); -- zab, földimogyoró
-INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES
+('Protein zabgolyó','Hozzávalók: zabpehely, fehérjepor, mogyoróvaj. Elkészítés: keverd össze és formázz golyókat.','csemege',8,20,25), -- zab, földimogyoró
 ('Csirkés édesburgonya tál','Hozzávalók: csirkemell, édesburgonya, olívaolaj, só, bors. Elkészítés: az édesburgonyát kockázd fel és süsd meg sütőben, a csirkemellet serpenyőben süsd aranybarnára, majd tálald együtt.','ebed',6,38,45), --
 ('Protein zabturmix','Hozzávalók: zabpehely, fehérjepor, tej vagy víz, banán. Elkészítés: turmixold össze az összes hozzávalót krémes állagúra.','reggeli',4,28,50), -- zab, tej
 ('Pulykás saláta','Hozzávalók: pulykamell, saláta, paradicsom, uborka. Elkészítés: grillezd a pulykamellet, majd szeleteld fel és keverd a salátával.','vacsora',4,35,8), --
@@ -564,7 +564,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Marhahúsos rizstál','Hozzávalók: sovány darált marhahús, rizs, paprika. Elkészítés: pirítsd meg a húst, főzd meg a rizst és keverd össze.','ebed',9,40,55), --
 ('Csirkés brokkoli quinoa','Hozzávalók: csirkemell, quinoa, brokkoli. Elkészítés: főzd meg a quinoát, párold a brokkolit, majd keverd össze a csirkével.','ebed',5,37,40), -- brokkoli
 ('Zöldséges tofu tál','Hozzávalók: tofu, paprika, brokkoli, szójaszósz. Elkészítés: pirítsd össze wokban.','ebed',9,22,18), -- tofu, szójabab, brokkoli
-
 ('Protein chia puding','Hozzávalók: chia mag, tej, fehérjepor. Elkészítés: keverd össze és hagyd állni hűtőben.','reggeli',8,22,15), -- tej
 ('Pulykás wrap','Hozzávalók: tortilla, pulykamell, saláta. Elkészítés: grillezd a húst, majd töltsd tortillába.','ebed',7,32,42), -- búza
 ('Tojásos spenótos omlett','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel.','reggeli',9,24,6), -- tojás, spenót, hagyma
@@ -575,7 +574,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Grillezett tonhal steak','Hozzávalók: tonhal steak, citrom, olívaolaj. Elkészítés: süsd meg grillen oldalanként pár percig.','vacsora',8,36,0), -- tonhal
 ('Pulykás rizs tál','Hozzávalók: pulykamell, rizs, paprika. Elkészítés: süsd meg a húst, majd keverd össze a főtt rizzsel.','ebed',5,36,55), --
 ('Mandulás zabkása','Hozzávalók: zabpehely, mandula, méz. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',10,16,50), -- zab, mandula
-
 ('Csirkés karfiol stir fry','Hozzávalók: csirkemell, karfiol, szójaszósz. Elkészítés: pirítsd össze wokban.','vacsora',5,35,12), -- karfiol, szójabab
 ('Tojásos rizs zöldségekkel','Hozzávalók: rizs, tojás, brokkoli, répa. Elkészítés: pirítsd össze serpenyőben.','ebed',9,22,48), -- tojás, brokkoli
 ('Protein smoothie bogyós gyümölccsel','Hozzávalók: fehérjepor, tej, bogyós gyümölcs. Elkészítés: turmixold össze.','csemege',3,26,20), -- tej
@@ -585,8 +583,7 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Pulyka burger salátával','Hozzávalók: pulykahús pogácsa, saláta, paradicsom. Elkészítés: süsd meg a pogácsát és tálald salátával.','ebed',9,34,12), --
 ('Csirkés zöldbab','Hozzávalók: csirkemell, zöldbab, fokhagyma. Elkészítés: pirítsd össze serpenyőben.','vacsora',5,35,10), -- zöldbab, fokhagyma
 ('Tonhalas rizssaláta','Hozzávalók: tonhal, rizs, kukorica. Elkészítés: keverd össze hidegen.','ebed',5,30,50), -- tonhal
-('Avokádós tojás saláta','Hozzávalók: tojás, avokádó, saláta. Elkészítés: főzd meg a tojást, majd keverd az avokádóval.','reggeli',14,22,10); -- tojás, avokádó
-INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES
+('Avokádós tojás saláta','Hozzávalók: tojás, avokádó, saláta. Elkészítés: főzd meg a tojást, majd keverd az avokádóval.','reggeli',14,22,10), -- tojás, avokádó
 ('Csirkés rizs brokkolival','Hozzávalók: csirkemell, rizs, brokkoli, só, bors. Elkészítés: a rizst főzd meg, a csirkét serpenyőben süsd meg, a brokkolit párold, majd keverd össze.','ebed',5,38,55), -- brokkoli
 ('Zabkása almával','Hozzávalók: zabpehely, tej vagy víz, alma, fahéj. Elkészítés: a zabot főzd krémesre, add hozzá a reszelt almát és a fahéjat.','reggeli',4,12,55), -- zab
 ('Pulykás quinoa tál','Hozzávalók: pulykamell, quinoa, paprika. Elkészítés: főzd meg a quinoát, a pulykát pirítsd meg, majd tálald együtt.','ebed',6,34,40), --
@@ -597,7 +594,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Lazac spárgával','Hozzávalók: lazacfilé, spárga, citrom. Elkészítés: a lazacot süsd meg sütőben, a spárgát párold.','vacsora',14,34,6), -- hal, spárga
 ('Zabpalacsinta banánnal','Hozzávalók: zabpehely, tojás, banán. Elkészítés: turmixold össze és süsd palacsintának.','reggeli',6,20,35), -- zab, tojás
 ('Pulykás saláta','Hozzávalók: pulykamell, saláta, uborka, paradicsom. Elkészítés: grillezd a pulykát és keverd a zöldségekhez.','vacsora',4,34,10), --
-
 ('Csirkés karfiolrizs','Hozzávalók: csirkemell, karfiol, fokhagyma. Elkészítés: reszeld a karfiolt rizs állagúra, majd pirítsd össze csirkével.','vacsora',5,35,12), -- karfiol, fokhagyma
 ('Protein joghurt','Hozzávalók: natúr joghurt, fehérjepor, méz. Elkészítés: keverd össze egy tálban.','csemege',3,25,12), -- tej
 ('Csirkés tészta','Hozzávalók: teljes kiőrlésű tészta, csirkemell, paradicsomszósz. Elkészítés: főzd meg a tésztát, majd keverd össze csirkével és szósszal.','ebed',7,32,60), -- búza
@@ -608,7 +604,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Csirkés quinoa','Hozzávalók: quinoa, csirkemell, uborka. Elkészítés: főzd meg a quinoát, majd keverd össze a csirkével.','ebed',6,36,40), --
 ('Protein muffin','Hozzávalók: zabpehely, tojás, fehérjepor. Elkészítés: keverd össze és süsd muffin formában.','csemege',6,18,28), -- zab, tojás
 ('Tonhalas rizs','Hozzávalók: tonhal, rizs, citromlé. Elkészítés: keverd össze egy tálban.','ebed',4,32,50), -- tonhal
-
 ('Tojásos omlett spenóttal','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojást felverve süsd meg a zöldségekkel.','reggeli',9,24,6), -- tojás, spenót, hagyma
 ('Csirkés zöldbab','Hozzávalók: csirkemell, zöldbab, fokhagyma. Elkészítés: pirítsd össze serpenyőben.','vacsora',5,35,10), -- zöldbab, fokhagyma
 ('Pulykás rizottó','Hozzávalók: rizs, pulykamell, hagyma. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',6,34,55), -- hagyma
@@ -619,7 +614,6 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Avokádós csirke saláta','Hozzávalók: csirkemell, avokádó, saláta. Elkészítés: grillezd a csirkét és keverd össze az avokádóval.','vacsora',12,34,8), -- avokádó
 ('Babos csirke chili','Hozzávalók: csirkemell, bab, paradicsomszósz, chili. Elkészítés: főzd össze egy lábasban.','ebed',6,38,40), -- babfélék, chili
 ('Protein zabkása','Hozzávalók: zabpehely, fehérjepor, tej. Elkészítés: főzd össze krémesre.','reggeli',5,30,45), -- zab, tej
-
 ('Csirkés kuszkusz','Hozzávalók: kuszkusz, csirkemell, paprika. Elkészítés: készítsd el a kuszkuszt és keverd csirkével.','ebed',5,34,50), -- búza
 ('Tojásos rizs','Hozzávalók: rizs, tojás, szójaszósz. Elkészítés: pirítsd össze serpenyőben.','ebed',9,20,45), -- tojás, szójabab
 ('Pulyka burger','Hozzávalók: pulykahús pogácsa, teljes kiőrlésű zsemle. Elkészítés: süsd meg a pogácsát és tálald zsemlében.','ebed',9,34,35), -- búza
@@ -640,50 +634,96 @@ FOREIGN KEY (recept_id) REFERENCES recept(recept_id),
 FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
 );
 INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES
+(1,35),
+(2,4),(2,8),
+(4,6),(4,1),(4,76),
+(5,65),
+(7,6),(7,4),(7,10),
+(8,7),(8,35),
+(9,1),(9,10),
+(10,6),(10,40),(10,45),
+(11,1),
+(12,1),
+(13,4),(13,10),
+(14,36),
+(15,68),
+(16,57),
+(17,76),
+(18,1),(18,65),
+(19,10),
+(20,20),
+(21,45),
+(22,58),(22,9),(22,35),
+(23,4),(23,6),
+(25,7),(25,53),
+(26,1),
+(27,6),(27,9),
+(28,4),(28,12),
+(29,35),
+(30,4),(30,8),
+(32,4),(32,10),
+(34,4),(34,6),(34,10),
+(35,65),(35,1),
+(36,32),(36,46),
+(37,10),
+(39,35),
+(40,58),(40,9),(40,35),
+(41,10),
+(42,1),
+(43,6),(43,40),(43,45),
+(44,1),
+(45,7),(45,76),
+(46,57),(46,80),
+(47,4),(47,6),
+(48,65),
+(50,4),(50,12),
+(51,36),(51,9),
+(52,6),(52,35),
+(53,10),
+(54,55),
+(55,68),
+(56,4),(56,10),
+(58,54),(58,46),
+(59,65),
+(60,6),(60,76),
+(61,35),
+(62,4),
+(64,6),(64,76),
+(65,65),
+(66,4),(66,10),
+(67,1),
+(68,7),(68,53),
+(69,4),(69,6),
+(71,36),(71,46),
+(72,10),
+(73,1),
+(74,57),
+(75,58),(75,9),(75,35),
+(76,4),(76,12),
+(77,68),
+(79,4),(79,6),
+(80,65),
+(81,6),(81,40),(81,45),
+(82,54),(82,46),
+(83,45),
+(84,10),
+(85,7),
+(86,4),(86,8),
+(87,1),
+(88,76),
+(89,57),(89,80),
+(90,4),(90,10),
+(91,1),
+(92,6),(92,9),
+(93,1),
+(94,66),
+(95,40),
+(96,35),
+(97,58),(97,9),
+(98,68),
+(99,10),(99,12),
+(100,4),(100,6);
 
--- zabos receptek
-(1,4),(7,4),(12,4),(24,4),(37,4),(45,4),(50,4),(63,4),(70,4),(88,4),(96,4),(105,4),(110,4),
-
--- tojásos receptek
-(4,6),(14,6),(17,6),(25,6),(40,6),(56,6),(71,6),(85,6),(98,6),(109,6),
-
--- halas receptek
-(3,7),(8,7),(22,7),(27,7),(42,7),(48,7),(92,7),(126,7),(145,7),(166,7),
-
--- tonhal
-(3,65),(22,65),(58,65),(90,65),(120,65),(150,65),
-
--- makréla
-(32,68),(60,68),(72,68),(86,68),(140,68),(168,68),
-
--- szardínia
-(36,66),(133,66),
-
--- hering
-(52,67),(81,67),
-
--- tofu / szója
-(35,58),(61,58),(122,58),
-(35,9),(61,9),(122,9),
-
--- tej / laktóz
-(5,10),(5,11),(15,10),(25,10),(31,10),(50,10),(70,10),(103,10),
-
--- földimogyoró
-(39,8),(88,8),(127,8),
-
--- mandula
-(24,12),(74,12),(142,12),
-
--- zöldségek
-(8,35),(41,35),(97,35),(135,35), -- brokkoli
-(83,36),(111,36), -- karfiol
-(17,40),(121,40), -- spenót
-(17,45),(121,45), -- hagyma
-(71,54),(123,54), -- zöldbab
-(94,55), -- lencse
-(28,57),(69,57),(116,57), -- bab
-(76,76),(21,76),(128,76); -- avokádó
 -- ETREND
 CREATE TABLE IF NOT EXISTS etrend (
 etrend_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -693,21 +733,6 @@ felhasznalo_id INT,
 recept_id INT,
 FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
 FOREIGN KEY (recept_id) REFERENCES recept(recept_id)
-);
-
--- KOMPETENCIA
-CREATE TABLE IF NOT EXISTS kompetencia (
-kompetencia_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150)
-);
-
--- EDZO - KOMPETENCIA
-CREATE TABLE IF NOT EXISTS kompetenciak_kivalasztasa (
-edzo_id INT,
-kompetencia_id INT,
-PRIMARY KEY (edzo_id, kompetencia_id),
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
-FOREIGN KEY (kompetencia_id) REFERENCES kompetencia(kompetencia_id)
 );
 
 -- KOMMENT
@@ -791,7 +816,7 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 -- Hát gyakorlatok összekötése a Hátizommal (2-es ID)
 (16, 2), (17, 2), (18, 2), (19, 2), (20, 2), 
 (21, 2), (22, 2), (23, 2), (24, 2), (25, 2), 
-(26, 2), (27, 2), (28, 2), (29, 2), (30, 2);
+(26, 2), (27, 2), (28, 2), (29, 2), (30, 2),
 -- Váll (3)
 (31, 3), (32, 3), (33, 3), (34, 3), (35, 3), 
 (36, 3), (37, 3), (38, 3), (39, 3), (40, 3), (41, 3), (42, 3),
@@ -803,7 +828,7 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (58, 5), (59, 5), (60, 5), (61, 5), (62, 5),
 -- Alkar (6)
 (63, 6), (64, 6), (65, 6), (66, 6), (67, 6), 
-(68, 6), (69, 6), (70, 6);
+(68, 6), (69, 6), (70, 6),
 -- Quadriceps (7)
 (71, 7), (72, 7), (73, 7), (74, 7), (75, 7), (76, 7), (77, 7), (78, 7), (79, 7), (80, 7),
 -- Hamstring (8)
@@ -812,3 +837,17 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (89, 9), (90, 9), (91, 9), (92, 9), (93, 9), (94, 9),
 -- Vádli (10)
 (95, 10), (96, 10), (97, 10), (98, 10), (99, 10), (100, 10);
+-- 4 alap edző adatai 
+INSERT INTO login (id, felh_nev, jelszo, email, role) VALUES 
+(101, 'Togi', 'trustedSource', 'togi@fitlife.hu', 'edzo'),
+(102, 'Chris Tren', 'pr_vagy_er', 'chris@fitlife.hu', 'edzo'),
+(103, 'Mike Tren', 'heavyweight', 'mike@fitlife.hu', 'edzo'),
+(104, 'Sara Saffari', 'vloglife', 'sara@fitlife.hu', 'edzo'),
+(105, 'Rich Piana', '5percent', 'rich@fitlife.hu', 'edzo');
+
+INSERT INTO edzo (edzo_id, edzoterm_cim, kep, idezet, leiras) VALUES 
+(101, 'USA, Erica Cliff, West Johnside', 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
+(102, 'USA, Gainz Blvd 666.', 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
+(103, 'USA, Gainz Blvd 667.', 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
+(104, 'California, Zoo Culture', 'sara.jpg', '"Várj, ezt le kell videóznom a YouTube-ra!"', 'Influenszer tréning, hogyan éld túl Bradley Martynt, tartalomgyártás edzés közben.'),
+(105, 'California, 5% Gym', 'rich.jpg', '"Mi lenne, ha több kiba***** kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% mentalitás, legenda.');

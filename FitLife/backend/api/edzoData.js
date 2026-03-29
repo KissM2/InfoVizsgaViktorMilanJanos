@@ -21,27 +21,54 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-//!Edző adatainak frissítése
-//? POST /api/edzoData
-router.post('/edzoData', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+//!Edző adatainak mentése
+//? POST /api/edzoDataInsert
+router.post('/edzoDataInsert', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
     try {
-        const {nem,
-            leiras, 
-            kompetenciak, 
+        const {
+            edzőterem_cím,
             kep, 
             idezet, 
+            leiras,
+            kompetenciak         
+        } = request.body;
+
+        database.insertEdzo(
             edzőterem_cím,
-            email
+            kep, 
+            idezet, 
+            leiras,
+            request.session.id
+        );
+
+        response.status(200).json({
+            message: "adatok sikeresen mentve",
+        })
+
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Hiba a végponton."
+        });
+    }
+});
+
+//? POST /api/edzoDataUpdate
+router.post('/edzoDataUpdate', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const {
+            edzőterem_cím,
+            kep, 
+            idezet, 
+            leiras,
+            kompetenciak
         } = request.body;
 
         database.updateEdzo(
-            nem,
-            leiras, 
-            kompetenciak, 
+            edzőterem_cím,
             kep, 
             idezet, 
-            edzőterem_cím,
-            email,
+            leiras, 
             request.session.id
         );
 
