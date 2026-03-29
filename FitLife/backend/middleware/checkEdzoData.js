@@ -1,15 +1,18 @@
+const { json } = require("express");
+
 async function checkEdzoData(request, response, next) {
-    try {
-
-        const {nem,
-            leiras, 
-            kompetenciak, 
-            kep, 
-            idezet, 
-            edzőterem_cím
+    try {        
+        const {
+            leiras,
+            kompetenciak,
+            idezet,
+            edzoterem_cim_lat,
+            edzoterem_cim_lng
         } = request.body;
+        
+        const kep = request.file;
 
-        if(!nem || !leiras || !kompetenciak || !kep || !idezet || !edzőterem_cím){
+        if(!leiras || !kompetenciak || !idezet || !edzoterem_cim_lat || !edzoterem_cim_lng || !kep) {
             return response.status(400).json({
                 message: "nem megfelelő adatok"
             })

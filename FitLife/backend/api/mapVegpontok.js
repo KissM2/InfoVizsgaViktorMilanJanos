@@ -14,7 +14,7 @@ router.get('/getEdzoTerem', async (request, response) => {
         }
         const edzoTerem = await database.selectEdzoTerem(request.query.edzoid);
         response.status(200).json({
-            edzoTerem: edzoTerem[0].edzoterm_cim
+            edzoTerem: edzoTerem[0].edzoterem_cim
         });
     } catch (error) {
         response.status(500).json({ message: "Nem sikerült lekérni az edzőtermet." });

@@ -1,6 +1,6 @@
 async function loginCheck(request, response, next) {
     try {
-        if (!request.session.email) {
+        if (!request.session.user.email) {
             return response.status(401).json({
                 message: "Nincs bejelentkezve."
             });
