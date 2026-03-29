@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 leiras: adat.leiras,
                 eredmenyek: [
                     "Szakértő tréner",
-                    "Helyszín:"+ adat.edzoterm_cim,
                     "Email:"+ adat.email,
                     "Telefon:"+adat.telszam
                 ]
