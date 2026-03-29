@@ -12,10 +12,27 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="container-fluid" style="margin-top: 100px; padding: 0 5%;">
-        <h1 class="text-center text-success fw-bold display-4 mb-5">Csapatunk</h1>
+<div class="container-fluid main-tartalom">
+        <h1 class="oldal-cim">Csapatunk</h1>
 
-        <div id="edzo-grid" class="edzo-grid-layout">
+        <div class="vezerlo-sor">
+            <button id="rendezes-abc-btn" class="sajat-btn">
+                <span>Rendezés</span>
+                <i id="rendezes-ikon" class="fa-solid fa-arrow-down-a-z"></i>
+            </button>
+            
+            <button class="sajat-btn tiltott" disabled>Távolság (Hamarosan)</button>
+            
+            <button id="nezet-valto-btn" class="sajat-btn kiemelt">
+                <i class="fa-solid fa-map"></i>
+                <span>Térkép nézet</span>
+            </button>
+        </div>
+
+        <div id="edzo-grid" class="edzo-grid-layout"></div>
+
+        <div id="terkep-container" class="terkep-megjelenito">
+            <p>A térkép betöltése folyamatban...</p>
         </div>
     </div>
     <footer class="lab pt-5 pb-3 mt-5">
@@ -52,5 +69,4 @@
         </div>
     </footer>
 </body>
-
 </html>
