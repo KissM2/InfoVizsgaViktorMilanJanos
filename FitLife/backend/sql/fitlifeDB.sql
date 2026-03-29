@@ -29,7 +29,6 @@ edzesre_forditott_ido INT,
 napi_kaloria_bevitel INT,
 cel_alak VARCHAR(100),
 cel_testsuly FLOAT,
-uzott_sport VARCHAR(100),
 edzesen_kivuli_mozgas VARCHAR(100),
 FOREIGN KEY (felhasznalo_id) REFERENCES login(id)
 );
@@ -41,6 +40,7 @@ edzoterm_cim VARCHAR(255),
 kep TEXT,
 idezet TEXT,
 leiras TEXT,
+kompetenciak TEXT,
 FOREIGN KEY (edzo_id) REFERENCES login(id)
 );
 
@@ -731,21 +731,6 @@ felhasznalo_id INT,
 recept_id INT,
 FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
 FOREIGN KEY (recept_id) REFERENCES recept(recept_id)
-);
-
--- KOMPETENCIA
-CREATE TABLE IF NOT EXISTS kompetencia (
-kompetencia_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150)
-);
-
--- EDZO - KOMPETENCIA
-CREATE TABLE IF NOT EXISTS kompetenciak_kivalasztasa (
-edzo_id INT,
-kompetencia_id INT,
-PRIMARY KEY (edzo_id, kompetencia_id),
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
-FOREIGN KEY (kompetencia_id) REFERENCES kompetencia(kompetencia_id)
 );
 
 -- KOMMENT
