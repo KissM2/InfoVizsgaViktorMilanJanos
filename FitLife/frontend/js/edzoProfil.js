@@ -34,7 +34,7 @@ export function letrehozEdzoProfil(celElemId, adatObj) {
     pLeiras.textContent = adatObj.leiras;
     const h3Eredmeny = document.createElement("h3");
     h3Eredmeny.classList.add("text-white", "mt-4", "h5");
-    h3Eredmeny.textContent = "Kiemelt eredmények:";
+    h3Eredmeny.textContent = "További információk:";
     const lista = document.createElement("ul");
     lista.classList.add("list-group", "list-group-flush", "bg-transparent", "mb-4");
     adatObj.eredmenyek.forEach(eredmeny => {
