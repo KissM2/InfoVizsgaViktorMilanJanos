@@ -6,23 +6,76 @@ const menuLinkek = [
     { nev: "Edzéstervek", url: "../html/edzesterv.html" },
     { nev: "Receptek", url: "../html/etrendek.html" }
 ];
+
+let eredetiEdzoLista = [];
+let novekvo = true;
+let Terkepblok = false;
+
 document.addEventListener("DOMContentLoaded", async () => {
     const gridContainer = document.getElementById("edzo-grid");
-    if (gridContainer) {
-        const edzokLista = await getKeres('/api/osszesEdzo');
-        if (edzokLista && edzokLista.results) {
-        renderGrid(gridContainer, edzokLista.results);
-        }
+    const terkepContainer = document.getElementById("terkep-container");
+    const rendezesBtn = document.getElementById("rendezes-abc-btn");
+    const nezetValtoBtn = document.getElementById("nezet-valto-btn");
+
+    const adatok = await getKeres('/api/osszesEdzo');
+    if (adatok && adatok.results) {        
+        eredetiEdzoLista = adatok.results;
+        renderGrid(gridContainer, eredetiEdzoLista);
     }
     navbarGeneralas(menuLinkek);
+    rendezesBtn.addEventListener("click", () => {
+        if (novekvo) {
+            novekvo = false
+        }
+        else {
+            novekvo = true
+        }
+        const ikon = document.getElementById("rendezes-ikon");
+        const rendezett = eredetiEdzoLista.slice();
+        if (novekvo) {
+            rendezett.sort((a, b) => a.nev.localeCompare(b.nev, 'hu'));
+            ikon.className = "fa-solid fa-arrow-down-a-z";
+        }
+        else {
+            rendezett.sort((a, b) => b.nev.localeCompare(a.nev, 'hu'));
+            ikon.className = "fa-solid fa-arrow-down-z-a";
+        }
+        renderGrid(gridContainer, rendezett);
+    });
+    nezetValtoBtn.addEventListener("click", () => {
+        if (Terkepblok) {
+            Terkepblok = false
+        }
+        else {
+            Terkepblok = true
+        }
+        nezetValtoBtn.replaceChildren();
+        const ujIkon = document.createElement("i");
+        const szovegNode = document.createTextNode("");
+        if (Terkepblok) {
+            gridContainer.style.display = "none";
+            terkepContainer.style.display = "flex";
+            ujIkon.className = "fa-solid fa-list";
+            szovegNode.textContent = " Lista nézet";
+        }
+        else {
+            gridContainer.style.display = "grid";
+            terkepContainer.style.display = "none";
+            ujIkon.className = "fa-solid fa-map";
+            szovegNode.textContent = " Térkép nézet";
+        }
+        nezetValtoBtn.appendChild(ujIkon);
+        nezetValtoBtn.appendChild(szovegNode);
+    });
 });
+
 function renderGrid(container, lista) {
-    container.replaceChildren(); 
+    container.replaceChildren();
 
     for (const edzo of lista) {
         const link = document.createElement("a");
-        link.href = "../html/edzo.html?id="+edzo.id;
-        link.target="_blank";
+        link.href = "../html/edzo.html?id=" + edzo.id;
+        link.target = "_blank";
         link.className = "edzo-card-wrapper";
         link.title = edzo.nev;
         const kartyaDiv = document.createElement("div");
@@ -30,7 +83,7 @@ function renderGrid(container, lista) {
         const imgDiv = document.createElement("div");
         imgDiv.className = "edzo-kep-tarolo";
         const img = document.createElement("img");
-        img.src = "../images/"+edzo.kep;
+        img.src = "../images/" + edzo.kep;
         img.alt = edzo.nev;
         imgDiv.appendChild(img);
 
@@ -49,14 +102,9 @@ function renderGrid(container, lista) {
         const kompetenciakTomb = edzo.kompetenciak ? edzo.kompetenciak.split(',') : [];
         kompDiv.textContent = kompetenciakTomb.slice(0, 3).join(", ");
 
-        const cimDiv = document.createElement("div");
-        cimDiv.className = "edzo-helyszin";
-        cimDiv.textContent = edzo.edzoterm_cim;
-
         infoDiv.appendChild(nevDiv);
         infoDiv.appendChild(kompDiv);
         infoDiv.appendChild(idezetDiv);
-        infoDiv.appendChild(cimDiv);
         kartyaDiv.appendChild(imgDiv);
         kartyaDiv.appendChild(infoDiv);
         link.appendChild(kartyaDiv);

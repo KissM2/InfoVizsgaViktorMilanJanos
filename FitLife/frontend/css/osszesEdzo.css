@@ -69,7 +69,7 @@ body {
     color: #DDDDDD;
     border-top: 1px solid #333333;
     font-family: Arial, sans-serif;
-    margin-top: auto !important;
+    margin-top: 60px !important;
     
 }
 
@@ -222,9 +222,66 @@ body {
     margin: 5px 0;
     color: #00e01e;
 }
+/* vezerlok */
+.main-tartalom {
+    margin-top: 100px;
+    padding: 0 5%;
+}
 
-.edzo-helyszin {
-    font-size: 0.85em;
-    margin-top: 8px;
+.oldal-cim {
+    text-align: center;
+    color: #28a745;
     font-weight: bold;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+.vezerlo-sor {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.sajat-btn {
+    background-color: transparent;
+    border: 1px solid #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.sajat-btn:hover:not(.tiltott) {
+    background-color: #28a745;
+}
+
+.sajat-btn.kiemelt {
+    background-color: #28a745;
+}
+
+.sajat-btn.tiltott {
+    border-color: #555;
+    color: #777;
+    cursor: not-allowed;
+}
+
+.terkep-megjelenito {
+    display: none;
+    width: 100%;
+    height: 500px;
+    background-color: #333;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.social-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
 }
