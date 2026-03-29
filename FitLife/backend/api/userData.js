@@ -44,7 +44,7 @@ router.post('/userDataInsert', upload.single("file") ,checkUser.checkUserData, l
             celTestsuly,
             uzott_sport,
             edzesen_kivuli_mozgas,
-            request.session.id
+            request.session.user.id
         );
 
         response.status(200).json({
@@ -81,7 +81,7 @@ router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, l
             celTestsuly,
             uzott_sport,
             edzesen_kivuli_mozgas,
-            request.session.id
+            request.session.user.id
         );
 
         response.status(200).json({

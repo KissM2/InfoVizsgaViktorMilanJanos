@@ -51,7 +51,7 @@ function renderGrid(container, lista) {
 
         const cimDiv = document.createElement("div");
         cimDiv.className = "edzo-helyszin";
-        cimDiv.textContent = edzo.edzoterm_cim;
+        cimDiv.textContent = edzo.edzoterem_cim;
 
         infoDiv.appendChild(nevDiv);
         infoDiv.appendChild(kompDiv);

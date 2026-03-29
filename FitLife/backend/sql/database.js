@@ -11,9 +11,9 @@ const pool = mysql.createPool({
 });
 
 //!SQL Queries
-async function updateEdzo(edzőterem_cím, kep, idezet, leiras, id) {
-    const query = 'UPDATE edzo SET edzoterm_cim=?,kep=?,idezet=?,leiras=? WHERE edzo.edzo_id = ?;';
-    const [rows] = await pool.execute(query, [edzőterem_cím, kep, idezet, leiras, id]);
+async function updateEdzo(edzoterem_cim_lat, edzoterem_cim_lng, kep, idezet, leiras, id) {
+    const query = 'UPDATE edzo SET edzoterem_cim=POINT(?,?),kep=?,idezet=?,leiras=? WHERE edzo.edzo_id = ?;';
+    const [rows] = await pool.execute(query, [edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, id]);
     return rows;
 }
 async function insertLogin(felh_nev, jelszo, email, telszam, nem, role, szul_datum) {
@@ -41,7 +41,7 @@ async function updateUser(testsuly ,magassag ,edzesre_forditott_ido , cel_alak, 
 }
 
 async function selectTrainerById(id) {
-    const query = "SELECT login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterm_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
+    const query = "SELECT login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterem_cim, edzo.kep, edzo.idezet, edzo.leiras FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
@@ -57,12 +57,12 @@ async function selectAllGyakorlatok() {
     return rows;
 }
 async function selectAllTrainers() {
-    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterm_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
     const [rows] = await pool.execute(query);
     return rows;
 }
 async function selectEdzoTerem(id) {
-    const query = "select edzo.edzoterm_cim from edzo where edzo.edzo_id LIKE ?";
+    const query = "select edzo.edzoterem_cim from edzo where edzo.edzo_id LIKE ?";
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
@@ -71,9 +71,9 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, c
     const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas]);
     return rows;
 }
-async function insertEdzo(edzoterm_cim, kep, idezet, leiras) {
-    const query = "INSERT INTO edzo(edzoterm_cim, kep, idezet, leiras) VALUES (?,?,?,?,?)";
-    const [rows] = await pool.execute(query, [edzoterm_cim, kep, idezet, leiras]);
+async function insertEdzo(edzo_id,edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak) {
+    const query = "INSERT INTO edzo(edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak) VALUES (?,PLACE(?,?),?,?,?,?)";
+    const [rows] = await pool.execute(query, [edzo_id, edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak]);
     return rows;
 }
 async function selectAllAllergen() {

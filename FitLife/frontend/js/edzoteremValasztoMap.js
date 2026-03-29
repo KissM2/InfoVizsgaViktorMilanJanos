@@ -1,9 +1,9 @@
 let map;
 export let marker;
 
-document.addEventListener('DOMContentLoaded', function(){
+window.addEventListener('load', function(){
     initMap();
-})
+});
 
 async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");

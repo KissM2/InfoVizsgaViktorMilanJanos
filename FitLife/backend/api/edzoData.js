@@ -12,10 +12,10 @@ const { request } = require('http');
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
-        callback(null, path.join(__dirname, '../uploads'));
+        callback(null, path.join(__dirname, '../../frontend/images'));
     },
     filename: (request, file, callback) => {
-        callback(null, file.originalname); //?file eredeti neve
+        callback(null, request.session.user.id + file.originalname); //? session id + file eredeti neve, hogy biztosan egyedi legyen
     }
 });
 
@@ -23,22 +23,26 @@ const upload = multer({ storage });
 
 //!Edző adatainak mentése
 //? POST /api/edzoDataInsert
-router.post('/edzoDataInsert', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
     try {
         const {
-            edzőterem_cím,
-            kep, 
-            idezet, 
+            edzoterem_cim_lat,
+            edzoterem_cim_lng,
+            idezet,
             leiras,
-            kompetenciak         
+            kompetenciak
         } = request.body;
 
+        const kep = request.file.filename;
+
         database.insertEdzo(
-            edzőterem_cím,
-            kep, 
-            idezet, 
+            request.session.user.id,
+            edzoterem_cim_lng,
+            edzoterem_cim_lat,
+            kep,
+            idezet,
             leiras,
-            request.session.id
+            kompetenciak
         );
 
         response.status(200).json({
@@ -54,22 +58,26 @@ router.post('/edzoDataInsert', checkEdzoData.checkEdzoData, loginCheck.loginChec
 });
 
 //? POST /api/edzoDataUpdate
-router.post('/edzoDataUpdate', checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/edzoDataUpdate', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
     try {
         const {
-            edzőterem_cím,
-            kep, 
+            edzoterem_cim_lat,
+            edzoterem_cim_lng,
             idezet, 
             leiras,
             kompetenciak
         } = request.body;
 
+        const kep = request.file.filename;
+
         database.updateEdzo(
-            edzőterem_cím,
-            kep, 
-            idezet, 
-            leiras, 
-            request.session.id
+            edzoterem_cim_lat,
+            edzoterem_cim_lng,
+            kep,
+            idezet,
+            leiras,
+            kompetenciak,
+            request.session.user.id
         );
 
         response.status(200).json({

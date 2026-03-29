@@ -36,7 +36,7 @@ FOREIGN KEY (felhasznalo_id) REFERENCES login(id)
 -- EDZO
 CREATE TABLE IF NOT EXISTS edzo (
 edzo_id INT PRIMARY KEY,
-edzoterm_cim VARCHAR(255),
+edzoterem_cim VARCHAR(255),
 kep TEXT,
 idezet TEXT,
 leiras TEXT,
@@ -845,7 +845,7 @@ INSERT INTO login (id, felh_nev, jelszo, email, role) VALUES
 (104, 'Sara Saffari', 'vloglife', 'sara@fitlife.hu', 'edzo'),
 (105, 'Rich Piana', '5percent', 'rich@fitlife.hu', 'edzo');
 
-INSERT INTO edzo (edzo_id, edzoterm_cim, kep, idezet, leiras) VALUES 
+INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras) VALUES 
 (101, 'USA, Erica Cliff, West Johnside', 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
 (102, 'USA, Gainz Blvd 666.', 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
 (103, 'USA, Gainz Blvd 667.', 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
