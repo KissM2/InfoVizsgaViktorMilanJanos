@@ -21,7 +21,7 @@ function renderGrid(container, lista) {
 
     for (const edzo of lista) {
         const link = document.createElement("a");
-        link.href = "../html/edzo.html";
+        link.href = "../html/edzo.html?id="+edzo.id;
         link.target="_blank";
         link.className = "edzo-card-wrapper";
         link.title = edzo.nev;

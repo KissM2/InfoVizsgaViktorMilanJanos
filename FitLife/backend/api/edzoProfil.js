@@ -37,7 +37,7 @@ router.get('/osszesEdzo', async (request, response) => {
 //?GET /api/edzoProfil?id=:id
 router.get('/edzoProfil', async (request, response) => {
     try {
-        const azon=request.params.id;
+        const azon=request.query.id;
         if (!azon) {
             return response.status(400).json({
                 message: 'Hiányzó edző ID.'
@@ -51,7 +51,7 @@ router.get('/edzoProfil', async (request, response) => {
         }
         response.status(200).json({
             message: 'Sikeres lekérdezés.',
-            results: edzo
+            results: edzo[0]
         });
     } catch (error) {
         response.status(500).json({
