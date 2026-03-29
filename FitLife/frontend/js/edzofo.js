@@ -1,3 +1,4 @@
+import { getKeres } from "./kozosFetch.js";
 document.addEventListener("DOMContentLoaded", function () {
     generalWeek();
 });

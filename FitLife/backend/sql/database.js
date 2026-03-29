@@ -76,6 +76,11 @@ async function insertEdzo(edzoterm_cim, kep, idezet, leiras) {
     const [rows] = await pool.execute(query, [edzoterm_cim, kep, idezet, leiras]);
     return rows;
 }
+async function getEdzoIdopontok(id) {
+    const query = "SELECT heti_beosztas.weekday,heti_beosztas.start,heti_beosztas.end,heti_beosztas.mettol_ervenyes,kulonleges_alkalom.datum,kulonleges_alkalom.start,kulonleges_alkalom.end,kulonleges_alkalom.statusz,foglalas.felhasznalo_id,foglalas.datum,foglalas.start,foglalas.end,foglalas.statusz INNER JOIN kulonleges_alkalom ON kulonleges_alkalom.edzo_id=heti_beosztas.edzo_id INNER JOIN foglalas ON heti_beosztas.edzo_id=foglalas.edzo_id WHERE heti_beosztas.edzo_id=?;";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 async function selectAllAllergen() {
     const query = "SELECT * FROM allergen";
     const [rows] = await pool.execute(query);
@@ -95,5 +100,6 @@ module.exports = {
     selectEdzoTerem,
     insertUser,
     selectAllAllergen,
-    insertEdzo
+    insertEdzo,
+    getEdzoIdopontok
 };
