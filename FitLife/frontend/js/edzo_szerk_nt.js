@@ -13,48 +13,65 @@ let aktualisEv = new Date().getFullYear();
 let aktualisHonap = new Date().getMonth() + 1;
 let kapottbeo = [];
 let mentettbeo = [[], [], [], [], [], [], []];
-let mentetttorolt=[];
+let mentetttorolt = [];
 async function genBeo() {
     const host = document.getElementById('beo');
+
+    const fejlecSor = document.createElement('div');
+    fejlecSor.classList.add('dt-head');
+
+    const tartalom = document.createElement('div');
+    tartalom.classList.add('dt-body');
+
+    host.appendChild(fejlecSor);
+    host.appendChild(tartalom);
+
     for (let i = 0; i < napok.length; i++) {
-        let divtablecolumn = document.createElement('div');
-        let divtablehead = document.createElement('div');
-        let divtabledatebox = document.createElement('div');
-        divtablehead.innerHTML = napok[i];
-        divtablecolumn.classList.add("dtc");
-        divtablehead.classList.add("nap", "fejlec");
-        divtabledatebox.classList.add("dtdb");
+
+        // FEJLÉC
+        let fej = document.createElement('div');
+        fej.innerText = napok[i];
+        fej.classList.add("nap", "fejlec");
+        fejlecSor.appendChild(fej);
+
+        // OSZLOP
+        let oszlop = document.createElement('div');
+        oszlop.classList.add("dtc");
+
         for (let perc = 0; perc < 24 * 60; perc += 30) {
             let ora = Math.floor(perc / 60);
             let p = perc % 60;
 
             let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
-            let date = document.createElement('div');
-            date.innerText = ido;
-            date.classList.add('nap')
-            date.dataset.bek = 0;
-            date.dataset.di = i;
-            date.addEventListener("click", function () {
+
+            let cell = document.createElement('div');
+            cell.innerText = ido;
+            cell.classList.add('nap');
+
+            cell.dataset.bek = 0;
+            cell.dataset.di = i;
+
+            cell.addEventListener("click", function () {
                 let ez = this;
+
                 if (ez.dataset.bek == 0) {
                     ez.classList.add("bb");
                     ez.dataset.bek = 1;
                     mentettbeo[ez.dataset.di].push(ez.innerText);
+                } else {
+                    ez.classList.remove("bb");
+                    ez.dataset.bek = 0;
+                    mentettbeo[ez.dataset.di] =
+                        mentettbeo[ez.dataset.di].filter(e => e !== ez.innerText);
                 }
-                else {
-                    if (mentettbeo[ez.dataset.di].length > 0) {
-                        ez.classList.remove("bb");
-                        ez.dataset.bek = 0;
-                        mentettbeo[ez.dataset.di] = mentettbeo[ez.dataset.di].filter(elem => elem !== ez.innerText);
-                    }
-                }
-                console.log(mentettbeo)
+
+                console.log(mentettbeo);
             });
-            divtabledatebox.appendChild(date);
+
+            oszlop.appendChild(cell);
         }
-        divtablecolumn.appendChild(divtablehead);
-        divtablecolumn.appendChild(divtabledatebox);
-        host.appendChild(divtablecolumn);
+
+        tartalom.appendChild(oszlop);
     }
 }
 function naptarGeneral(ev, honap) {
@@ -100,17 +117,21 @@ function naptarGeneral(ev, honap) {
                 nap.innerText = naptarinap;
                 nap.addEventListener("click", function () {
                     let ezz = this;
-
+                    document.getElementById('naptargombok').innerHTML = "";
+                    document.getElementById('napgombokfejlec').innerHTML = "";
+                    const host = document.getElementById('naptargombok');
+                    host.dataset.datum = aktualisEv + "-" + aktualisHonap + "-" + ezz.innerText;
+                    document.getElementById('napgombokfejlec').innerText = aktualisEv + "." + aktualisHonap + "." + ezz.innerText + ".";
                     for (let perc = 0; perc < 24 * 60; perc += 30) {
                         let ora = Math.floor(perc / 60);
                         let p = perc % 60;
-
                         let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
+
                         let napgomb = document.createElement('button')
                         napgomb.innerText = ido;
-                        napgomb.dataset.bek=0;
-                        if (mentetttorolt.includes(ido)) {
-                            napgomb.dataset.bek=1;
+                        napgomb.dataset.bek = 0;
+                        if (mentetttorolt.includes({ nap: host.dataset.datum, ido: ido })) {
+                            napgomb.dataset.bek = 1;
                             napgomb.classList.add("rr");
                         }
                         napgomb.addEventListener("click", function () {
@@ -118,17 +139,23 @@ function naptarGeneral(ev, honap) {
                             if (ez.dataset.bek == 0) {
                                 ez.classList.add("rr");
                                 ez.dataset.bek = 1;
-                                mentetttorolt.push(ez.innerText);
+                                mentetttorolt.push({ nap: document.getElementById('naptargombok').dataset.datum, ido: ez.innerText });
                             }
                             else {
                                 if (mentetttorolt.length > 0) {
                                     ez.classList.remove("rr");
                                     ez.dataset.bek = 0;
-                                    mentetttorolt = mentetttorolt.filter(elem => elem !== ez.innerText);
+                                    const nap = document.getElementById('naptargombok').dataset.datum;
+                                    const ido = ez.innerText;
+
+                                    mentetttorolt = mentetttorolt.filter(elem =>
+                                        !(elem.nap === nap && elem.ido === ido)
+                                    );
                                 }
                             }
-                            console.log(mentetttorolt)
+                            console.log(mentetttorolt);
                         });
+                        host.appendChild(napgomb);
                     }
                 });
                 naptarinap++;

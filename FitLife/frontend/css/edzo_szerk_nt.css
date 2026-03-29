@@ -1,0 +1,158 @@
+body {
+    background-color: #222;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* KERET */
+.naptarkeret {
+    background-color: #161616;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 40px 0;
+    width: 95%;
+    max-width: 1200px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+h1 {
+    color: #28a745;
+}
+
+/* ===== FŐ KONTAINER ===== */
+.dt {
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+    border: 1px solid #333;
+}
+
+/* ===== FEJLÉC ===== */
+.dt-head {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #111;
+}
+
+/* ===== TARTALOM ===== */
+.dt-body {
+    display: flex;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+/* SCROLLBAR */
+.dt-body::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.dt-body::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.dt-body::-webkit-scrollbar-thumb {
+    background: #28a745;
+    border-radius: 10px;
+}
+
+.dt-body {
+    scrollbar-color: #28a745 #111;
+    scrollbar-width: thin;
+}
+
+/* OSZLOPOK */
+.dtc {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+/* CELLÁK */
+.nap {
+    height: 22px;
+    width: 90px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #222;
+    border: 1px solid #333;
+    color: #ddd;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nap:hover {
+    background-color: #2e2e2e;
+}
+
+/* FEJLÉC CELLÁK */
+.fejlec {
+    color: #28a745;
+    font-weight: bold;
+}
+
+/* KÉK KIJELÖLÉS */
+.bb {
+    background: linear-gradient(135deg, #007bff, #00bfff);
+    color: white;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+}
+
+/* PIROS */
+.rr {
+    background-color: #cc0000 !important;
+    color: white;
+}
+
+/* NAPTÁR */
+.het {
+    display: flex;
+}
+
+.noDay {
+    background-color: #1a1a1a;
+}
+
+.naptarFejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* GOMBOK */
+button {
+    background-color: #28a745;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1f7d38;
+}
+
+#naptargombok button {
+    margin: 3px;
+    background-color: #222;
+    border: 1px solid #444;
+}

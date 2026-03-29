@@ -39,8 +39,8 @@ router.get('/edzo_regisztral', (request, response) => {
 router.get('/userSurvey', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/surveyTemplate.html'));
 });
-router.get('/foglalasok', (request, response) => {
-    response.sendFile(path.join(__dirname, '../frontend/html/foglalasok.html'));
+router.get('/edzofo', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/edzofo.html'));
 });
 router.get('/edzo', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/edzo.html'));
@@ -52,6 +52,9 @@ router.get('/trainersedit', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/trainers-edit.html'));
 });
 
+router.get('/esznt', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/edzo_szerk_nt.html'));
+});
 //!API endpoints
 app.use('/', router);
 const authEndpoints = require('./api/auth.js');
