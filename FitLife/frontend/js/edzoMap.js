@@ -1,19 +1,23 @@
 import { getKeres } from "./kozosFetch.js";
 
-document.addEventListener('DOMContentLoaded', function(){
+window.addEventListener('load', async function(){
+    await waitForGoogleMaps();
     initMap();
 });
 
 async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
     const myLocation = { lat: 47.4979, lng: 19.0402 };
 
-    const map = new google.maps.Map(document.getElementById("map"), {
+    const map = new Map(document.getElementById("map"), {
         center: myLocation,
         zoom: 12,
         mapId: "726b6548570dfcd93188934a"
     });
 
-    const marker = new google.maps.marker.AdvancedMarkerElement({
+    const marker = new AdvancedMarkerElement({
         map: map,
         position: myLocation,
         title: "Budapest"
@@ -21,8 +25,11 @@ async function initMap() {
 
     const geocoder = new google.maps.Geocoder();
 
-    //edző id-t le kell majd cserélni
-    const address = await getKeres('/api/getEdzoTerem?edzoid=5');
+    const parameter = new URLSearchParams(window.location.search);
+
+    const id = parameter.get("id");
+
+    const address = await getKeres('/api/getEdzoTerem?edzoid='+id);
 
     geocoder.geocode({ address:address.edzoTerem }, (results, status) => {
         if (status === "OK") {
@@ -41,7 +48,7 @@ async function initMap() {
     let div = document.createElement('div');
     let h3 = document.createElement('h3');
     h3.style.color = "black";
-    h3.innerText = "Power fitness edzőterem";
+    h3.innerText = address.edzoTerem;
     let p = document.createElement('p');
     p.style.color = "black";
     p.innerText = "nyitvatartás: 8:00-17:00";
@@ -58,4 +65,10 @@ async function initMap() {
             map: map,
         });
     });
+}
+
+async function waitForGoogleMaps() {
+  while (!window.google || !google.maps || !google.maps.importLibrary) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
 }
