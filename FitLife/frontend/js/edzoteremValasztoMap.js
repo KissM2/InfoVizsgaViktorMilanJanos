@@ -1,7 +1,8 @@
 let map;
 export let marker;
 
-window.addEventListener('load', function(){
+window.addEventListener('load', async function(){
+    await waitForGoogleMaps();
     initMap();
 });
 
@@ -17,7 +18,7 @@ async function initMap() {
         mapId: "726b6548570dfcd93188934a"
     });
     
-    marker = new google.maps.marker.AdvancedMarkerElement({
+    marker = new AdvancedMarkerElement({
         map: map,
         position: defaultLocation
     });
@@ -50,3 +51,9 @@ async function initMap() {
         marker.position = e.latLng;
     });
 };
+
+async function waitForGoogleMaps() {
+  while (!window.google || !google.maps || !google.maps.importLibrary) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+}
