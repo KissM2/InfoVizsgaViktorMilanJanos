@@ -14,7 +14,6 @@ const loadGoogleMaps = () =>
       return resolve();
     }
 
-
     const script = document.createElement("script");
 
     // A script tartalmába beírjuk a Google hivatalos betöltő kódját
@@ -29,7 +28,7 @@ const loadGoogleMaps = () =>
         r=new Set,e=new URLSearchParams,
         u=()=>h||(h=new Promise(async(f,n)=>{
           await (a=m.createElement("script"));
-          e.set("key","AIzaSyAzbHiyUyOtNFD4pzt2g8nx96tRxVaRDb4");
+          e.set("key","AIzaSyDnEa4bk2vEIsWOHXdAI2G_z8dnhOeDORc");
           e.set("v","weekly");
           e.set("callback",c+".maps."+q);
           a.src="https://maps.googleapis.com/maps/api/js?"+e;
@@ -54,7 +53,7 @@ const loadGoogleMaps = () =>
   });
 
 async function initMap() {
-     // Betöltjük a szükséges "könyvtárakat"
+    // Betöltjük a szükséges "könyvtárakat"
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
