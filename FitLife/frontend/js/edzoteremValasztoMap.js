@@ -33,7 +33,7 @@ const loadGoogleMaps = () =>
         r=new Set,e=new URLSearchParams,
         u=()=>h||(h=new Promise(async(f,n)=>{
           await (a=m.createElement("script"));
-          e.set("key","AIzaSyDnEa4bk2vEIsWOHXdAI2G_z8dnhOeDORc");
+          e.set("key","Api_key");
           e.set("v","weekly");
           e.set("callback",c+".maps."+q);
           a.src="https://maps.googleapis.com/maps/api/js?"+e;
@@ -62,11 +62,19 @@ async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
 
-    const defaultLocation = { lat: 47.4979, lng: 19.0402 }; //Pest
+    let location;
+
+    try{
+        location = await helyAdatokElkerese();
+
+    }catch(error){
+        console.error("Hiba a helyadatok lekérésekor:", error);
+        location = { lat: 47.4979, lng: 19.0402 }; //Pest
+    }
 
     // Térkép létrehozása
     map = new Map(document.getElementById("map"), {
-        center: defaultLocation,
+        center: location,
         zoom: 13,
         mapId: "726b6548570dfcd93188934a" // egyedi stílus (Google Cloud-ban)
     });
@@ -74,7 +82,7 @@ async function initMap() {
     // Marker létrehozása a térképen
     marker = new AdvancedMarkerElement({
         map: map,
-        position: defaultLocation
+        position: location
     });
 
     // Térképre kattintva a marker a kattintás helyére kerül
@@ -96,7 +104,6 @@ async function autocompleteElhelyezes(map, marker) {
 
     // Esemény: amikor kiválasztanak egy helyet
     autocompleteElement.addEventListener("gmp-select", async (event) => {
-    console.log("EVENT FIRED");
 
     const placePrediction = event.placePrediction;
 
@@ -132,6 +139,49 @@ async function autocompleteElhelyezes(map, marker) {
     marker.title = place.displayName || place.formattedAddress || "Kiválasztott hely";
     marker.map = map;
 
-    console.log("Selected place:", place);
 });
+}
+
+async function helyAdatokElkerese() {
+    return new Promise((resolve, reject) => {
+
+        // Ellenőrizzük, hogy a böngésző támogatja-e a geolocationt
+        if (!navigator.geolocation) {
+            reject(new Error("A böngésző nem támogatja a helymeghatározást."));
+            return;
+        }
+
+        // Hely lekérése
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const location = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                resolve(location); // siker → visszaadjuk a koordinátákat
+            },
+            (error) => {
+                // Hibakezelés
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        reject(new Error("A felhasználó nem engedélyezte a helymeghatározást."));
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        reject(new Error("A helyadat nem elérhető."));
+                        break;
+                    case error.TIMEOUT:
+                        reject(new Error("A helylekérés időtúllépés miatt megszakadt."));
+                        break;
+                    default:
+                        reject(new Error("Ismeretlen hiba történt."));
+                }
+            },
+            {
+                enableHighAccuracy: true, // pontosabb, de lassabb lehet
+                timeout: 60000,           // max 10 mp várakozás
+                maximumAge: 0             // ne használjon cache-t
+            }
+        );
+    });
 }

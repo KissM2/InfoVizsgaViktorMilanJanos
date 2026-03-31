@@ -28,7 +28,7 @@ const loadGoogleMaps = () =>
         r=new Set,e=new URLSearchParams,
         u=()=>h||(h=new Promise(async(f,n)=>{
           await (a=m.createElement("script"));
-          e.set("key","AIzaSyDnEa4bk2vEIsWOHXdAI2G_z8dnhOeDORc");
+          e.set("key","Api_key");
           e.set("v","weekly");
           e.set("callback",c+".maps."+q);
           a.src="https://maps.googleapis.com/maps/api/js?"+e;
