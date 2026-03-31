@@ -36,7 +36,7 @@ FOREIGN KEY (felhasznalo_id) REFERENCES login(id)
 -- EDZO
 CREATE TABLE IF NOT EXISTS edzo (
 edzo_id INT PRIMARY KEY,
-edzoterem_cim VARCHAR(255),
+edzoterem_cim POINT,
 kep TEXT,
 idezet TEXT,
 leiras TEXT,
@@ -846,8 +846,8 @@ INSERT INTO login (id, felh_nev, jelszo, email, role) VALUES
 (105, 'Rich Piana', '5percent', 'rich@fitlife.hu', 'edzo');
 
 INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras) VALUES 
-(101, 'USA, Erica Cliff, West Johnside', 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
-(102, 'USA, Gainz Blvd 666.', 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
-(103, 'USA, Gainz Blvd 667.', 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
-(104, 'California, Zoo Culture', 'sara.jpg', '"Várj, ezt le kell videóznom a YouTube-ra!"', 'Influenszer tréning, hogyan éld túl Bradley Martynt, tartalomgyártás edzés közben.'),
-(105, 'California, 5% Gym', 'rich.jpg', '"Mi lenne, ha több kiba***** kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% mentalitás, legenda.');
+(101, POINT(-106.5348379,38.7945952), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
+(102, POINT(-106.5348379,38.7945952), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
+(103, POINT(-106.5348379,38.7945952), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
+(104, POINT(-118.4938492,34.1584655), 'sara.jpg', '"Várj, ezt le kell videóznom a YouTube-ra!"', 'Influenszer tréning, hogyan éld túl Bradley Martynt, tartalomgyártás edzés közben.'),
+(105, POINT(-119.9740534,37.7201051), 'rich.jpg', '"Mi lenne, ha több kiba***** kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% mentalitás, legenda.');
