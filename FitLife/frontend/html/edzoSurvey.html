@@ -11,7 +11,6 @@
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script type="module" src="../js/edzoteremValasztoMap.js"></script>
     <script type="module" src="../js/edzoSurvey.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=Your_key&loading=async&v=weekly&libraries=places"></script>
     <!--!CSS-->
     <link rel="stylesheet" href="../css/regisztral.css">
     <link rel="stylesheet" href="../css/survey.css">
@@ -28,7 +27,7 @@
             <div class="row">
                 <h3 class="secondary-title">Edzőterem kiválasztása</h3>
                 <div class="col" id="mapBefogo">
-                    <gmp-place-autocomplete id="autocomplete"></gmp-place-autocomplete>
+                    <div id="autocomplete"></div>
                     <div id="map"></div>
                 </div>
             </div>
