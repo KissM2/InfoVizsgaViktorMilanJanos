@@ -70,17 +70,18 @@ async function initMap() {
     const marker = new AdvancedMarkerElement({
         map: map,
         position: myLocation,
-        title: "Budapest"
     });
 
+    const location = await helykoordinatak();
+
     // Marker áthelyezése a térképen az edzőterem koordinátáinak helyére
-    markerAthelyezes(map, marker);
+    markerAthelyezes(map, marker, location);
 
     // Info ablak tartalom létrehozása
-    infoAblakLetrehozas(map, marker);
+    infoAblakLetrehozas(map, marker, location);
 }
 
-async function markerAthelyezes(map, marker) {
+async function helykoordinatak() {
     const parameter = new URLSearchParams(window.location.search);
     const id = parameter.get("id");
     const address = (await getKeres('/api/getEdzoTerem?edzoid=' + id)).edzoTerem;
@@ -91,30 +92,67 @@ async function markerAthelyezes(map, marker) {
         lat: parseFloat(address.y),
         lng: parseFloat(address.x)
     };
+    return location;
+}
 
+function markerAthelyezes(map, marker, location) {
     // Térkép középpontjának és nagyításának beállítása a koordináták alapján
     map.setCenter(location);
 
     // Marker áthelyezése title beállítása a térképen a koordináták alapján
     marker.map = null;
     marker.position = location;
-    marker.title = "Edzőterem címének helye";
     marker.map = map;
 }
 
-function infoAblakLetrehozas(map, marker) {
-    let div = document.createElement('div');
+async function infoAblakLetrehozas(map, marker, location) {
+    const helyadatok = await helyAdatok(location);
 
+    if(!helyadatok || !helyadatok.displayName) {
+      console.error("Hely adatok nem elérhetőek");
+      return;
+    }
+
+    let div = document.createElement('div');
+    
     let h3 = document.createElement('h3');
     h3.style.color = "black";
-    h3.innerText = "edzőterem címének helye";
-
-    let p = document.createElement('p');
-    p.style.color = "black";
-    p.innerText = "edzőterem további információk helye";
-
+    h3.innerText = helyadatok.displayName;
+    h3.style.margin = "0";
     div.appendChild(h3);
-    div.appendChild(p);
+
+    if (helyadatok.rating) {
+      let rating = document.createElement('p');
+      rating.style.color = "black";
+      rating.innerText = `Értékelés: ${helyadatok.rating}`;
+      rating.style.marginBottom = "5px";
+      div.appendChild(rating);
+    }
+
+    if (helyadatok.photos && helyadatok.photos.length !== 0) {
+      let img =document.createElement('img');
+      img.src = helyadatok.photos[0].getURI({ maxWidth: 150 });
+      img.style.width = "100%";
+      img.style.height = "auto";
+      div.appendChild(img);
+    }
+
+    if (helyadatok.regularOpeningHours) {
+      let nyitvatartas = document.createElement('div');
+      let nyitvatartasCim = document.createElement('h5');
+      nyitvatartasCim.style.color = "black";
+      nyitvatartasCim.style.margin = "10px 0 0 0";
+      nyitvatartasCim.innerText = "Általános nyitvatartás:";
+      nyitvatartas.appendChild(nyitvatartasCim);
+      for (let i = 0; i < helyadatok.regularOpeningHours.ph.length; i++) {
+        let p = document.createElement('p');
+        p.style.color = "black";
+        p.style.margin = "0";
+        p.innerText = helyadatok.regularOpeningHours.ph[i];
+        nyitvatartas.appendChild(p);
+      }
+      div.appendChild(nyitvatartas);
+    }
 
     const infoWindow = new google.maps.InfoWindow({
         content: div
@@ -126,4 +164,47 @@ function infoAblakLetrehozas(map, marker) {
             map: map,
         });
     });
+}
+
+async function helyAdatok(location) {
+    try {
+        const place = await helyLekerese(location.lat, location.lng);
+        const details = await helyadatokLekerese(place);
+        return details;
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
+
+async function helyLekerese(lat, lng) {
+    const { Place } = await google.maps.importLibrary("places");
+
+    const request = {
+        locationRestriction: {
+          center: { lat, lng },
+          radius: 50,
+        },
+        fields: ["id", "displayName", "location", "photos", "rating"],
+    };
+
+    const { places } = await Place.searchNearby(request);
+
+    if (!places.length) {
+        throw new Error("Nem található hely a megadott koordináták közelében.");
+    }
+
+    return places[0];
+}
+  
+async function helyadatokLekerese(place){
+    await place.fetchFields({
+        fields: [
+            "displayName",
+            "regularOpeningHours",
+            "photos",
+            "rating",
+        ],
+    });
+
+    return place;
 }

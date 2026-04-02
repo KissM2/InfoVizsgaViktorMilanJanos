@@ -1,17 +1,17 @@
 #mapBefogo {
     height: 500px;
-    width: 100%;
+    max-width: 100%;
     margin: 20px 0;
 }
 
 #map{
     height: 500px;
-    width: 800px;
+    max-width: 800px;
     margin: auto;
 }
 
 #autocomplete {
     display: block;
     margin: auto;
-    width: 400px;
+    max-width: 400px;
 }
