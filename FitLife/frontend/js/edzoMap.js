@@ -118,7 +118,16 @@ async function infoAblakLetrehozas(map, marker, location) {
     let h3 = document.createElement('h3');
     h3.style.color = "black";
     h3.innerText = helyadatok.displayName;
+    h3.style.margin = "0";
     div.appendChild(h3);
+
+    if (helyadatok.rating) {
+      let rating = document.createElement('p');
+      rating.style.color = "black";
+      rating.innerText = `Értékelés: ${helyadatok.rating}`;
+      rating.style.marginBottom = "5px";
+      div.appendChild(rating);
+    }
 
     if (helyadatok.photos && helyadatok.photos.length !== 0) {
       let img =document.createElement('img');
@@ -132,7 +141,8 @@ async function infoAblakLetrehozas(map, marker, location) {
       let nyitvatartas = document.createElement('div');
       let nyitvatartasCim = document.createElement('h5');
       nyitvatartasCim.style.color = "black";
-      nyitvatartasCim.innerText = "Nyitvatartás:";
+      nyitvatartasCim.style.margin = "10px 0 0 0";
+      nyitvatartasCim.innerText = "Általános nyitvatartás:";
       nyitvatartas.appendChild(nyitvatartasCim);
       for (let i = 0; i < helyadatok.regularOpeningHours.ph.length; i++) {
         let p = document.createElement('p');
@@ -174,7 +184,7 @@ async function helyLekerese(lat, lng) {
           center: { lat, lng },
           radius: 50,
         },
-        fields: ["id", "displayName", "location", "photos"],
+        fields: ["id", "displayName", "location", "photos", "rating"],
     };
 
     const { places } = await Place.searchNearby(request);
@@ -190,9 +200,9 @@ async function helyadatokLekerese(place){
     await place.fetchFields({
         fields: [
             "displayName",
-            "formattedAddress",
             "regularOpeningHours",
-            "photos"
+            "photos",
+            "rating",
         ],
     });
 
