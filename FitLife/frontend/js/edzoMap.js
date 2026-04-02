@@ -1,5 +1,5 @@
 import { getKeres } from "./kozosFetch.js";
-import {loadGoogleMaps} from "./maps.js";
+import {loadGoogleMaps, helyAdatokLekerese} from "./maps.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadGoogleMaps();
@@ -63,7 +63,7 @@ async function infoAblakLetrehozas(map, marker, location) {
     const helyadatok = await helyAdatok(location);
 
     if(!helyadatok || !helyadatok.displayName) {
-      console.error("Hely adatok nem elérhetőek");
+      marker.title = "Nincs elérhető helyadat";
       return;
     }
 
@@ -111,7 +111,7 @@ async function infoAblakLetrehozas(map, marker, location) {
     const infoWindow = new google.maps.InfoWindow({
         content: div
     });
-
+    
     marker.addListener("gmp-click", () => {
         infoWindow.open({
             anchor: marker,
@@ -122,43 +122,9 @@ async function infoAblakLetrehozas(map, marker, location) {
 
 async function helyAdatok(location) {
     try {
-        const place = await helyLekerese(location.lat, location.lng);
-        const details = await helyadatokLekerese(place);
+        const details = await helyAdatokLekerese(location.lat, location.lng, 50, ["displayName","regularOpeningHours","photos","rating",]);
         return details;
     } catch (err) {
         console.error("Error:", err);
     }
-}
-
-async function helyLekerese(lat, lng) {
-    const { Place } = await google.maps.importLibrary("places");
-
-    const request = {
-        locationRestriction: {
-          center: { lat, lng },
-          radius: 50,
-        },
-        fields: ["id", "displayName", "location", "photos", "rating"],
-    };
-
-    const { places } = await Place.searchNearby(request);
-
-    if (!places.length) {
-        throw new Error("Nem található hely a megadott koordináták közelében.");
-    }
-
-    return places[0];
-}
-  
-async function helyadatokLekerese(place){
-    await place.fetchFields({
-        fields: [
-            "displayName",
-            "regularOpeningHours",
-            "photos",
-            "rating",
-        ],
-    });
-
-    return place;
 }
