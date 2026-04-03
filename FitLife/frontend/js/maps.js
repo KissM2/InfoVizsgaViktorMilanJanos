@@ -155,7 +155,6 @@ export async function autocompleteElhelyezes(map, autocompleteDivId, marker) {
 
         // place.viewport → ha a helynek van viewportja, akkor a térkép azt fogja megjeleníteni, ha nincs, akkor a hely koordinátáira fog zoomolni
         if (place.viewport) {
-            console.log("wtf")
             map.fitBounds(place.viewport);
         } else {
             map.setCenter(place.location);
