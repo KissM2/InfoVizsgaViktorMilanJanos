@@ -1,17 +1,45 @@
 #mapBefogo {
-    height: 500px;
-    max-width: 100%;
-    margin: 20px 0;
+    max-height: 500px;
+    width: 40%;
+    margin: auto;
 }
 
 #map{
     height: 500px;
-    max-width: 800px;
+    max-width: 90%;
     margin: auto;
 }
 
 #autocomplete {
     display: block;
     margin: auto;
-    max-width: 400px;
+    width: 400px;
+    height: 50px;
+}
+
+.infoWindowValtoBtn{
+    margin: none;
+    position: sticky;
+    top: 0;
+    background-color: rgb(172, 172, 172);
+    width: 50%;
+    border-radius: 0px;;
+}
+
+.infoWindowValtoBtn:hover{
+    background-color: rgb(158, 158, 158);
+}
+
+.infoWindowValtoBtnActive{
+    background-color: rgb(116, 116, 116);
+}
+
+.infoWindowValtoBtnActive:hover{
+    background-color: rgb(100, 100, 100);
+}
+
+.infoWindowValtoBtn:disabled{
+    cursor: not-allowed !important;
+    border: gray solid 1px !important;
+    pointer-events: all !important;
 }

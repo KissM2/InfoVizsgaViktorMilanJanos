@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../css/osszesEdzo.css">
     <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/map.css">
     <script type="module" src="../js/osszesEdzo.js"></script>
+    <script type="module" src="../js/osszesEdzoteremMap.js"></script>
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
     <title>Document</title>
 </head>
@@ -31,8 +33,9 @@
 
         <div id="edzo-grid" class="edzo-grid-layout"></div>
 
-        <div id="terkep-container" class="terkep-megjelenito">
-            <p>A térkép betöltése folyamatban...</p>
+        <div id="terkep-container" class="terkep-megjelenito row">
+            <div id="autocomplete"></div>
+            <div id="map""></div>
         </div>
     </div>
     <footer class="lab pt-5 pb-3 mt-5">

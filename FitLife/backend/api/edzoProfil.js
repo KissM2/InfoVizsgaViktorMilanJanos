@@ -74,4 +74,20 @@ router.get('/topNegyEdzo', async (request, response) => {
     }
 });
 
+//?GET /api/osszesEdzo?lng=:lng&lat=:lat
+router.get('/osszesEdzoKorzetben', async (request, response) => {
+    try {
+        const { lng, lat } = request.query;
+        const edzok = await database.selectAllTrainersByDist(lng, lat);
+        response.status(200).json({
+            message: 'Edzők sikeresen lekérve.',
+            results: edzok
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Hiba történt a szerver oldalon az edzők lekérdezésekor.'
+        });
+    }
+});
+
 module.exports = router;

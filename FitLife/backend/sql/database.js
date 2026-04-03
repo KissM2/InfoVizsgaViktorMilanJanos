@@ -81,6 +81,17 @@ async function selectAllAllergen() {
     const [rows] = await pool.execute(query);
     return rows;
 }
+async function selectAllEdzoterem() {
+    const query = "SELECT DISTINCT edzo.edzoterem_cim FROM edzo";
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+
+async function selectAllTrainersByDist(lng, lat) {
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?,?)) <= 50`;
+    const [rows] = await pool.execute(query, [lng, lat]);
+    return rows;
+}
 //!Export
 module.exports = {
     updateEdzo,
@@ -95,5 +106,7 @@ module.exports = {
     selectEdzoTerem,
     insertUser,
     selectAllAllergen,
-    insertEdzo
+    insertEdzo,
+    selectAllEdzoterem,
+    selectAllTrainersByDist
 };

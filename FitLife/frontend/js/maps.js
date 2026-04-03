@@ -21,7 +21,7 @@ export const loadGoogleMaps = () =>
         r=new Set,e=new URLSearchParams,
         u=()=>h||(h=new Promise(async(f,n)=>{
           await (a=m.createElement("script"));
-          e.set("key","AIzaSyBxABoWzljDSRuXT-J8FUTdfzl1vN8FfA4");
+          e.set("key","AIzaSyCNA1vQi0b5-v4UgCT9AMMDaavLNFuzz3A");
           e.set("v","weekly");
           e.set("callback",c+".maps."+q);
           a.src="https://maps.googleapis.com/maps/api/js?"+e;
@@ -177,4 +177,57 @@ export async function autocompleteElhelyezes(map, autocompleteDivId, marker) {
             }
         }
     });
+}
+
+export function edzoteremDivGeneralas(helyadatok, marker) {
+
+    if(!helyadatok || !helyadatok.displayName) {
+        if(marker){
+            marker.title = "Nincs elérhető helyadat";
+        }
+      return;
+    }
+
+    let edzoteremDiv = document.createElement('div');
+
+    let h3 = document.createElement('h3');
+    h3.style.color = "black";
+    h3.innerText = helyadatok.displayName;
+    h3.style.margin = "0";
+    edzoteremDiv.appendChild(h3);
+
+    if (helyadatok.rating) {
+      let rating = document.createElement('p');
+      rating.style.color = "black";
+      rating.innerText = `Értékelés: ${helyadatok.rating}`;
+      rating.style.marginBottom = "5px";
+      edzoteremDiv.appendChild(rating);
+    }
+
+    if (helyadatok.photos && helyadatok.photos.length !== 0) {
+      let img =document.createElement('img');
+      img.src = helyadatok.photos[0].getURI({ maxWidth: 150 });
+      img.style.width = "100%";
+      img.style.height = "auto";
+      edzoteremDiv.appendChild(img);
+    }
+
+    if (helyadatok.regularOpeningHours) {
+      let nyitvatartas = document.createElement('edzoteremDiv');
+      let nyitvatartasCim = document.createElement('h5');
+      nyitvatartasCim.style.color = "black";
+      nyitvatartasCim.style.margin = "10px 0 0 0";
+      nyitvatartasCim.innerText = "Általános nyitvatartás:";
+      nyitvatartas.appendChild(nyitvatartasCim);
+      for (let i = 0; i < helyadatok.regularOpeningHours.ph.length; i++) {
+        let p = document.createElement('p');
+        p.style.color = "black";
+        p.style.margin = "0";
+        p.innerText = helyadatok.regularOpeningHours.ph[i];
+        nyitvatartas.appendChild(p);
+      }
+      edzoteremDiv.appendChild(nyitvatartas);
+    }
+
+    return edzoteremDiv;
 }

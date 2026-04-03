@@ -1,5 +1,5 @@
 import { getKeres } from "./kozosFetch.js";
-import {loadGoogleMaps, helyAdatokLekerese} from "./maps.js";
+import {loadGoogleMaps, helyAdatokLekerese, edzoteremDivGeneralas} from "./maps.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadGoogleMaps();
@@ -53,7 +53,7 @@ function markerAthelyezes(map, marker, location) {
     // Térkép középpontjának és nagyításának beállítása a koordináták alapján
     map.setCenter(location);
 
-    // Marker áthelyezése title beállítása a térképen a koordináták alapján
+    // Marker áthelyezése a térképen a koordináták alapján
     marker.map = null;
     marker.position = location;
     marker.map = map;
@@ -62,51 +62,7 @@ function markerAthelyezes(map, marker, location) {
 async function infoAblakLetrehozas(map, marker, location) {
     const helyadatok = await helyAdatok(location);
 
-    if(!helyadatok || !helyadatok.displayName) {
-      marker.title = "Nincs elérhető helyadat";
-      return;
-    }
-
-    let div = document.createElement('div');
-    
-    let h3 = document.createElement('h3');
-    h3.style.color = "black";
-    h3.innerText = helyadatok.displayName;
-    h3.style.margin = "0";
-    div.appendChild(h3);
-
-    if (helyadatok.rating) {
-      let rating = document.createElement('p');
-      rating.style.color = "black";
-      rating.innerText = `Értékelés: ${helyadatok.rating}`;
-      rating.style.marginBottom = "5px";
-      div.appendChild(rating);
-    }
-
-    if (helyadatok.photos && helyadatok.photos.length !== 0) {
-      let img =document.createElement('img');
-      img.src = helyadatok.photos[0].getURI({ maxWidth: 150 });
-      img.style.width = "100%";
-      img.style.height = "auto";
-      div.appendChild(img);
-    }
-
-    if (helyadatok.regularOpeningHours) {
-      let nyitvatartas = document.createElement('div');
-      let nyitvatartasCim = document.createElement('h5');
-      nyitvatartasCim.style.color = "black";
-      nyitvatartasCim.style.margin = "10px 0 0 0";
-      nyitvatartasCim.innerText = "Általános nyitvatartás:";
-      nyitvatartas.appendChild(nyitvatartasCim);
-      for (let i = 0; i < helyadatok.regularOpeningHours.ph.length; i++) {
-        let p = document.createElement('p');
-        p.style.color = "black";
-        p.style.margin = "0";
-        p.innerText = helyadatok.regularOpeningHours.ph[i];
-        nyitvatartas.appendChild(p);
-      }
-      div.appendChild(nyitvatartas);
-    }
+    let div = edzoteremDivGeneralas(helyadatok, marker);
 
     const infoWindow = new google.maps.InfoWindow({
         content: div
