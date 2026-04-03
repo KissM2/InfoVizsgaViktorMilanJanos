@@ -1,56 +1,10 @@
 import { getKeres } from "./kozosFetch.js";
+import {loadGoogleMaps, helyAdatokLekerese, edzoteremDivGeneralas} from "./maps.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadGoogleMaps();
     await initMap();
 });
-
-// Ez a függvény tölti be a Google Maps API-t dinamikusan
-const loadGoogleMaps = () =>
-  new Promise((resolve, reject) => {
-
-    // Ha már egyszer betöltöttük a Google Maps-et, akkor nem kell újra betölteni
-    if (window.google?.maps?.importLibrary) {
-      return resolve();
-    }
-
-    const script = document.createElement("script");
-
-    // A script tartalmába beírjuk a Google hivatalos betöltő kódját
-    // Ez teszi lehetővé az új "importLibrary" használatát
-    script.innerHTML = `
-      (g=>{
-        var h,a,k,p="The Google Maps JavaScript API",
-        c="google",l="importLibrary",q="__ib__",
-        m=document,b=window;
-        b=b[c]||(b[c]={});
-        var d=b.maps||(b.maps={}),
-        r=new Set,e=new URLSearchParams,
-        u=()=>h||(h=new Promise(async(f,n)=>{
-          await (a=m.createElement("script"));
-          e.set("key","Api_key");
-          e.set("v","weekly");
-          e.set("callback",c+".maps."+q);
-          a.src="https://maps.googleapis.com/maps/api/js?"+e;
-          d[q]=f;
-          a.onerror=()=>h=n(Error(p+" could not load."));
-          m.head.append(a)
-        }));
-        d[l]?console.warn(p+" only loads once."):
-        d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))
-      })({});
-    `;
-     // Hozzáadjuk a scriptet a HTML-hez → elkezd betöltődni a Google Maps API
-    document.head.appendChild(script);
-
-    // Ez folyamatosan ellenőrzi, hogy betöltődött-e már a Google Maps API
-    const interval = setInterval(() => {
-      if (window.google?.maps?.importLibrary) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 50);
-  });
 
 async function initMap() {
     // Betöltjük a szükséges "könyvtárakat"
@@ -99,7 +53,7 @@ function markerAthelyezes(map, marker, location) {
     // Térkép középpontjának és nagyításának beállítása a koordináták alapján
     map.setCenter(location);
 
-    // Marker áthelyezése title beállítása a térképen a koordináták alapján
+    // Marker áthelyezése a térképen a koordináták alapján
     marker.map = null;
     marker.position = location;
     marker.map = map;
@@ -108,56 +62,12 @@ function markerAthelyezes(map, marker, location) {
 async function infoAblakLetrehozas(map, marker, location) {
     const helyadatok = await helyAdatok(location);
 
-    if(!helyadatok || !helyadatok.displayName) {
-      console.error("Hely adatok nem elérhetőek");
-      return;
-    }
-
-    let div = document.createElement('div');
-    
-    let h3 = document.createElement('h3');
-    h3.style.color = "black";
-    h3.innerText = helyadatok.displayName;
-    h3.style.margin = "0";
-    div.appendChild(h3);
-
-    if (helyadatok.rating) {
-      let rating = document.createElement('p');
-      rating.style.color = "black";
-      rating.innerText = `Értékelés: ${helyadatok.rating}`;
-      rating.style.marginBottom = "5px";
-      div.appendChild(rating);
-    }
-
-    if (helyadatok.photos && helyadatok.photos.length !== 0) {
-      let img =document.createElement('img');
-      img.src = helyadatok.photos[0].getURI({ maxWidth: 150 });
-      img.style.width = "100%";
-      img.style.height = "auto";
-      div.appendChild(img);
-    }
-
-    if (helyadatok.regularOpeningHours) {
-      let nyitvatartas = document.createElement('div');
-      let nyitvatartasCim = document.createElement('h5');
-      nyitvatartasCim.style.color = "black";
-      nyitvatartasCim.style.margin = "10px 0 0 0";
-      nyitvatartasCim.innerText = "Általános nyitvatartás:";
-      nyitvatartas.appendChild(nyitvatartasCim);
-      for (let i = 0; i < helyadatok.regularOpeningHours.ph.length; i++) {
-        let p = document.createElement('p');
-        p.style.color = "black";
-        p.style.margin = "0";
-        p.innerText = helyadatok.regularOpeningHours.ph[i];
-        nyitvatartas.appendChild(p);
-      }
-      div.appendChild(nyitvatartas);
-    }
+    let div = edzoteremDivGeneralas(helyadatok, marker);
 
     const infoWindow = new google.maps.InfoWindow({
         content: div
     });
-
+    
     marker.addListener("gmp-click", () => {
         infoWindow.open({
             anchor: marker,
@@ -168,43 +78,9 @@ async function infoAblakLetrehozas(map, marker, location) {
 
 async function helyAdatok(location) {
     try {
-        const place = await helyLekerese(location.lat, location.lng);
-        const details = await helyadatokLekerese(place);
+        const details = await helyAdatokLekerese(location.lat, location.lng, 50, ["displayName","regularOpeningHours","photos","rating",]);
         return details;
     } catch (err) {
         console.error("Error:", err);
     }
-}
-
-async function helyLekerese(lat, lng) {
-    const { Place } = await google.maps.importLibrary("places");
-
-    const request = {
-        locationRestriction: {
-          center: { lat, lng },
-          radius: 50,
-        },
-        fields: ["id", "displayName", "location", "photos", "rating"],
-    };
-
-    const { places } = await Place.searchNearby(request);
-
-    if (!places.length) {
-        throw new Error("Nem található hely a megadott koordináták közelében.");
-    }
-
-    return places[0];
-}
-  
-async function helyadatokLekerese(place){
-    await place.fetchFields({
-        fields: [
-            "displayName",
-            "regularOpeningHours",
-            "photos",
-            "rating",
-        ],
-    });
-
-    return place;
 }

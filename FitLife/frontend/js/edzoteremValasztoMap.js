@@ -1,5 +1,6 @@
 let map;
 export let marker;
+import {loadGoogleMaps, felhHelyAdatokElkerese, helyAdatokLekerese, autocompleteElhelyezes} from "./maps.js";
 
 document.addEventListener('DOMContentLoaded', async function(){
     // Ez megakadályozza, hogy a form elküldése újratöltse az oldalt
@@ -10,53 +11,6 @@ document.addEventListener('DOMContentLoaded', async function(){
     await initMap();
 });
 
-// Ez a függvény tölti be a Google Maps API-t dinamikusan
-const loadGoogleMaps = () =>
-  new Promise((resolve, reject) => {
-
-    // Ha már egyszer betöltöttük a Google Maps-et, akkor nem kell újra betölteni
-    if (window.google?.maps?.importLibrary) {
-      return resolve();
-    }
-
-    const script = document.createElement("script");
-
-    // A script tartalmába beírjuk a Google hivatalos betöltő kódját
-    // Ez teszi lehetővé az új "importLibrary" használatát
-    script.innerHTML = `
-      (g=>{
-        var h,a,k,p="The Google Maps JavaScript API",
-        c="google",l="importLibrary",q="__ib__",
-        m=document,b=window;
-        b=b[c]||(b[c]={});
-        var d=b.maps||(b.maps={}),
-        r=new Set,e=new URLSearchParams,
-        u=()=>h||(h=new Promise(async(f,n)=>{
-          await (a=m.createElement("script"));
-          e.set("key","Api_key");
-          e.set("v","weekly");
-          e.set("callback",c+".maps."+q);
-          a.src="https://maps.googleapis.com/maps/api/js?"+e;
-          d[q]=f;
-          a.onerror=()=>h=n(Error(p+" could not load."));
-          m.head.append(a)
-        }));
-        d[l]?console.warn(p+" only loads once."):
-        d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))
-      })({});
-    `;
-     // Hozzáadjuk a scriptet a HTML-hez → elkezd betöltődni a Google Maps API
-    document.head.appendChild(script);
-
-    // Ez folyamatosan ellenőrzi, hogy betöltődött-e már a Google Maps API
-    const interval = setInterval(() => {
-      if (window.google?.maps?.importLibrary) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 50);
-  });
-
 async function initMap() {
     // Betöltjük a szükséges "könyvtárakat"
     const { Map } = await google.maps.importLibrary("maps");
@@ -65,7 +19,7 @@ async function initMap() {
     let location;
 
     try{
-        location = await helyAdatokElkerese();
+        location = await felhHelyAdatokElkerese();
 
     }catch(error){
         console.error("Hiba a helyadatok lekérésekor:", error);
@@ -86,102 +40,70 @@ async function initMap() {
     });
 
     // Térképre kattintva a marker a kattintás helyére kerül
-    map.addListener("click", (e) => {
+    map.addListener("click", async (e) => {
         marker.position = e.latLng;
+        try {
+            //megnézzük hogy van e bármi google mapsen jelölt hely a kattintás környezetében. Ha van, akkor megkérdezzük az edzőt, hogy arra a helyre gondolt e, és ha igen, akkor a marker arra a helyre kerül
+            let helyadatok = await helyAdatokLekerese(e.latLng.lat(), e.latLng.lng(), 50, ["displayName", "location"]);
+            if (helyadatok) {
+                popupWindowGeneralas(helyadatok, marker);
+            }
+        } catch (error) {
+            console.error("Hiba a hely lekérésekor:", error);
+        }
     });
 
-    autocompleteElhelyezes(map, marker);
+   await autocompleteElhelyezes(map, "autocomplete", marker);
 };
 
-async function autocompleteElhelyezes(map, marker) {
-    // Betöltjük a places könyvtárat az autocomplete használatához
-    const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
-
-    // létrehozunk egyautocomplete elementet
-    const autocompleteElement = new PlaceAutocompleteElement();
-    autocompleteElement.placeholder = "Keress edzőtermet...";
-    document.getElementById("autocomplete").appendChild(autocompleteElement);
-
-    // Esemény: amikor kiválasztanak egy helyet
-    autocompleteElement.addEventListener("gmp-select", async (event) => {
-
-    const placePrediction = event.placePrediction;
-
-    // ha nincs helyválasztás, vagy nem jön vissza helyadat
-    if (!placePrediction) {
-        console.error("No placePrediction in event:", event);
-        return;
-    }
-
-    const place = placePrediction.toPlace();
-
-    // Betöltjük a hely adatait, hogy megkapjuk a koordinátákat
-    await place.fetchFields({
-        fields: ["displayName", "formattedAddress", "location", "viewport"]
-    });
+function popupWindowGeneralas(helyadatok, marker) {
     
-    // ha nincs helyadat, akkor nem tudjuk megjeleníteni a helyet a térképen
-    if (!place.location) {
-        console.error("No location returned:", place);
-        return;
-    }
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(0,0,0,0.5)";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.zIndex = "9999";
 
-    // place.viewport → ha a helynek van viewportja, akkor a térkép azt fogja megjeleníteni, ha nincs, akkor a hely koordinátáira fog zoomolni
-    if (place.viewport) {
-        map.fitBounds(place.viewport);
-    } else {
-        map.setCenter(place.location);
-        map.setZoom(17);
-    }
+    const box = document.createElement("div");
+    box.style.background = "black";
+    box.style.padding = "20px";
+    box.style.borderRadius = "10px";
+    box.style.width = "300px";
+    box.style.textAlign = "center";
+    box.style.fontFamily = "Arial";
 
-    marker.map = null;
-    marker.position = place.location;
-    marker.title = place.displayName || place.formattedAddress || "Kiválasztott hely";
-    marker.map = map;
+    const title = document.createElement("h3");
+    title.innerText = helyadatok.displayName || "Ismeretlen hely";
 
-});
-}
+    const question = document.createElement("p");
+    question.innerText = "Erre a helyre gondoltál?";
 
-async function helyAdatokElkerese() {
-    return new Promise((resolve, reject) => {
+    const yesBtn = document.createElement("button");
+    yesBtn.innerText = "Igen";
+    yesBtn.style.margin = "5px";
+    yesBtn.onclick = () => {
+        marker.position = helyadatok.location;
+        document.body.removeChild(overlay);
+    };
 
-        // Ellenőrizzük, hogy a böngésző támogatja-e a geolocationt
-        if (!navigator.geolocation) {
-            reject(new Error("A böngésző nem támogatja a helymeghatározást."));
-            return;
-        }
+    const noBtn = document.createElement("button");
+    noBtn.innerText = "Nem";
+    noBtn.style.margin = "5px";
+    noBtn.onclick = () => {
+        document.body.removeChild(overlay);
+    };
 
-        // Hely lekérése
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const location = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+    box.appendChild(title);
+    box.appendChild(question);
+    box.appendChild(yesBtn);
+    box.appendChild(noBtn);
 
-                resolve(location); // siker → visszaadjuk a koordinátákat
-            },
-            (error) => {
-                // Hibakezelés
-                switch (error.code) {
-                    case error.PERMISSION_DENIED:
-                        reject(new Error("A felhasználó nem engedélyezte a helymeghatározást."));
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        reject(new Error("A helyadat nem elérhető."));
-                        break;
-                    case error.TIMEOUT:
-                        reject(new Error("A helylekérés időtúllépés miatt megszakadt."));
-                        break;
-                    default:
-                        reject(new Error("Ismeretlen hiba történt."));
-                }
-            },
-            {
-                enableHighAccuracy: true, // pontosabb, de lassabb lehet
-                timeout: 60000,           // max 10 mp várakozás
-                maximumAge: 0             // ne használjon cache-t
-            }
-        );
-    });
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
 }

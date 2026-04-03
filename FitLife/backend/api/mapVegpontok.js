@@ -21,4 +21,16 @@ router.get('/getEdzoTerem', async (request, response) => {
     }
 });
 
+router.get('/getAllEdzoterem', async (request, response) => {
+    try {
+        const edzoteremAdatok = await database.selectAllEdzoterem();
+        response.status(200).json({
+            message: "Edzőzermek adatai sikeresen lekérve.", 
+            edzoteremAdatok: edzoteremAdatok
+        });
+    } catch (error) {
+        response.status(500).json({ message: "Nem sikerült lekérni az edzőtermeket." });
+    }
+});
+
 module.exports = router;
