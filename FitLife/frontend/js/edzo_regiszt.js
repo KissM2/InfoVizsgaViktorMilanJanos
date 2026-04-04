@@ -1,5 +1,9 @@
 import { postKeres } from '../js/kozosFetch.js';
+import { footerGeneralas } from './footer.js';
 
+document.addEventListener("DOMContentLoaded", async function () {
+    footerGeneralas()
+});
 document.getElementById('trainerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (document.getElementById('password').value !== document.getElementById('confirm').value) {

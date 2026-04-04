@@ -1,6 +1,7 @@
 import { naptarInit } from './Naptar.js';
 import { letrehozEdzoProfil } from '../js/edzoProfil.js';
 import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 import { getKeres } from '../js/kozosFetch.js'
 
 const menuLinkek = [
@@ -11,7 +12,7 @@ const menuLinkek = [
 ];
 document.addEventListener("DOMContentLoaded", async () => {
     navbarGeneralas(menuLinkek);
-    
+    footerGeneralas();
     const urlParams = new URLSearchParams(window.location.search);
     const edzoId = urlParams.get('id');
     if (edzoId) {

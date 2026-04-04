@@ -1,5 +1,6 @@
 import { postKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 
 const menuLinkek = [
     { nev: "Főoldal", url: "../html/index.html" },
@@ -9,6 +10,7 @@ const menuLinkek = [
 ];
 document.addEventListener("DOMContentLoaded", () => {
     navbarGeneralas(menuLinkek);
+    footerGeneralas();
 });
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
