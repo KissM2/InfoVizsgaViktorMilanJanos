@@ -79,6 +79,7 @@ router.get('/osszesEdzoKorzetben', async (request, response) => {
     try {
         const { lng, lat } = request.query;
         const edzok = await database.selectAllTrainersByDist(lng, lat);
+        console.log(edzok);
         response.status(200).json({
             message: 'Edzők sikeresen lekérve.',
             results: edzok

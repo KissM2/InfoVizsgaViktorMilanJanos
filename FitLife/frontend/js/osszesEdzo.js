@@ -1,5 +1,6 @@
 import { getKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
+import { felhHelyAdatokElkerese } from './maps.js';
 
 const menuLinkek = [
     { nev: "Főoldal", url: "../html/index.html" },
@@ -10,15 +11,17 @@ const menuLinkek = [
 let eredetiEdzoLista = [];
 let novekvo = true;
 let Terkepblok = false;
+let tavolsagNovekvo = true;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const gridContainer = document.getElementById("edzo-grid");
     const terkepContainer = document.getElementById("terkep-container");
     const rendezesBtn = document.getElementById("rendezes-abc-btn");
     const nezetValtoBtn = document.getElementById("nezet-valto-btn");
+    const rendezesTavolsagBtn = document.getElementById("rendezes-tavolsag-btn");
 
     const adatok = await getKeres('/api/osszesEdzo');
-    if (adatok && adatok.results) {        
+    if (adatok && adatok.results) {
         eredetiEdzoLista = adatok.results;
         renderGrid(gridContainer, eredetiEdzoLista);
     }
@@ -41,6 +44,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             ikon.className = "fa-solid fa-arrow-down-z-a";
         }
         renderGrid(gridContainer, rendezett);
+    });
+
+    rendezesTavolsagBtn.addEventListener("click", async () => {
+        try {
+            const coords = await felhHelyAdatokElkerese();
+            const adatok = await getKeres(`/api/osszesEdzoKorzetben?lng=${coords.lng}&lat=${coords.lat}`);
+            console.log(adatok);
+            if (adatok) {
+                renderGrid(gridContainer, adatok.results);
+            }
+        } catch (error) {
+            console.error("Hiba a távolsági gombnál:", error);
+        }
     });
     nezetValtoBtn.addEventListener("click", () => {
         if (Terkepblok) {
@@ -92,7 +108,12 @@ function renderGrid(container, lista) {
         const nevDiv = document.createElement("div");
         nevDiv.className = "edzo-nev";
         nevDiv.textContent = edzo.nev;
-
+        if (edzo.tavolsag !== undefined) {
+            const tavDiv = document.createElement("div");
+            tavDiv.style.color = "#ffc107";
+            tavDiv.textContent = Math.round(edzo.tavolsag / 1000) + " km-re tőled";
+            infoDiv.appendChild(tavDiv);
+        }
         const idezetDiv = document.createElement("div");
         idezetDiv.className = "edzo-idezet";
         idezetDiv.textContent = edzo.idezet;

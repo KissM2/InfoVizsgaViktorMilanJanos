@@ -88,7 +88,19 @@ async function selectAllEdzoterem() {
 }
 
 async function selectAllTrainersByDist(lng, lat) {
-    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?,?)) <= 50`;
+    const query = `
+        SELECT 
+            login.id, 
+            login.felh_nev AS nev, 
+            edzo.kep, 
+            edzo.leiras AS kompetenciak, 
+            edzo.edzoterem_cim, 
+            edzo.idezet, 
+            ROUND(ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?))) AS tavolsag 
+        FROM edzo 
+        INNER JOIN login ON edzo.edzo_id = login.id 
+        ORDER BY tavolsag ASC`;
+    
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
