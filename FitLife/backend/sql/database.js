@@ -34,9 +34,9 @@ async function checkUser(email) {
     return rows;
 }
 
-async function updateUser(testsuly ,magassag ,edzesre_forditott_ido , cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id) {
+async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id) {
     const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak=,cel_testsuly=?,uzott_sport=?,edzesen_kivuli_mozgas=? WHERE felhasznalo.felhasznalo_id = ?";
-    const [rows] = await pool.execute(query, [testsuly ,magassag ,edzesre_forditott_ido , cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id]);
+    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id]);
     return rows;
 }
 
@@ -76,15 +76,99 @@ async function insertEdzo(edzoterm_cim, kep, idezet, leiras) {
     const [rows] = await pool.execute(query, [edzoterm_cim, kep, idezet, leiras]);
     return rows;
 }
-async function getEdzoIdopontok(id) {
-    const query = "SELECT heti_beosztas.weekday,heti_beosztas.start,heti_beosztas.end,heti_beosztas.mettol_ervenyes,kulonleges_alkalom.datum,kulonleges_alkalom.start,kulonleges_alkalom.end,kulonleges_alkalom.statusz,foglalas.felhasznalo_id,foglalas.datum,foglalas.start,foglalas.end,foglalas.statusz INNER JOIN kulonleges_alkalom ON kulonleges_alkalom.edzo_id=heti_beosztas.edzo_id INNER JOIN foglalas ON heti_beosztas.edzo_id=foglalas.edzo_id WHERE heti_beosztas.edzo_id=?;";
-    const [rows] = await pool.execute(query, [id]);
-    return rows;
-}
 async function selectAllAllergen() {
     const query = "SELECT * FROM allergen";
     const [rows] = await pool.execute(query);
     return rows;
+}
+
+async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
+    const query = `
+        INSERT INTO heti_beosztas 
+        (weekday, start, end, mettol_ervenyes, edzo_id)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await pool.execute(query, [
+        weekday,
+        start,
+        end,
+        mettol,
+        edzoId
+    ]);
+
+    return result;
+}
+
+async function checkHetiBeosztasExists(edzoId, mettol) {
+    const query = `
+        SELECT 1 
+        FROM heti_beosztas 
+        WHERE edzo_id = ? AND mettol_ervenyes = ?
+        LIMIT 1
+    `;
+
+    const [rows] = await pool.execute(query, [edzoId, mettol]);
+    return rows.length > 0;
+}
+
+
+async function insertKulonlegesAlkalom(datum, start, end, statusz, edzoId) {
+    const query = `
+        INSERT INTO kulonleges_alkalom 
+        (datum, start, end, statusz, edzo_id)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await pool.execute(query, [
+        datum,
+        start,
+        end,
+        statusz,
+        edzoId
+    ]);
+
+    return result;
+}
+
+async function checkKulonlegesAlkalomExists(edzoId, datum) {
+    const query = `
+        SELECT 1 
+        FROM kulonleges_alkalom 
+        WHERE edzo_id = ? AND datum = ?
+        LIMIT 1
+    `;
+
+    const [rows] = await pool.execute(query, [edzoId, datum]);
+    return rows.length > 0;
+}
+
+
+
+async function getCalendarData(edzoId) {
+    const hetiQuery = `
+        SELECT weekday, start, end, mettol_ervenyes
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+    `;
+
+    const kulonlegesQuery = `
+        SELECT datum, start, end, statusz
+        FROM kulonleges_alkalom
+        WHERE edzo_id = ?
+    `;
+
+    const foglalasQuery = `
+        SELECT datum, start, end, statusz, felhasznalo_id
+        FROM foglalas
+        WHERE edzo_id = ?
+    `;
+
+    const [heti] = await pool.execute(hetiQuery, [edzoId]);
+    const [kulonleges] = await pool.execute(kulonlegesQuery, [edzoId]);
+    const [foglalas] = await pool.execute(foglalasQuery, [edzoId]);
+
+    return { heti, kulonleges, foglalas };
 }
 //!Export
 module.exports = {
@@ -101,5 +185,9 @@ module.exports = {
     insertUser,
     selectAllAllergen,
     insertEdzo,
-    getEdzoIdopontok
+    insertHetiBeosztasSingle,
+    checkHetiBeosztasExists,
+    checkKulonlegesAlkalomExists,
+    insertKulonlegesAlkalom,
+    getCalendarData
 };
