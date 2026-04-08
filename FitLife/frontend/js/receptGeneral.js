@@ -1,5 +1,7 @@
 import { getKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
+
 
 const menuLinkek = [
     { nev: "Főoldal", url: "../html/index.html" },
@@ -10,6 +12,7 @@ const menuLinkek = [
 let receptek=[]
 
 document.addEventListener("DOMContentLoaded", async function () {
+    footerGeneralas();
     const adatok = await getKeres('/api/receptek');
     if (adatok) {
         receptek = adatok;
