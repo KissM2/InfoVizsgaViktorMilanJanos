@@ -92,6 +92,23 @@ async function selectAllTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+async function selectKommentekByEdzoId(edzo_id) {
+    const query = `
+        SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, k.edzo_id, l.felh_nev AS felhasznalo_nev 
+        FROM komment k
+            LEFT JOIN login l ON k.felhasznalo_id = l.id
+        WHERE k.edzo_id = ?
+        ORDER BY k.komment_id DESC
+    `;
+    const [rows] = await pool.execute(query, [edzo_id]);
+    return rows;
+}
+
+async function insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id) {
+    const query = `INSERT INTO komment (szoveg, ertekeles, statusz, edzo_id, felhasznalo_id) VALUES (?, ?, 'aktiv', ?, ?)`;
+    const [result] = await pool.execute(query, [szoveg, ertekeles, edzo_id, felhasznalo_id]);
+    return result;
+}
 //!Export
 module.exports = {
     updateEdzo,
@@ -108,5 +125,7 @@ module.exports = {
     selectAllAllergen,
     insertEdzo,
     selectAllEdzoterem,
-    selectAllTrainersByDist
+    selectAllTrainersByDist,
+    selectKommentekByEdzoId,
+    insertKomment
 };
