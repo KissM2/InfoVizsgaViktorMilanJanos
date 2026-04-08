@@ -1,0 +1,50 @@
+.lab {
+    background-color: #111;
+    color: #ddd;
+    border-top: 1px solid #333;
+    font-family: sans-serif;
+}
+
+.footer-cim {
+    color: #fff;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+}
+
+.footer-menu li {
+    margin-bottom: 10px;
+}
+
+.footer-menu a {
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-menu a:hover {
+    color: #28a745;
+}
+
+.social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.social:hover {
+    background-color: red;
+}
+
+.copyright {
+    color: #666;
+    font-size: 0.85rem;
+}
