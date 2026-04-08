@@ -1,0 +1,89 @@
+.komment-szekcio {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1b1b1b;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+}
+.komment-fejlec {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ff0000;
+    padding-bottom: 10px;
+}
+
+.komment-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 500px; 
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+.komment-urlap-tarolo {
+    background-color: #fff;
+    padding: 20px;
+    color: black;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+}
+.urlap-sor {
+    margin-bottom: 15px;
+}
+#uj-komment-szoveg {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-family: inherit;
+}
+#uj-komment-ertekeles {
+    width: 60px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.komment-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+.gomb-elsodleges { 
+    background-color: #28a745; 
+    color: white; 
+}
+.gomb-elsodleges:hover { 
+    background-color: #1fce45; 
+}
+.gomb-masodlagos { 
+    background-color: #007bff; 
+    color: white; 
+}
+.gomb-masodlagos:hover { 
+    background-color: #2e93ff; 
+}
+.gomb-szellemkep { 
+    background-color: transparent; 
+    border: 2px solid #007bff; 
+    color: #007bff; 
+    width: 100%; 
+}
+.gomb-szellemkep:hover { 
+    background-color: #007bff; 
+    color: white; 
+}
+.tobb-komment-tarolo { 
+    margin-top: 15px; 
+}
