@@ -4,7 +4,6 @@ import { navbarGeneralas } from './navbar.js';
 import { getKeres } from '../js/kozosFetch.js'
 
 const menuLinkek = [
-    { nev: "Főoldal", url: "../html/index.html" },
     { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
     { nev: "Receptek", url: "../html/etrendek.html" },
     { nev: "Edzéstervek", url: "../html/edzesterv.html" }

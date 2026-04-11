@@ -1,67 +1,103 @@
 export function navbarGeneralas(linkek) {
-    const navContainer = document.createElement("nav");
-    navContainer.className = "alapNav";
+    const navbarBefogo = document.createElement('div');
+    navbarBefogo.id = "navbar";
 
-    const navDiv = document.createElement("div");
-    navDiv.className = "nav";
+    const navbar = document.createElement('div');
+    navbar.classList.add("navunk", "container-fluid");
 
-    const homeLink = document.createElement("a");
-    homeLink.href = "index.html";
-    homeLink.className = "home d-flex align-items-center text-decoration-none";
+    const logoLink = document.createElement('a');
+    logoLink.href = "..";
+    logoLink.style.textDecoration = "none";
 
-    const logoDiv = document.createElement("div");
-    logoDiv.className = "logo";
-    logoDiv.textContent = "F";
+    const logoBefogo = document.createElement('div');
+    logoBefogo.classList.add("home", "d-flex", "align-items-center");
 
-    const logoSzovegDiv = document.createElement("div");
-    logoSzovegDiv.className = "logoSzoveg";
-    logoSzovegDiv.textContent = "FITLIFE";
+    const logo = document.createElement('div');
+    logo.classList.add("logo");
+    logo.innerText = "F";
+    logoBefogo.appendChild(logo);
 
-    homeLink.appendChild(logoDiv);
-    homeLink.appendChild(logoSzovegDiv);
+    const logoSzoveg = document.createElement('div');
+    logoSzoveg.classList.add("ms-2");
+    logoSzoveg.innerText = "FITLIFE";
+    logoBefogo.appendChild(logoSzoveg);
 
-    const menuContainer = document.createElement("div");
-    menuContainer.className = "menu-container";
+    logoLink.appendChild(logoBefogo);
+    navbar.appendChild(logoLink);
 
-    const menuDiv = document.createElement("div");
-    menuDiv.className = "menu";
-    menuDiv.setAttribute("data-bs-toggle", "collapse");
-    menuDiv.setAttribute("data-bs-target", "#fitlifeMenu");
+    const auth = document.createElement('div');
+    auth.classList.add("d-flex", "align-items-center");
 
-    const menuSpan = document.createElement("span");
-    menuSpan.textContent = "MENÜ";
+    const bejelentkezes = document.createElement('a');
+    bejelentkezes.href = "/bejelentkezes";
+    bejelentkezes.classList.add("d-none", "d-sm-inline");
 
-    const togglerBtn = document.createElement("button");
-    togglerBtn.className = "navbar-toggler p-0 border-0 shadow-none";
+    const bejelentkezesBtn = document.createElement('button');
+    bejelentkezesBtn.classList.add("gomb", "btn", "btn-secondary", "me-2");
+    bejelentkezesBtn.innerText = "Bejelentkezés";
+    bejelentkezes.appendChild(bejelentkezesBtn);
 
-    const iconI = document.createElement("i");
-    iconI.className = "fa-solid fa-bars text-white";
+    const regisztralas = document.createElement('a');
+    regisztralas.href = "/user_regisztral";
+    regisztralas.classList.add("d-none", "d-sm-inline", "ms-2");
 
-    togglerBtn.appendChild(iconI);
-    menuDiv.appendChild(menuSpan);
-    menuDiv.appendChild(togglerBtn);
+    const regisztralasBtn = document.createElement('button');
+    regisztralasBtn.classList.add("gomb", "btn", "btn-secondary", "me-2");
+    regisztralasBtn.innerText = "Regisztrálás";
+    regisztralas.appendChild(regisztralasBtn);
 
-    const collapseDiv = document.createElement("div");
-    collapseDiv.className = "collapse doboz";
-    collapseDiv.id = "fitlifeMenu";
+    const menuBtn = document.createElement('button');
+    menuBtn.type = "button";
+    menuBtn.classList.add("navbar-toggler", "border-0", "ms-2", "bg-hover-transp");
+    menuBtn.setAttribute("data-bs-toggle", "collapse");
+    menuBtn.setAttribute("data-bs-target", "#fitlifeMenu");
 
-    const linkekDiv = document.createElement("div");
-    linkekDiv.className = "linkek";
+    const menuSpan = document.createElement('span');
+    menuSpan.classList.add("fas", "fa-bars", "fa-1x", "text-white");
+    menuBtn.appendChild(menuSpan);
+
+    auth.appendChild(bejelentkezes);
+    auth.appendChild(regisztralas);
+    auth.appendChild(menuBtn);
+
+    navbar.appendChild(auth);
+
+    const menuPontok = document.createElement('div');
+    menuPontok.id = "fitlifeMenu";
+    menuPontok.classList.add("menupontok", "collapse", "text-center", "bg-dark");
+
+    const menuLista = document.createElement('ul');
+    menuLista.classList.add("list-unstyled", "py-3", "m-0");
 
     for (const link of linkek) {
+        const listaElem = document.createElement('li');
+
         const a = document.createElement("a");
+        a.classList.add("nav-link", "text-white", "py-2", "font-size-medium");
         a.href = link.url;
         a.textContent = link.nev;
-        linkekDiv.appendChild(a);
+
+        listaElem.appendChild(a);
+        menuLista.appendChild(listaElem);
     }
 
-    collapseDiv.appendChild(linkekDiv);
-    menuContainer.appendChild(menuDiv);
-    menuContainer.appendChild(collapseDiv);
-    
-    navDiv.appendChild(homeLink);
-    navDiv.appendChild(menuContainer);
-    navContainer.appendChild(navDiv);
-//prepend az elem legelso helyere kerul
-    document.body.prepend(navContainer);
+    menuPontok.appendChild(menuLista);
+
+    navbar.appendChild(menuPontok);
+    navbarBefogo.appendChild(navbar);
+
+    //prepend az elem legelso helyere kerul
+    document.body.prepend(navbarBefogo);
 }
+
+let ticking = false;
+window.addEventListener("scroll", () => {
+    if (!ticking) {
+        window.requestAnimationFrame(() => {
+            const navbar = document.getElementById("navbar");
+            if (navbar) navbar.classList.toggle("scrolled", window.scrollY > 10);
+            ticking = false;
+        });
+        ticking = true;
+    }
+});

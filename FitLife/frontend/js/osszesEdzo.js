@@ -2,7 +2,6 @@ import { getKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
 
 const menuLinkek = [
-    { nev: "Főoldal", url: "../html/index.html" },
     { nev: "Edzéstervek", url: "../html/edzesterv.html" },
     { nev: "Receptek", url: "../html/etrendek.html" }
 ];
