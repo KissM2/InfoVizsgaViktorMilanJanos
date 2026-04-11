@@ -763,11 +763,13 @@ FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
 beo_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday VARCHAR(20),
+weekday INT,
 start TIME,
 end TIME,
 mettol_ervenyes DATE,
 edzo_id INT,
+-- ugyanaz a blokk ne duplikálódjon
+    UNIQUE KEY unique_slot (edzo_id, mettol_ervenyes, weekday, start, end),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
@@ -775,11 +777,11 @@ FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
 ka_id INT AUTO_INCREMENT PRIMARY KEY,
 datum DATE,
-weekday VARCHAR(20),
 start TIME,
 end TIME,
 statusz VARCHAR(50),
 edzo_id INT,
+UNIQUE KEY unique_ka (edzo_id, datum, start, end),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 -- IZOMCSOPORT TÖRZZSTÁBLA

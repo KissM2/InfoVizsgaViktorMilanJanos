@@ -34,9 +34,9 @@ async function checkUser(email) {
     return rows;
 }
 
-async function updateUser(testsuly ,magassag ,edzesre_forditott_ido , cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id) {
+async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id) {
     const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak=,cel_testsuly=?,uzott_sport=?,edzesen_kivuli_mozgas=? WHERE felhasznalo.felhasznalo_id = ?";
-    const [rows] = await pool.execute(query, [testsuly ,magassag ,edzesre_forditott_ido , cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id]);
+    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id]);
     return rows;
 }
 
@@ -121,6 +121,95 @@ async function insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id) {
     const [result] = await pool.execute(query, [szoveg, ertekeles, edzo_id, felhasznalo_id]);
     return result;
 }
+
+async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
+    const query = `
+        INSERT INTO heti_beosztas 
+        (weekday, start, end, mettol_ervenyes, edzo_id)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await pool.execute(query, [
+        weekday,
+        start,
+        end,
+        mettol,
+        edzoId
+    ]);
+
+    return result;
+}
+
+async function checkHetiBeosztasExists(edzoId, mettol) {
+    const query = `
+        SELECT 1 
+        FROM heti_beosztas 
+        WHERE edzo_id = ? AND mettol_ervenyes = ?
+        LIMIT 1
+    `;
+
+    const [rows] = await pool.execute(query, [edzoId, mettol]);
+    return rows.length > 0;
+}
+
+
+async function insertKulonlegesAlkalom(datum, start, end, statusz, edzoId) {
+    const query = `
+        INSERT INTO kulonleges_alkalom 
+        (datum, start, end, statusz, edzo_id)
+        VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await pool.execute(query, [
+        datum,
+        start,
+        end,
+        statusz,
+        edzoId
+    ]);
+
+    return result;
+}
+
+async function checkKulonlegesAlkalomExists(edzoId, datum) {
+    const query = `
+        SELECT 1 
+        FROM kulonleges_alkalom 
+        WHERE edzo_id = ? AND datum = ?
+        LIMIT 1
+    `;
+
+    const [rows] = await pool.execute(query, [edzoId, datum]);
+    return rows.length > 0;
+}
+
+
+
+async function getCalendarData(edzoId) {
+    const hetiQuery = `
+        SELECT weekday, start, end, mettol_ervenyes
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+    `;
+
+    const kulonlegesQuery = `
+        SELECT datum, start, end, statusz
+        FROM kulonleges_alkalom
+        WHERE edzo_id = ?
+    `;
+
+    const foglalasQuery = `
+        SELECT datum, start, end, statusz, felhasznalo_id
+        FROM foglalas
+        WHERE edzo_id = ?
+    `;
+
+    const [heti] = await pool.execute(hetiQuery, [edzoId]);
+    const [kulonleges] = await pool.execute(kulonlegesQuery, [edzoId]);
+    const [foglalas] = await pool.execute(foglalasQuery, [edzoId]);
+
+    return { heti, kulonleges, foglalas };
+}
 //!Export
 module.exports = {
     updateEdzo,
@@ -139,5 +228,10 @@ module.exports = {
     selectAllEdzoterem,
     selectAllTrainersByDist,
     selectKommentekByEdzoId,
-    insertKomment
+    insertKomment,
+    insertHetiBeosztasSingle,
+    checkHetiBeosztasExists,
+    checkKulonlegesAlkalomExists,
+    insertKulonlegesAlkalom,
+    getCalendarData
 };
