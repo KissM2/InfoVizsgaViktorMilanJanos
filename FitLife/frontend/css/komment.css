@@ -87,3 +87,40 @@
 .tobb-komment-tarolo { 
     margin-top: 15px; 
 }
+.komment-lista.kibontva {
+    max-height: 800px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.komment-kartya {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.komment-kartya-fejlec {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.komment-csillagok {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.komment-szoveg-tartalom {
+    color: #333;
+    line-height: 1.5;
+}
+.ertekeles-sor {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.rejtett {
+    display: none !important;
+}

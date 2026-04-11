@@ -20,9 +20,15 @@ router.get('/kommentek', async (request, response) => {
 // POST: uj komment
 router.post('/kommentek', async (request, response) => {
     try {
-        const { szoveg, ertekeles, edzo_id, felhasznalo_id } = request.body;
+        const { szoveg, ertekeles, edzo_id} = request.body;
+        
+        const felhasznalo_id = request.session.user.id;
 
-        if (!szoveg || !ertekeles || !edzo_id || !felhasznalo_id) {
+        if (!felhasznalo_id) {
+            return response.status(401).json({ message: 'Be kell jelentkezned!' });
+        }
+
+        if (!szoveg || !ertekeles || !edzo_id) {
             response.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
         }
 
