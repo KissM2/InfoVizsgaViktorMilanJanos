@@ -838,16 +838,34 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 -- Vádli (10)
 (95, 10), (96, 10), (97, 10), (98, 10), (99, 10), (100, 10);
 -- 4 alap edző adatai 
-INSERT INTO login (id, felh_nev, jelszo, email, role) VALUES 
-(101, 'Togi', 'trustedSource', 'togi@fitlife.hu', 'edzo'),
-(102, 'Chris Tren', 'pr_vagy_er', 'chris@fitlife.hu', 'edzo'),
-(103, 'Mike Tren', 'heavyweight', 'mike@fitlife.hu', 'edzo'),
-(104, 'Sara Saffari', 'vloglife', 'sara@fitlife.hu', 'edzo'),
-(105, 'Rich Piana', '5percent', 'rich@fitlife.hu', 'edzo');
+INSERT INTO login (id, felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES 
+(101, 'Togi', 'trustedSource', 'togi@fitlife.hu', '+36301112233', 'Férfi', 'edzo', '1998-05-12'),
+(102, 'Chris Tren', 'pr_vagy_er', 'chris@fitlife.hu', '+36302223344', 'Férfi', 'edzo', '2001-08-20'),
+(103, 'Mike Tren', 'heavyweight', 'mike@fitlife.hu', '+36303334455', 'Férfi', 'edzo', '2001-08-20'),
+(104, 'Sara Saffari', 'vloglife', 'sara@fitlife.hu', '+36304445566', 'Nő', 'edzo', '2001-02-28'),
+(105, 'Rich Piana', '5percent', 'rich@fitlife.hu', '+36305556677', 'Férfi', 'edzo', '1970-02-21'),
+(106, 'Annabel Lucinda', 'shredded1', 'annabel@fitlife.hu', '+36306667788', 'Nő', 'edzo', '1999-11-15'),
+(107, 'Keiani', 'aloha_gains', 'keiani@fitlife.hu', '+36307778899', 'Nő', 'edzo', '2000-03-10'),
+(108, 'Krissy Cela', 'evolve_u', 'krissy@fitlife.hu', '+36308889900', 'Nő', 'edzo', '1994-10-07'),
+(109, 'LeanBeefPatty', 'mummy_abs', 'patty@fitlife.hu', '+36309990011', 'Nő', 'edzo', '1997-01-21'),
+(110, 'Alex Eubank', 'greek_god', 'alex@fitlife.hu', '+36300001122', 'Férfi', 'edzo', '2000-05-23'),
+(111, 'Sam Sulek', 'winter_bulk', 'sam@fitlife.hu', '+36300002233', 'Férfi', 'edzo', '2002-02-07'),
+(112, 'David Laid', 'aesthetic_king', 'david@fitlife.hu', '+36300003344', 'Férfi', 'edzo', '1998-01-29'),
+(113, 'Whitney Simmons', 'alive_and_well', 'whitney@fitlife.hu', '+36300004455', 'Nő', 'edzo', '1993-02-27'),
+(114, 'Pamela Reif', 'home_workout', 'pamela@fitlife.hu', '+36300005566', 'Nő', 'edzo', '1996-07-09');
 
 INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras) VALUES 
-(101, POINT(-106.5348379,38.7945952), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
-(102, POINT(-106.5348379,38.7945952), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
-(103, POINT(-106.5348379,38.7945952), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak, maximális intenzitás.'),
-(104, POINT(-118.4938492,34.1584655), 'sara.jpg', '"Várj, ezt le kell videóznom a YouTube-ra!"', 'Influenszer tréning, hogyan éld túl Bradley Martynt, tartalomgyártás edzés közben.'),
-(105, POINT(-119.9740534,37.7201051), 'rich.jpg', '"Mi lenne, ha több kiba***** kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% mentalitás, legenda.');
+(101, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
+(102, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
+(103, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.'),
+(104, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.'),
+(105, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.'),
+(106, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.'),
+(107, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.'),
+(108, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.'),
+(109, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.'),
+(110, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.'),
+(111, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.'),
+(112, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.'),
+(113, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.'),
+(114, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.');
