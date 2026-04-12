@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const valasz = await getKeres("/api/edzoProfil?id=" + edzoId);
         if (valasz && valasz.results) {
             const adat = valasz.results;
+            const atlag = adat.ertekeles_atlag ? parseFloat(adat.ertekeles_atlag).toFixed(1) + " / 5⭐" : " Nincs még értékelés";
             const formataltAdat = {
                 nev: adat.felh_nev,
                 kep: "../images/" + adat.kep,
@@ -33,7 +34,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 eredmenyek: [
                     "Szakértő tréner",
                     "Email:" + adat.email,
-                    "Telefon:" + adat.telszam
+                    "Telefon:" + adat.telszam,
+                    "Átlagos értékelés:" + atlag
                 ]
             };
             letrehozEdzoProfil("edzo", formataltAdat);
@@ -57,12 +59,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     //komment resz letrehozasa
     function renderKommentek() {
         listaKontener.innerHTML = "";
-        if (aktualisKommentek.length === 0) {
+        const lathatoKommentek = [];
+        for (let i = 0; i < aktualisKommentek.length; i++) {
+            const komment = aktualisKommentek[i];
+            if (komment.szoveg && komment.szoveg.trim() !== "") {
+                lathatoKommentek.push(komment);
+            }
+        }
+        if (lathatoKommentek.length === 0) {
             listaKontener.innerText = "Még nincsenek értékelések. Legyél te az első!";
             tobbBtn.classList.add("rejtett");
         }
         else {
-            aktualisKommentek.forEach(komment => {
+            lathatoKommentek.forEach(komment => {
                 const kartya = document.createElement("div");
                 kartya.className = "komment-kartya";
 
@@ -71,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const nevSpan = document.createElement("span");
                 nevSpan.className = "komment-neve";
-                nevSpan.textContent = "👤 " +komment.felhasznalo_nev;
+                nevSpan.textContent = "👤 " + komment.felhasznalo_nev;
 
                 const csillagokSpan = document.createElement("span");
                 csillagokSpan.className = "komment-csillagok";
@@ -113,14 +122,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
         const szovegInput = document.getElementById("uj-komment-szoveg").value.trim();
         const ertekelesInput = parseInt(document.getElementById("uj-komment-ertekeles").value);
-        if (!szovegInput) {
-            hibaDiv.textContent = "Írj szöveget!";
-        }
         try {
             const eredmeny = await postApi('/api/kommentek', {
                 szoveg: szovegInput,
                 ertekeles: ertekelesInput,
-                edzo_id: edzoId 
+                edzo_id: edzoId
             });
             document.getElementById("uj-komment-szoveg").value = "";
             urlapKontener.classList.add("rejtett");
