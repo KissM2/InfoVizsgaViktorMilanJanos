@@ -1,5 +1,6 @@
 import { getKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 
 const menuLinkek = [
     { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
@@ -15,6 +16,7 @@ document.addEventListener("DOMContentLoaded",async function () {
     alapTablaGeneralas();
     }
     navbarGeneralas(menuLinkek);
+    footerGeneralas();
 });
 
 function vezerloSavKeszites() {

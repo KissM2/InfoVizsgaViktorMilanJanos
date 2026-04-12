@@ -1,5 +1,6 @@
 import { getKeres } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 
 const menuLinkek = [
     { nev: "Edzéstervek", url: "../html/edzesterv.html" },
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         eredetiEdzoLista = adatok.results;
         renderGrid(gridContainer, eredetiEdzoLista);
     }
+    footerGeneralas();
     navbarGeneralas(menuLinkek);
     rendezesBtn.addEventListener("click", () => {
         if (novekvo) {
