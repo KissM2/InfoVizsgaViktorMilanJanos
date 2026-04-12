@@ -7,6 +7,7 @@
     <title>FitLife-Edző</title>
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../css/komment.css">
     <link rel="stylesheet" href="../css/edzo.css">
     <link rel="stylesheet" href="../css/map.css">
     <link rel="stylesheet" href="../css/navbar.css">
@@ -28,6 +29,32 @@
         <div id="idopontok"></div>
     </div>
 
+    <div class="komment-szekcio">
+        <div class="komment-fejlec">
+            <h3>Vélemények és Értékelések</h3>
+            <button id="uj-komment-nyito-btn" class="komment-btn gomb-elsodleges">Értékelés írása</button>
+        </div>
+
+        <div id="komment-urlap-tarolo" class="komment-urlap-tarolo rejtett">
+            <h4>Új értékelés</h4>
+            <div class="urlap-sor">
+                <textarea id="uj-komment-szoveg" rows="4" placeholder="Oszd meg a tapasztalataidat az edzővel kapcsolatban..."></textarea>
+            </div>
+            <div class="urlap-sor ertekeles-sor">
+                <label for="uj-komment-ertekeles">Értékelés (1-5):</label>
+                <input type="number" id="uj-komment-ertekeles" min="1" max="5" value="5">
+                <button id="komment-kuldes-btn" class="komment-btn gomb-masodlagos">Küldés</button>
+            </div>
+            <div id="komment-hiba-uzenet" class="hiba-uzenet"></div>
+        </div>
+
+        <div id="komment-lista" class="komment-lista">
+        </div>
+
+        <div class="tobb-komment-tarolo">
+            <button id="tobb-komment-btn" class="komment-btn gomb-szellemkep rejtett">Összes megtekintése</button>
+        </div>
+    </div>
 </body>
 
 </html>
