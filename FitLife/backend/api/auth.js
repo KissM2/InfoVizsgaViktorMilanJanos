@@ -5,6 +5,7 @@ const fs = require('fs/promises');
 const bcrypt = require('bcrypt'); //?npm install bcrypt
 const validator = require('../middleware/Validalas.js');
 const checkIfEmailUsed = require('../middleware/checkIfEmailUsed.js');
+const requireLogin = require('../middleware/requireLogin.js')
 
 //!Multer
 const multer = require('multer'); //?npm install multer
@@ -136,5 +137,22 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
         });
     }
 });
+
+//?GET /api/getLoginStatus
+router.get('/getLoginStatus', requireLogin.loginCheck, async (request, response) =>
+ {
+    try {
+        response.status(200).json({
+            message: 'Belépési státusz sikeresen lekérve',
+            id: request.session.user.id,
+            role: request.session.user.role,
+        })
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).json({
+            message: 'Ez a végpont nem működik: '
+        });
+    }
+ });
 
 module.exports = router;
