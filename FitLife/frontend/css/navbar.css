@@ -1,100 +1,94 @@
-.alapNav {
-    background-color: #1a1d20;
-    padding: 0 20px;
-    height: 80px;
-    border-bottom: 1px solid #333;
-    display: flex;
-    align-items: center;
-    position: sticky;
+#navbar {
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    width: 100%;
+    padding: 20px 0;
+    background: transparent;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
+}
+#navbar.scrolled {
+    background: rgba(22, 22, 22, 0.95) !important;
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.menupontok {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: auto;
+    min-width: 200px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
+    z-index: 1100;
 }
 
-.nav {
+.menupontok ul li a:hover {
+    background-color: #28a745;
+    color: white !important;
+}
+
+@media (max-width: 576px) {
+    .navunk { font-size: 22px; padding: 0 15px; }
+    .logo { width: 35px; height: 35px; line-height: 28px; }
+    .menupontok {
+        width: 180px; 
+    }
+}
+.navunk {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: 1300px;
-    margin: 0 auto;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.home {
+    color: #FFFF;
+    text-decoration: none;
+}
+
+.home:hover {
+    .logo {
+        border: 3.5px solid #6a6a6a;
+    }
+    color: #6a6a6a;
+    cursor: pointer;
 }
 
 .logo {
-    color: white;
-    font-weight: bold;
-    font-size: 25px;
+    margin: 3.5px 2px 0 0;
     width: 40px;
     height: 40px;
-    border: 3.5px solid white;
+    border: 3.5px solid rgb(255, 255, 255);
     border-radius: 50%;
     text-align: center;
     line-height: 30px;
-    margin-right: 5px;
 }
 
-.logoSzoveg {
-    color: white;
+.gomb {
+    background-color: #161616;
+    border: 3px solid #6a6a6a;
+    border-radius: 10px;
+    margin-left: 5px;
     font-weight: bold;
-    font-size: 1.2rem;
 }
 
-.menu-container {
-    position: relative;
-}
-
-.menu {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    user-select: none;
-}
-.doboz {
-    position: absolute;
-    right: 0;
-    top: 60px;
-    background-color: #1a1d20;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    z-index: 1100;
-    width: auto; 
-    min-width: fit-content;
-}
-.linkek {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-    margin: 0;
-}
-.linkek a {
-    color: white;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 150px;
-    height: 40px;
-    padding: 2px; 
-    transition: background 0.2s;
-    border-bottom: none;
-}
-
-.linkek a:hover {
-    background-color: green;
+.gomb:hover {
+    background-color: #6a6a6a;
     color: black;
+    border: 3px solid #ffffff;
+    height: 48px;
 }
 
-.linkek a:last-child {
-    border-bottom: none;
+.font-size-medium{
+    font-size: medium;
 }
-.collapse.show {
-    display: block !important;
+
+.bg-hover-transp:hover{
+    background-color: transparent !important;
 }
-.home:hover .logo, .home:hover .logoSzoveg {
-    color: #6a6a6a;
-    border-color: #6a6a6a;
+
+.mt-120px{
+    margin-top: 120px !important;
 }

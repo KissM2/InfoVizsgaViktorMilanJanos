@@ -1,9 +1,18 @@
 import { postKeres } from '../js/kozosFetch.js';
+import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
 
-document.addEventListener("DOMContentLoaded", async function () {
+const menuLinkek = [
+    { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
+    { nev: "Receptek", url: "../html/etrendek.html" },
+    { nev: "Edzéstervek", url: "../html/edzesterv.html" }
+];
+
+document.addEventListener('DOMContentLoaded', function(){
+    navbarGeneralas(menuLinkek);
     footerGeneralas()
 });
+
 document.getElementById('trainerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (document.getElementById('password').value !== document.getElementById('confirm').value) {
