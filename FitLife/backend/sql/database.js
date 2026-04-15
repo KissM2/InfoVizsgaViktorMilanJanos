@@ -228,6 +228,15 @@ async function getCalendarData(edzoId) {
 
     return { heti, kulonleges, foglalas };
 }
+async function updateUserProfile(email, felh, telsz, userId) {
+    const sql = `
+        UPDATE users
+        SET login.email = ?, login.felh_nev = ?, login.telszam = ?
+        WHERE login.id= ? AND login.role = 'edzo';
+    `;
+
+    await db.execute(sql, [email, felh, telsz, userId]);
+}
 //!Export
 module.exports = {
     updateEdzo,
