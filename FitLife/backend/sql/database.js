@@ -104,6 +104,24 @@ async function selectAllTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+
+async function selectTrainersByDist(lng, lat) {
+    const query = `
+        SELECT
+            login.id,
+            login.felh_nev AS nev,
+            edzo.kep,
+            edzo.leiras AS kompetenciak,
+            edzo.edzoterem_cim,
+            edzo.idezet
+        FROM edzo
+        INNER JOIN login ON edzo.edzo_id = login.id
+        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
+    
+    const [rows] = await pool.execute(query, [lng, lat]);
+    return rows;
+}
+
 async function selectKommentekByEdzoId(edzo_id) {
     const query = `
         SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, k.edzo_id, l.felh_nev AS felhasznalo_nev 
@@ -233,5 +251,6 @@ module.exports = {
     checkHetiBeosztasExists,
     checkKulonlegesAlkalomExists,
     insertKulonlegesAlkalom,
-    getCalendarData
+    getCalendarData,
+    selectTrainersByDist
 };
