@@ -134,12 +134,8 @@ export async function navbarGeneralas(linkek) {
     menuLista.appendChild(regisztralasTeloElem);
     menuLista.appendChild(profilTeloElem);
 
-    //még nincs meg az api végpont
-    //const bejelentkezve = await getKeres('/api/bejelentkezve');
-    const bejelentkezve = {
-        role: "teszt",
-        id: "teszt"
-    };
+    const bejelentkezve = await getKeres('api/getLoginStatus');
+    console.log(bejelentkezve);
     if(bejelentkezve && bejelentkezve.role && bejelentkezve.id){
         bejelentkezesBtn.style.display = "none";
         regisztralasBtn.style.display = "none";

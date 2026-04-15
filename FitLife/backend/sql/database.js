@@ -23,7 +23,7 @@ async function insertLogin(felh_nev, jelszo, email, telszam, nem, role, szul_dat
 }
 
 async function login(email) {
-    const query = 'SELECT login.jelszo, login.id FROM login WHERE email = ?;';
+    const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ?;';
     const [rows] = await pool.execute(query, [email]);
     return rows;
 }
