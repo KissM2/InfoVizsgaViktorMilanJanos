@@ -14,7 +14,7 @@ function getMondayInTwoWeeks() {
     const day = d.getDay();
     const mondayOffset = (day === 0 ? -6 : 1 - day);
 
-    d.setDate(d.getDate() + mondayOffset + 14);
+    d.setDate(d.getDate() + mondayOffset + 28);
 
     // csak dátum kell!
     const year = d.getFullYear();
@@ -39,9 +39,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
         const exists = await database.checkHetiBeosztasExists(edzoId, mettolFormatted);
 
         if (exists) {
-            return res.status(400).json({
-                message: "Erre a hétre már létezik beosztás"
-            });
+            await database.deleteHetiBeosztas(edzoId, mettolFormatted);
         }
 
         const toMinutes = (t) => {
@@ -69,11 +67,11 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
             for (let j = 1; j < sorted.length; j++) {
                 const current = toMinutes(sorted[j]);
 
-                if (current !== prev + 30) {
+                if (current !== prev) {
                     await database.insertHetiBeosztasSingle(
                         i,
                         toTime(start),
-                        toTime(prev + 30), // 🔥 FIX: blokk vége
+                        toTime(prev), // 🔥 FIX: blokk vége
                         mettolFormatted,
                         edzoId
                     );
@@ -87,7 +85,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
             await database.insertHetiBeosztasSingle(
                 i,
                 toTime(start),
-                toTime(prev + 30), // 🔥 FIX
+                toTime(prev), // 🔥 FIX
                 mettolFormatted,
                 edzoId
             );

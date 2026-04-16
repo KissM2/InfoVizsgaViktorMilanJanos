@@ -7,8 +7,8 @@ let mentetttorolt = [];
 document.addEventListener("DOMContentLoaded", function () {
     genBeo();
     general();
-    document.getElementById("beoS").addEventListener("click",async function() {await postApi("/api/insertHB",mentettbeo)});
-    document.getElementById("torS").addEventListener("click",async function() {await postApi("/api/insertKA",mentettbeo)});
+    document.getElementById("beoS").addEventListener("click",async function() {await postApi("/api/insertHB",mentettbeo);location.reload();});
+    document.getElementById("torS").addEventListener("click",async function() {await postApi("/api/insertKA",mentettbeo);location.reload();});
 });
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 

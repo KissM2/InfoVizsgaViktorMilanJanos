@@ -50,7 +50,7 @@ function toMinutes(t) {
 // idő tartomány
 function isInRange(time, start, end) {
     const t = toMinutes(time);
-    return t >= toMinutes(start) && t < toMinutes(end);
+    return t >= toMinutes(start) && t <= toMinutes(end);
 }
 
 // helyi dátum → YYYY-MM-DD

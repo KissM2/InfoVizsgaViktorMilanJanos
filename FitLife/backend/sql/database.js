@@ -218,8 +218,12 @@ async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
     return result;
 }
 
-//update
-
+//delete
+async function deleteHetiBeosztas(edzoId, mettol) {
+    const query="DELETE FROM heti_beosztas WHERE edzo_id = ? AND mettol_ervenyes = ?";
+    const [rows] = await pool.execute(query, [edzoId, mettol]);
+    return rows.length > 0;
+}
 
 //select
 async function checkHetiBeosztasExists(edzoId, mettol) {
@@ -298,15 +302,15 @@ async function getCalendarData(edzoId) {
     return { heti, kulonleges, foglalas };
 }
 //update users?
-async function updateUserProfile(email, felh, telsz, userId) {
-    const sql = `
-        UPDATE users
-        SET login.email = ?, login.felh_nev = ?, login.telszam = ?
-        WHERE login.id= ? AND login.role = 'edzo';
-    `;
+// async function updateUserProfile(email, felh, telsz, userId) {
+//     const query = `
+//         UPDATE users
+//         SET login.email = ?, login.felh_nev = ?, login.telszam = ?
+//         WHERE login.id= ? AND login.role = 'edzo';
+//     `;
 
-    await db.execute(sql, [email, felh, telsz, userId]);
-}
+//     await pool.execute(query, [email, felh, telsz, userId]);
+// }
 //!Export
 module.exports = {
     updateEdzo,
@@ -331,5 +335,6 @@ module.exports = {
     checkKulonlegesAlkalomExists,
     insertKulonlegesAlkalom,
     getCalendarData,
-    selectTrainersByDist
+    selectTrainersByDist,
+    deleteHetiBeosztas
 };
