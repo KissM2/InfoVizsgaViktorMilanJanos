@@ -79,7 +79,8 @@ gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
 nev VARCHAR(150),
 leiras TEXT,
 kor INT,
-ismetles INT
+ismetles INT,
+tipus ENUM('sulyzós', 'saját_testsúlyos', 'kardió') NOT NULL
 );
 
 -- KELLEK
