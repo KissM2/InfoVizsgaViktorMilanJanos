@@ -20,14 +20,6 @@ role ENUM('felhasznalo','edzo','admin') DEFAULT 'felhasznalo',
 szul_datum DATE
 );
 
--- FELHASZNÁLÓ EDZÉSI NAPJAI
-CREATE TABLE IF NOT EXISTS felhasznalo_edzesi_napok (
-    felhasznalo_id INT NOT NULL,
-    nap_sorszam INT NOT NULL,
-    PRIMARY KEY (felhasznalo_id, nap_sorszam),
-    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
-);
-
 -- CEL_ALAK
 CREATE TABLE IF NOT EXISTS cel_alak (
 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -52,6 +44,14 @@ EKM_id INT NOT NULL, -- edzesen kivuli mozgas
 FOREIGN KEY (felhasznalo_id) REFERENCES login(id),
 FOREIGN KEY (cel_alak_id) REFERENCES cel_alak(id),
 FOREIGN KEY (EKM_id) REFERENCES edzesen_kivuli_mozgas(id)
+);
+
+-- FELHASZNÁLÓ EDZÉSI NAPJAI
+CREATE TABLE IF NOT EXISTS felhasznalo_edzesi_napok (
+    felhasznalo_id INT NOT NULL,
+    nap_sorszam INT NOT NULL,
+    PRIMARY KEY (felhasznalo_id, nap_sorszam),
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
 -- EDZO
