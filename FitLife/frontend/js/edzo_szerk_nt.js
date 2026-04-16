@@ -1,6 +1,14 @@
+import { postApi } from "./kozosFetch";
+let aktualisEv = new Date().getFullYear();
+let aktualisHonap = new Date().getMonth() + 1;
+let kapottbeo = [];
+let mentettbeo = [[], [], [], [], [], [], []];
+let mentetttorolt = [];
 document.addEventListener("DOMContentLoaded", function () {
     genBeo();
     general();
+    document.getElementById("beoS").addEventListener("click",async function() {await postApi("/api/insertHB",mentettbeo)});
+    document.getElementById("torS").addEventListener("click",async function() {await postApi("/api/insertKA",mentettbeo)});
 });
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
@@ -9,11 +17,7 @@ const honapok = [
     "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 ];
 
-let aktualisEv = new Date().getFullYear();
-let aktualisHonap = new Date().getMonth() + 1;
-let kapottbeo = [];
-let mentettbeo = [[], [], [], [], [], [], []];
-let mentetttorolt = [];
+
 async function genBeo() {
     const host = document.getElementById('beo');
 
