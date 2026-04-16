@@ -58,7 +58,31 @@ async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, c
 }
 
 //select
+async function getUserCel(userId) {
+    const query = `
+        SELECT felhasznalo.edzesre_forditott_ido, cel_alak.nev AS cel_nev 
+        FROM felhasznalo
+        JOIN cel_alak ON felhasznalo.cel_alak_id = cel_alak.id
+        WHERE felhasznalo.felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [userId]);
+    return rows[0];
+}
+//felhasznalo_edzesi_napok
 
+//insert
+
+//update
+
+//select
+async function getUserEdzesNapok(userId) {
+    const query = `SELECT nap_sorszam FROM felhasznalo_edzesi_napok WHERE felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [userId]);
+    let napok = [];
+    for(let i = 0; i < rows.length; i++) {
+        napok.push(rows[i].nap_sorszam);
+    }
+    return napok;
+}
 
 //edzo tábla
 
@@ -331,5 +355,7 @@ module.exports = {
     checkKulonlegesAlkalomExists,
     insertKulonlegesAlkalom,
     getCalendarData,
-    selectTrainersByDist
+    selectTrainersByDist,
+    getUserCel,
+    getUserEdzesNapok
 };

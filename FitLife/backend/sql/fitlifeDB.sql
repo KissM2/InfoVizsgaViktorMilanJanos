@@ -221,11 +221,10 @@ CREATE TABLE IF NOT EXISTS gyakorlat_izomcsoport (
 
 -- 1. Cél alakok
 INSERT INTO cel_alak (id, nev) VALUES 
-(1, 'Izmosodás'), 
+(1, 'Izomépítés'), 
 (2, 'Fogyás'), 
-(3, 'Szálkásítás'), 
-(4, 'Erőemelés'), 
-(5, 'Állóképesség javítása');
+(3, 'Erőemelés'), 
+(4, 'Állóképesség');
 
 -- 2. Edzésen kívüli mozgás (EKM)
 INSERT INTO edzesen_kivuli_mozgas (id, intenzitas) VALUES 
