@@ -24,7 +24,7 @@ szul_datum DATE
 CREATE TABLE IF NOT EXISTS felhasznalo_edzesi_napok (
     felhasznalo_id INT NOT NULL,
     nap_sorszam INT NOT NULL,
-    PRIMARY KEY (felhasznalo_id, nap),
+    PRIMARY KEY (felhasznalo_id, nap_sorszam),
     FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
