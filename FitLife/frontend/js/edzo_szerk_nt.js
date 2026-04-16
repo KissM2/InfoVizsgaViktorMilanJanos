@@ -1,4 +1,4 @@
-import { postApi } from "./kozosFetch";
+import { postApi } from "./kozosFetch.js";
 let aktualisEv = new Date().getFullYear();
 let aktualisHonap = new Date().getMonth() + 1;
 let kapottbeo = [];

@@ -133,3 +133,15 @@ button:hover {
     flex-direction: column;
     justify-content: center;
 }
+.elerheto{
+    background: linear-gradient(135deg, #007bff, #00bfff);
+    color: white;
+}
+.kulonleges{
+background-color: #cc0000 ;
+    color: white;
+}
+.foglalt{
+    background-color: #ec6d04 ;
+    color: white;
+}

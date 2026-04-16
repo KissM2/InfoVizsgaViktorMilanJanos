@@ -1,4 +1,4 @@
-import { postKeres } from "./kozosFetch.js";
+import { getKeres } from "./kozosFetch.js";
 
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
@@ -10,47 +10,58 @@ let calendarData = {
     foglalas: []
 };
 
-/* =========================
-   API BETÖLTÉS
-========================= */
-async function loadCalendar() {
-    const formData = new FormData();
-
-    const res = await postKeres("/getCalendar", formData);
-
-    if (res && res.result) {
-        calendarData = res.result;
-    }
-
-    generalWeek();
-}
-
 document.addEventListener("DOMContentLoaded", function () {
     loadCalendar();
 });
 
 /* =========================
+   API BETÖLTÉS
+========================= */
+async function loadCalendar() {
+    const res = await getKeres("/api/getCalendar");
+
+    if (res?.result) {
+        calendarData = res.result;
+    } else if (res) {
+        calendarData = res;
+    }
+
+    // 🔥 weekday string → number
+    calendarData.heti = calendarData.heti.map(h => ({
+        ...h,
+        weekday: Number(h.weekday)
+    }));
+
+    console.log("Calendar data:", calendarData);
+
+    generalWeek();
+}
+
+/* =========================
    SEGÉDFÜGGVÉNYEK
 ========================= */
 
-// "HH:MM" -> perc
+// idő → perc (kezeli: HH:MM és HH:MM:SS)
 function toMinutes(t) {
-    const [h, m] = t.split(":").map(Number);
+    const [h = 0, m = 0] = t.trim().split(":").map(Number);
     return h * 60 + m;
 }
 
-// idő benne van-e egy tartományban
+// idő tartomány
 function isInRange(time, start, end) {
     const t = toMinutes(time);
-    return t >= toMinutes(start) && t <= toMinutes(end);
+    return t >= toMinutes(start) && t < toMinutes(end);
 }
 
-// Date -> YYYY-MM-DD
+// helyi dátum → YYYY-MM-DD
 function formatDateISO(d) {
-    return d.toISOString().split("T")[0];
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
-// Date -> szép formátum
+// szép dátum
 function formatDate(d) {
     return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
 }
@@ -63,6 +74,19 @@ function getWeekStart(date) {
     return new Date(d.setDate(diff));
 }
 
+// dátum egységesítés
+function normalizeDate(d) {
+    return d.replaceAll(".", "-");
+}
+
+// 🔥 mettol_ervenyes check
+function isValidFrom(dateObj, mettol) {
+    if (!mettol) return true;
+
+    const from = new Date(mettol);
+    return dateObj >= from;
+}
+
 /* =========================
    CELLA ÁLLAPOT
 ========================= */
@@ -70,21 +94,25 @@ function getWeekStart(date) {
 function getCellStatus(dateObj, ido, weekdayIndex) {
     const datum = formatDateISO(dateObj);
 
-    // 1. foglalás (legerősebb)
+    // 1. foglalás
     const foglalt = calendarData.foglalas.find(f =>
-        f.datum === datum && isInRange(ido, f.start, f.end)
+        normalizeDate(f.datum) === datum &&
+        isInRange(ido, f.start, f.end)
     );
     if (foglalt) return "foglalt";
 
-    // 2. különleges alkalom
+    // 2. különleges
     const kulonleges = calendarData.kulonleges.find(k =>
-        k.datum === datum && isInRange(ido, k.start, k.end)
+        normalizeDate(k.datum) === datum &&
+        isInRange(ido, k.start, k.end)
     );
     if (kulonleges) return "kulonleges";
 
-    // 3. heti beosztás
+    // 3. heti
     const heti = calendarData.heti.find(h =>
-        h.weekday === weekdayIndex && isInRange(ido, h.start, h.end)
+        h.weekday === weekdayIndex &&
+        isInRange(ido, h.start, h.end) &&
+        isValidFrom(dateObj, h.mettol_ervenyes)
     );
     if (heti) return "elerheto";
 
@@ -143,12 +171,11 @@ function generalWeek() {
     /* ===== IDŐK ===== */
     for (let perc = 0; perc < 24 * 60; perc += 30) {
 
+        let ora = Math.floor(perc / 60);
+        let p = perc % 60;
+        let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
+
         for (let i = 0; i < 7; i++) {
-
-            let ora = Math.floor(perc / 60);
-            let p = perc % 60;
-
-            let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
 
             let d = new Date(weekStart);
             d.setDate(weekStart.getDate() + i);
@@ -161,7 +188,6 @@ function generalWeek() {
             if (status === "foglalt") cell.classList.add("foglalt");
             else if (status === "kulonleges") cell.classList.add("kulonleges");
             else if (status === "elerheto") cell.classList.add("elerheto");
-            else cell.classList.add("nincs");
 
             cell.innerText = ido;
 

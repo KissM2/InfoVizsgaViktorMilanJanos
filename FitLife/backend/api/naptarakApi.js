@@ -8,17 +8,20 @@ const database = require('../sql/database.js');
 ========================= */
 
 function getMondayInTwoWeeks() {
-    const date = new Date();
+    const d = new Date();
 
-    date.setDate(date.getDate() + 14);
+    // aktuális hét hétfője
+    const day = d.getDay();
+    const mondayOffset = (day === 0 ? -6 : 1 - day);
 
-    const day = date.getDay();
-    const diff = (1 - day + 7) % 7;
+    d.setDate(d.getDate() + mondayOffset + 14);
 
-    date.setDate(date.getDate() + diff);
-    date.setHours(0, 0, 0, 0);
+    // csak dátum kell!
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const dayNum = String(d.getDate()).padStart(2, "0");
 
-    return date;
+    return `${year}-${month}-${dayNum}`; // 🔥 STRING!
 }
 
 /* =========================
@@ -30,8 +33,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
         const edzoId = req.session.user.id;
         const schedule = req.body;
 
-        const mettol = getMondayInTwoWeeks();
-        const mettolFormatted = mettol.toISOString().split("T")[0];
+        const mettolFormatted = getMondayInTwoWeeks(); // 🔥 már string!
 
         // duplikáció ellenőrzés
         const exists = await database.checkHetiBeosztasExists(edzoId, mettolFormatted);
@@ -43,7 +45,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
         }
 
         const toMinutes = (t) => {
-            const [h, m] = t.split(":").map(Number);
+            const [h = 0, m = 0] = t.split(":").map(Number);
             return h * 60 + m;
         };
 
@@ -71,7 +73,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
                     await database.insertHetiBeosztasSingle(
                         i,
                         toTime(start),
-                        toTime(prev),
+                        toTime(prev + 30), // 🔥 FIX: blokk vége
                         mettolFormatted,
                         edzoId
                     );
@@ -85,7 +87,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
             await database.insertHetiBeosztasSingle(
                 i,
                 toTime(start),
-                toTime(prev),
+                toTime(prev + 30), // 🔥 FIX
                 mettolFormatted,
                 edzoId
             );
@@ -120,7 +122,7 @@ router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
         const data = req.body;
 
         const toMinutes = (t) => {
-            const [h, m] = t.split(":").map(Number);
+            const [h = 0, m = 0] = t.split(":").map(Number);
             return h * 60 + m;
         };
 
@@ -130,12 +132,17 @@ router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
             return `${h}:${m}`;
         };
 
+        // 🔥 dátum normalizálás (ha frontend nem tiszta)
+        const normalizeDate = (d) => d.replaceAll(".", "-");
+
         // csoportosítás dátum szerint
         const grouped = {};
 
         data.forEach(item => {
-            if (!grouped[item.datum]) grouped[item.datum] = [];
-            grouped[item.datum].push(item.ido);
+            const datum = normalizeDate(item.datum);
+
+            if (!grouped[datum]) grouped[datum] = [];
+            grouped[datum].push(item.ido);
         });
 
         // duplikáció ellenőrzés
@@ -167,7 +174,7 @@ router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
                     await database.insertKulonlegesAlkalom(
                         datum,
                         toTime(start),
-                        toTime(prev),
+                        toTime(prev + 30), // 🔥 FIX
                         "aktiv",
                         edzoId
                     );
@@ -181,7 +188,7 @@ router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
             await database.insertKulonlegesAlkalom(
                 datum,
                 toTime(start),
-                toTime(prev),
+                toTime(prev + 30), // 🔥 FIX
                 "aktiv",
                 edzoId
             );
@@ -210,12 +217,12 @@ router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
    NAPTÁR LEKÉRÉS
 ========================= */
 
-router.post('/getCalendar', loginCheck.loginCheck, async (req, res) => {
+router.get('/getCalendar', loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
-
+        console.log(edzoId)
         const data = await database.getCalendarData(edzoId);
-
+        console.log(data)
         res.status(200).json({
             message: "Adatok lekérve",
             result: data
