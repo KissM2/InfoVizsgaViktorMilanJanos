@@ -54,9 +54,11 @@ router.get('/traineradat', (request, response) => {
 router.get('/trainersedit', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/trainers-edit.html'));
 });
-
 router.get('/esznt', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/edzo_szerk_nt.html'));
+});
+router.get('/userProfil', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/user_profil.html'));
 });
 //!API endpoints
 app.use('/', router);

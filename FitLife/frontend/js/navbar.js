@@ -145,10 +145,8 @@ export async function navbarGeneralas(linkek) {
         profilLink.style.display = "block";
         profilTeloElem.style.display = "block";
         if(bejelentkezve.role == "felhasználó"){    
-            //még nincs profil oldala a felhasználónak és az edzőnek
-
-            //profilTeloLink.href = "/user_profil?id=" + bejelentkezve.id;
-            //profilLink.href = "/user_profil?id=" + bejelentkezve.id;
+            profilTeloLink.href = "/userProfil?id=" + bejelentkezve.id;
+            profilLink.href = "/userProfil?id=" + bejelentkezve.id;
         }else{
             if(bejelentkezve.role == "edző"){
                 //még nincs profil oldala a felhasználónak és az edzőnek
