@@ -9,12 +9,6 @@ const pontozasSzabalyok = {
     'Állóképesség': { 'kardió': 15, 'saját_testsúlyos': 10, 'sulyzós': -5 },
     'Erőemelés': { 'sulyzós': 20, 'saját_testsúlyos': 0, 'kardió': -15 }
 };
-// izomcsoport rotacio(push, pull, legs) ha tobb edzés van mint 3 akkor ujra kezdi a rotaciot
-const izomSorozat = [
-    ['Mell', 'Váll', 'Tricepsz'],
-    ['Hát', 'Bicepsz'],
-    ['Láb', 'Has']
-];
 
 router.get('/gyakorlatok', async (request, response) => {
     try {
@@ -45,6 +39,23 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
         if (!szabalyok) {
             szabalyok = { 'sulyzós': 0, 'saját_testsúlyos': 0, 'kardió': 0 };
         }
+        let izomSorozat = [];
+        if (edzesiNapok.length === 1) {
+            izomSorozat = [ ['Mell', 'Hát', 'Váll', 'Bicepsz', 'Tricepsz', 'Láb', 'Has'] ];
+        } 
+        else if (edzesiNapok.length === 2) {
+            izomSorozat = [
+                ['Mell', 'Hát', 'Váll', 'Bicepsz', 'Tricepsz'],
+                ['Láb', 'Has']
+            ];
+        } 
+        else {
+            izomSorozat = [
+                ['Mell', 'Váll', 'Tricepsz'],
+                ['Hát', 'Bicepsz'],
+                ['Láb', 'Has']
+            ];
+        }
         let hetiTerv = {};
         for (let d = 0; d < edzesiNapok.length; d++) {
             let aktualisNap = edzesiNapok[d];
@@ -65,7 +76,7 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
                         if (vegsoPont > 0) {
                             napiAjanlas.push({
                                 gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
-                                nev: aktualisGyakorlat.nev,
+                                nev: aktualisGyakorlat.gyakorlat_nev,
                                 kor: aktualisGyakorlat.kor,
                                 ismetles: aktualisGyakorlat.ismetles,
                                 tipus: aktualisGyakorlat.tipus,
