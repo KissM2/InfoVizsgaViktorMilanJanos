@@ -9,6 +9,12 @@ const pontozasSzabalyok = {
     'Állóképesség': { 'kardió': 15, 'saját_testsúlyos': 10, 'sulyzós': -5 },
     'Erőemelés': { 'sulyzós': 20, 'saját_testsúlyos': 0, 'kardió': -15 }
 };
+// izomcsoport rotacio(push, pull, legs) ha tobb edzés van mint 3 akkor ujra kezdi a rotaciot
+const izomSorozat = [
+    ['Mell', 'Váll', 'Tricepsz'],
+    ['Hát', 'Bicepsz'],
+    ['Láb', 'Has']
+];
 
 router.get('/gyakorlatok', async (request, response) => {
     try {
@@ -42,25 +48,31 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
         let hetiTerv = {};
         for (let d = 0; d < edzesiNapok.length; d++) {
             let aktualisNap = edzesiNapok[d];
+            let napiIzmok = izomSorozat[d % izomSorozat.length];
             let napiAjanlas = [];
 
             for (let i = 0; i < gyakorlatok.length; i++) {
                 let aktualisGyakorlat = gyakorlatok[i];
-                let alapPont = szabalyok[aktualisGyakorlat.tipus];
+                let aznapiIzomE = napiIzmok.includes(aktualisGyakorlat.izomcsoport_nev);
+                let kardioE = aktualisGyakorlat.tipus === 'kardió';
 
-                if (alapPont !== undefined) {
-                    let randomFaktor = Math.floor(Math.random() * 4);
-                    let vegsoPont = alapPont + randomFaktor;
+                if (aznapiIzomE || kardioE) {
+                    let alapPont = szabalyok[aktualisGyakorlat.tipus];
+                    if (alapPont !== undefined) {
+                        let randomFaktor = Math.floor(Math.random() * 4);
+                        let vegsoPont = alapPont + randomFaktor;
 
-                    if (vegsoPont > 0) {
-                        napiAjanlas.push({
-                            gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
-                            nev: aktualisGyakorlat.nev,
-                            kor: aktualisGyakorlat.kor,
-                            ismetles: aktualisGyakorlat.ismetles,
-                            tipus: aktualisGyakorlat.tipus,
-                            pontszam: vegsoPont
-                        });
+                        if (vegsoPont > 0) {
+                            napiAjanlas.push({
+                                gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
+                                nev: aktualisGyakorlat.nev,
+                                kor: aktualisGyakorlat.kor,
+                                ismetles: aktualisGyakorlat.ismetles,
+                                tipus: aktualisGyakorlat.tipus,
+                                izomcsoport_nev: aktualisGyakorlat.izomcsoport_nev,
+                                pontszam: vegsoPont
+                            });
+                        }
                     }
                 }
             }
