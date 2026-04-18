@@ -32,8 +32,6 @@ async function loadCalendar() {
         weekday: Number(h.weekday)
     }));
 
-    console.log("Calendar data:", calendarData);
-
     generalWeek();
 }
 
@@ -74,12 +72,9 @@ function getWeekStart(date) {
     return new Date(d.setDate(diff));
 }
 
-// dátum egységesítés
-function normalizeDate(d) {
-    return d.replaceAll(".", "-");
-}
 
-// 🔥 mettol_ervenyes check
+
+//mettol_ervenyes check
 function isValidFrom(dateObj, mettol) {
     if (!mettol) return true;
 
@@ -93,20 +88,22 @@ function isValidFrom(dateObj, mettol) {
 
 function getCellStatus(dateObj, ido, weekdayIndex) {
     const datum = formatDateISO(dateObj);
-
+    let aktStatusz = "nincs";
     // 1. foglalás
     const foglalt = calendarData.foglalas.find(f =>
-        normalizeDate(f.datum) === datum &&
+        f.statusz === "aktiv" &&
+        f.datum === datum &&
         isInRange(ido, f.start, f.end)
     );
-    if (foglalt) return "foglalt";
+
 
     // 2. különleges
     const kulonleges = calendarData.kulonleges.find(k =>
-        normalizeDate(k.datum) === datum &&
+        k.statusz === "aktiv" && // 🔥 EZ HIÁNYZOTT
+        k.datum === datum &&
         isInRange(ido, k.start, k.end)
     );
-    if (kulonleges) return "kulonleges";
+
 
     // 3. heti
     const heti = calendarData.heti.find(h =>
@@ -114,9 +111,15 @@ function getCellStatus(dateObj, ido, weekdayIndex) {
         isInRange(ido, h.start, h.end) &&
         isValidFrom(dateObj, h.mettol_ervenyes)
     );
-    if (heti) return "elerheto";
+    if (foglalt) {
+        aktStatusz = "foglalt";
+    } else if (kulonleges) {
+        aktStatusz = "kulonleges";
+    } else if (heti) {
+        aktStatusz = "elerheto";
+    }
 
-    return "nincs";
+    return aktStatusz;
 }
 
 /* =========================

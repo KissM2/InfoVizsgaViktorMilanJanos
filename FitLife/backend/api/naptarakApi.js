@@ -7,51 +7,64 @@ const database = require('../sql/database.js');
    DÁTUM SEGÉD
 ========================= */
 
-function getMondayInTwoWeeks() {
+function getMondayInFourWeeks() {
     const d = new Date();
 
-    // aktuális hét hétfője
     const day = d.getDay();
     const mondayOffset = (day === 0 ? -6 : 1 - day);
 
     d.setDate(d.getDate() + mondayOffset + 28);
 
-    // csak dátum kell!
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const dayNum = String(d.getDate()).padStart(2, "0");
 
-    return `${year}-${month}-${dayNum}`; // 🔥 STRING!
+    return `${year}-${month}-${dayNum}`;
 }
 
 /* =========================
-   HETI BEOSZTÁS INSERT
+   SEGÉD IDŐ
 ========================= */
 
+const toMinutes = (t) => {
+    const [h = 0, m = 0] = t.split(":").map(Number);
+    return h * 60 + m;
+};
+
+const toTime = (mins) => {
+    const h = String(Math.floor(mins / 60)).padStart(2, "0");
+    const m = String(mins % 60).padStart(2, "0");
+    return `${h}:${m}`;
+};
+
+/* =========================
+   HETI BEOSZTÁS
+========================= */
+
+// GET
+router.get("/getHB", loginCheck.loginCheck, async (req, res) => {
+    try {
+        const edzoId = req.session.user.id;
+        const data = await database.getHetiBeosztas(edzoId);
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: "Hiba történt" });
+    }
+});
+
+// INSERT (slot összevonás JAVÍTVA)
 router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
         const schedule = req.body;
 
-        const mettolFormatted = getMondayInTwoWeeks(); // 🔥 már string!
+        const mettolFormatted = getMondayInFourWeeks();
 
-        // duplikáció ellenőrzés
         const exists = await database.checkHetiBeosztasExists(edzoId, mettolFormatted);
 
         if (exists) {
             await database.deleteHetiBeosztas(edzoId, mettolFormatted);
         }
-
-        const toMinutes = (t) => {
-            const [h = 0, m = 0] = t.split(":").map(Number);
-            return h * 60 + m;
-        };
-
-        const toTime = (mins) => {
-            const h = String(Math.floor(mins / 60)).padStart(2, "0");
-            const m = String(mins % 60).padStart(2, "0");
-            return `${h}:${m}`;
-        };
 
         let insertedCount = 0;
 
@@ -67,11 +80,12 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
             for (let j = 1; j < sorted.length; j++) {
                 const current = toMinutes(sorted[j]);
 
-                if (current !== prev) {
+                // 🔥 JAVÍTÁS: folytonosság check
+                if (current !== prev + 30) {
                     await database.insertHetiBeosztasSingle(
                         i,
                         toTime(start),
-                        toTime(prev), // 🔥 FIX: blokk vége
+                        toTime(prev),
                         mettolFormatted,
                         edzoId
                     );
@@ -82,10 +96,11 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
                 prev = current;
             }
 
+            // utolsó blokk
             await database.insertHetiBeosztasSingle(
                 i,
                 toTime(start),
-                toTime(prev), // 🔥 FIX
+                toTime(prev),
                 mettolFormatted,
                 edzoId
             );
@@ -111,119 +126,92 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
 });
 
 /* =========================
-   KÜLÖNLEGES ALKALOM INSERT
+   KÜLÖNLEGES ALKALOM
 ========================= */
 
-router.post('/insertKA', loginCheck.loginCheck, async (req, res) => {
+// GET
+router.get("/getKA", loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
-        const data = req.body;
+        const data = await database.getKulonlegesAlkalmak(edzoId);
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: "Hiba történt" });
+    }
+});
 
-        const toMinutes = (t) => {
-            const [h = 0, m = 0] = t.split(":").map(Number);
-            return h * 60 + m;
-        };
+// TOGGLE
+router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
+    try {
+        const edzoId = req.session.user.id;
+        const { datum, start, end } = req.body;
 
-        const toTime = (mins) => {
-            const h = String(Math.floor(mins / 60)).padStart(2, "0");
-            const m = String(mins % 60).padStart(2, "0");
-            return `${h}:${m}`;
-        };
+        const weekdayJs = new Date(datum).getDay();
+        const weekday = weekdayJs === 0 ? 6 : weekdayJs - 1;
 
-        // 🔥 dátum normalizálás (ha frontend nem tiszta)
-        const normalizeDate = (d) => d.replaceAll(".", "-");
-
-        // csoportosítás dátum szerint
-        const grouped = {};
-
-        data.forEach(item => {
-            const datum = normalizeDate(item.datum);
-
-            if (!grouped[datum]) grouped[datum] = [];
-            grouped[datum].push(item.ido);
-        });
-
-        // duplikáció ellenőrzés
-        for (const datum in grouped) {
-            const exists = await database.checkKulonlegesAlkalomExists(edzoId, datum);
-
-            if (exists) {
-                return res.status(400).json({
-                    message: `Erre a dátumra már létezik adat: ${datum}`
-                });
-            }
-        }
-
-        let insertedCount = 0;
-
-        for (const datum in grouped) {
-            const times = grouped[datum];
-            if (!times.length) continue;
-
-            const sorted = [...times].sort((a, b) => toMinutes(a) - toMinutes(b));
-
-            let start = toMinutes(sorted[0]);
-            let prev = start;
-
-            for (let i = 1; i < sorted.length; i++) {
-                const current = toMinutes(sorted[i]);
-
-                if (current !== prev + 30) {
-                    await database.insertKulonlegesAlkalom(
-                        datum,
-                        toTime(start),
-                        toTime(prev + 30), // 🔥 FIX
-                        "aktiv",
-                        edzoId
-                    );
-                    insertedCount++;
-                    start = current;
-                }
-
-                prev = current;
-            }
-
-            await database.insertKulonlegesAlkalom(
-                datum,
-                toTime(start),
-                toTime(prev + 30), // 🔥 FIX
-                "aktiv",
-                edzoId
-            );
-
-            insertedCount++;
-        }
-
-        if (insertedCount === 0) {
+        // VALIDÁCIÓ (csak beosztásban lehet)
+        const benneVan = await database.isInHetiBeosztas(
+            edzoId,
+            weekday,
+            start
+        );
+        if (!benneVan) {
             return res.status(400).json({
-                message: "Nincs érvényes adat"
+                message: "Ez az időpont nincs a beosztásban"
             });
         }
 
-        res.status(200).json({
-            message: "Különleges alkalmak mentve",
-            inserted: insertedCount
-        });
+        const existing = await database.getKAByExact(
+            edzoId,
+            datum,
+            start,
+            end
+        );
 
-    } catch (error) {
-        console.error(error.message);
+        if (existing) {
+            const newStatus =
+                existing.statusz === "aktiv" ? "inaktiv" : "aktiv";
+
+            await database.updateKAStatus(existing.ka_id, newStatus);
+
+            return res.json({ statusz: newStatus });
+        }
+
+        await database.insertKulonlegesAlkalom(
+            datum,
+            start,
+            end,
+            "aktiv",
+            edzoId
+        );
+
+        res.json({ statusz: "aktiv" });
+
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Hiba történt" });
     }
 });
 
 /* =========================
-   NAPTÁR LEKÉRÉS
+   NAPTÁR
 ========================= */
 
 router.get('/getCalendar', loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
-        console.log(edzoId)
-        const data = await database.getCalendarData(edzoId);
-        console.log(data)
+
+        const heti = await database.getHetiBeosztas(edzoId);
+        const kulonleges = await database.getKulonlegesAlkalmak(edzoId);
+        const foglalas = await database.getFoglalas(edzoId);
+
         res.status(200).json({
             message: "Adatok lekérve",
-            result: data
+            result: {
+                heti,
+                kulonleges,
+                foglalas
+            }
         });
 
     } catch (error) {

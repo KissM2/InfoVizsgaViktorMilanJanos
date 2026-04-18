@@ -163,7 +163,7 @@ foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
 datum DATE,
 start TIME,
 end TIME,
-statusz VARCHAR(50),
+statusz ENUM('aktiv', 'inaktiv') NOT NULL DEFAULT 'aktiv',
 edzo_id INT,
 felhasznalo_id INT,
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
@@ -173,7 +173,7 @@ FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
 beo_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday VARCHAR(20),
+weekday int,
 start TIME,
 end TIME,
 mettol_ervenyes DATE,
@@ -185,10 +185,9 @@ FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
 ka_id INT AUTO_INCREMENT PRIMARY KEY,
 datum DATE,
-weekday VARCHAR(20),
 start TIME,
 end TIME,
-statusz VARCHAR(50),
+statusz ENUM('aktiv', 'inaktiv') NOT NULL DEFAULT 'aktiv', 
 edzo_id INT,
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
