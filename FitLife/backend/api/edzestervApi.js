@@ -77,6 +77,7 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
                             napiAjanlas.push({
                                 gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
                                 nev: aktualisGyakorlat.gyakorlat_nev,
+                                leiras: aktualisGyakorlat.leiras,
                                 kor: aktualisGyakorlat.kor,
                                 ismetles: aktualisGyakorlat.ismetles,
                                 tipus: aktualisGyakorlat.tipus,

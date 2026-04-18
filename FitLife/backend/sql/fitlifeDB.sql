@@ -659,10 +659,14 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Zabpalacsinta áfonyával','Hozzávalók: zabpehely, tojás, áfonya. Elkészítés: turmixold össze és süsd ki.','reggeli',6,20,40); -- zab, tojás
 
 -- 8. izomcsoport tábla:
-INSERT INTO izomcsoport (nev) VALUES 
-('Mell'), ('Váll'), ('Tricepsz'), -- 1. Nap (Push)
-('Hát'), ('Bicepsz'), -- 2. Nap (Pull)
-('Láb'), ('Has'); -- 3. Nap (Legs)
+NSERT INTO izomcsoport (izom_id, nev) VALUES 
+(1, 'Mell'), 
+(2, 'Váll'), 
+(3, 'Tricepsz'), 
+(4, 'Hát'), 
+(5, 'Bicepsz'),             
+(6, 'Láb'), 
+(7, 'Has');
 
 -- 9. felhasznalo tábla:
 INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, napi_kaloria_bevitel, cel_alak_id, cel_testsuly, EKM_id) VALUES

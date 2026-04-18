@@ -134,7 +134,7 @@ export async function navbarGeneralas(linkek) {
     menuLista.appendChild(regisztralasTeloElem);
     menuLista.appendChild(profilTeloElem);
 
-    const bejelentkezve = await getKeres('api/getLoginStatus');
+    const bejelentkezve = await getKeres('/api/getLoginStatus');
     console.log(bejelentkezve);
     if(bejelentkezve && bejelentkezve.role && bejelentkezve.id){
         bejelentkezesBtn.style.display = "none";

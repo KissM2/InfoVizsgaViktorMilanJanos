@@ -7,13 +7,26 @@ const menuLinkek = [
     { nev: "Receptek", url: "../html/etrendek.html" }
 ];
 let gyakorlatok = [];
-document.addEventListener("DOMContentLoaded",async function () {
+let hetiTervAjanlas = {};
+let bejelentkezettUserId = null;
+
+document.addEventListener("DOMContentLoaded", async function () {
+    const loginStatus = await getKeres('/api/getLoginStatus');
+    if (loginStatus && loginStatus.id) {
+        bejelentkezettUserId = loginStatus.id;
+    }
+    else {
+        alert("Az edzéstervhez be kell jelentkezned!");
+    }
     const adatok = await getKeres('/api/gyakorlatok');
     if (adatok) {
         gyakorlatok = adatok;
-        console.log("Gyakorlatok betöltve:", gyakorlatok);
-    vezerloSavKeszites();
-    alapTablaGeneralas();
+        vezerloSavKeszites();
+        alapTablaGeneralas();
+    }
+    const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok?id=${bejelentkezettUserId}`);
+    if (generaltAdatok) {
+        hetiTervAjanlas = generaltAdatok;
     }
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -25,7 +38,7 @@ function vezerloSavKeszites() {
     sav.classList.add("vezerlo-sav");
     const ujHetBtn = document.createElement("button");
     ujHetBtn.textContent = "Új hét (Üres tábla)";
-    ujHetBtn.addEventListener("click", function() {alapTablaGeneralas(); });
+    ujHetBtn.addEventListener("click", function () { alapTablaGeneralas(); });
     sav.appendChild(ujHetBtn);
     teljes.appendChild(sav);
 }
@@ -70,8 +83,8 @@ function alapTablaGeneralas() {
     container.classList.add("tabla-container");
     const table = document.createElement("table");
     table.classList.add("tabla");
-    torolBtn.addEventListener("click", function() {hetiResz.remove();});
-    
+    torolBtn.addEventListener("click", function () { hetiResz.remove(); });
+
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
     const thUres = document.createElement("th");
@@ -88,10 +101,10 @@ function alapTablaGeneralas() {
         gombSav.classList.add("napi-gombok");
         const tBtn = document.createElement("button");
         tBtn.textContent = "Törlés";
-        tBtn.addEventListener("click", function() {napTorlese(i, table);});
+        tBtn.addEventListener("click", function () { napTorlese(i, table); });
         const uBtn = document.createElement("button");
         uBtn.textContent = "Új felvétel";
-        uBtn.addEventListener("click", function() {napiUjFelvetel(i, table);});
+        uBtn.addEventListener("click", function () { napiUjFelvetel(i, table); });
         gombSav.appendChild(tBtn);
         gombSav.appendChild(uBtn);
         th.appendChild(gombSav);
@@ -102,7 +115,7 @@ function alapTablaGeneralas() {
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
     ujSorHozzaadasa(table);
-    genBtn.addEventListener("click", function() {edzestervFeltoltes(table);});
+    genBtn.addEventListener("click", function () { edzestervFeltoltes(table); });
     container.appendChild(table);
     hetiResz.appendChild(container);
     teljes.appendChild(hetiResz);
@@ -112,25 +125,29 @@ function edzestervFeltoltes(szuloTabla) {
     for (let i = 0; i < cellak.length; i++) {
         cellak[i].innerHTML = "";
     }
-   for (let j = 0; j < 7; j++) {
-        for (let sorszam = 0; sorszam < 3; sorszam++) {
-            let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
+    for (const dbNap in hetiTervAjanlas) {
+        let napiGyakorlatok = hetiTervAjanlas[dbNap];
+        let frontendNap = parseInt(dbNap) - 1;
+        for (let sorszam = 0; sorszam < napiGyakorlatok.length; sorszam++) {
+            let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + frontendNap + "'][data-sorszam='" + sorszam + "']");
             if (!td) {
                 ujSorHozzaadasa(szuloTabla);
-                td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
+                td = szuloTabla.querySelector(".kaja-cella[data-nap='" + frontendNap + "'][data-sorszam='" + sorszam + "']");
             }
-            const rnd = gyakorlatok[Math.floor(Math.random() * gyakorlatok.length)];
-            td.appendChild(gyakorlatKartyaKeszites(rnd));
+            const aktGyakorlat = napiGyakorlatok[sorszam];
+            td.appendChild(gyakorlatKartyaKeszites(aktGyakorlat));
         }
     }
 }
 function napiUjFelvetel(napIndex, szuloTabla) {
     const cellak = szuloTabla.querySelectorAll(".kaja-cella[data-nap='" + napIndex + "']");
     let uresCella = null;
-    for (let i = 0; i < cellak.length; i++) {
+    let i = 0;
+    while (i < cellak.length && uresCella === null) {
         if (!cellak[i].firstChild) {
             uresCella = cellak[i];
         }
+        i++;
     }
     if (!uresCella) {
         ujSorHozzaadasa(szuloTabla);
@@ -181,11 +198,15 @@ function gyakorlatKartyaKeszites(gyakorlat) {
     const xBtn = document.createElement("button");
     xBtn.textContent = "X";
     xBtn.classList.add("torles-x");
-    xBtn.addEventListener("click", function() {doboz.remove();});
+    xBtn.addEventListener("click", function () { doboz.remove(); });
 
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
-    nev.textContent = gyakorlat.gyakorlat_nev;
+    nev.textContent = gyakorlat.nev;
+    
+    const leiras = document.createElement("div");
+    leiras.classList.add("gyakorlat-leiras");
+    leiras.textContent = gyakorlat.leiras;
 
     const badge = document.createElement("div");
     badge.classList.add("kcal-badge");
@@ -193,12 +214,13 @@ function gyakorlatKartyaKeszites(gyakorlat) {
 
     const info = document.createElement("div");
     info.classList.add("adatok");
-    info.textContent = gyakorlat.izomcsoport_nev || "Általános"
+    info.textContent = gyakorlat.izomcsoport_nev;
 
     doboz.appendChild(xBtn);
     doboz.appendChild(nev);
+    doboz.appendChild(leiras);
     doboz.appendChild(badge);
     doboz.appendChild(info);
-    
+
     return doboz;
 }

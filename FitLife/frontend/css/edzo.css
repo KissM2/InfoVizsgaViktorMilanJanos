@@ -431,3 +431,9 @@ button:hover {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+.gyakorlat-leiras {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
