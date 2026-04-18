@@ -10,40 +10,41 @@ USE fitlife;
 
 -- LOGIN
 CREATE TABLE IF NOT EXISTS login (
-id INT AUTO_INCREMENT PRIMARY KEY,
-felh_nev VARCHAR(100) NOT NULL UNIQUE,
-jelszo VARCHAR(255) NOT NULL,
-email VARCHAR(150) UNIQUE,
-telszam VARCHAR(30),
-nem VARCHAR(20),
-role ENUM('felhasznalo','edzo','admin') DEFAULT 'felhasznalo',
-szul_datum DATE
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    felh_nev VARCHAR(100) NOT NULL UNIQUE,
+    jelszo VARCHAR(255) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    telszam VARCHAR(30),
+    nem VARCHAR(20),
+    role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
+    szul_datum DATE
 );
 
 -- CEL_ALAK
 CREATE TABLE IF NOT EXISTS cel_alak (
-id INT PRIMARY KEY AUTO_INCREMENT,
-nev VARCHAR(100) NOT NULL
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nev VARCHAR(100) NOT NULL
 );
 
 -- EKM 
 CREATE TABLE IF NOT EXISTS edzesen_kivuli_mozgas (
-id INT PRIMARY KEY AUTO_INCREMENT,
-intenzitas VARCHAR(100) NOT NULL
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    intenzitas VARCHAR(100) NOT NULL
 );
+
 -- FELHASZNALO
 CREATE TABLE IF NOT EXISTS felhasznalo (
-felhasznalo_id INT PRIMARY KEY,
-testsuly FLOAT,
-magassag FLOAT,
-edzesre_forditott_ido INT,
-napi_kaloria_bevitel INT,
-cel_alak_id INT,
-cel_testsuly FLOAT,
-EKM_id INT NOT NULL, -- edzesen kivuli mozgas
-FOREIGN KEY (felhasznalo_id) REFERENCES login(id),
-FOREIGN KEY (cel_alak_id) REFERENCES cel_alak(id),
-FOREIGN KEY (EKM_id) REFERENCES edzesen_kivuli_mozgas(id)
+    felhasznalo_id INT PRIMARY KEY,
+    testsuly FLOAT NOT NULL,
+    magassag FLOAT NOT NULL,
+    edzesre_forditott_ido INT NOT NULL,
+    napi_kaloria_bevitel INT,
+    cel_alak_id INT NOT NULL,
+    cel_testsuly FLOAT,
+    EKM_id INT NOT NULL, 
+    FOREIGN KEY (felhasznalo_id) REFERENCES login(id),
+    FOREIGN KEY (cel_alak_id) REFERENCES cel_alak(id),
+    FOREIGN KEY (EKM_id) REFERENCES edzesen_kivuli_mozgas(id)
 );
 
 -- FELHASZNÁLÓ EDZÉSI NAPJAI
@@ -56,150 +57,150 @@ CREATE TABLE IF NOT EXISTS felhasznalo_edzesi_napok (
 
 -- EDZO
 CREATE TABLE IF NOT EXISTS edzo (
-edzo_id INT PRIMARY KEY,
-edzoterem_cim POINT,
-kep TEXT,
-idezet TEXT,
-leiras TEXT,
-kompetenciak TEXT,
-FOREIGN KEY (edzo_id) REFERENCES login(id)
+    edzo_id INT PRIMARY KEY,
+    edzoterem_cim POINT,
+    kep TEXT,
+    idezet TEXT,
+    leiras TEXT,
+    kompetenciak TEXT,
+    FOREIGN KEY (edzo_id) REFERENCES login(id)
 );
 
 -- EDZESTERV
 CREATE TABLE IF NOT EXISTS edzesterv (
-edzesterv_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday VARCHAR(20),
-felhasznalo_id INT,
-FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
+    edzesterv_id INT AUTO_INCREMENT PRIMARY KEY,
+    weekday VARCHAR(20) NOT NULL,
+    felhasznalo_id INT NOT NULL,
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
 -- GYAKORLAT
 CREATE TABLE IF NOT EXISTS gyakorlat (
-gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150),
-leiras TEXT,
-kor INT,
-ismetles INT,
-tipus ENUM('sulyzós', 'saját_testsúlyos', 'kardió') NOT NULL
+    gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(150) NOT NULL,
+    leiras TEXT,
+    kor INT NOT NULL,
+    ismetles INT NOT NULL,
+    tipus ENUM('sulyzós', 'saját_testsúlyos', 'kardió') NOT NULL
 );
 
 -- KELLEK
 CREATE TABLE IF NOT EXISTS kellek (
-kellek_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150)
+    kellek_id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(150) NOT NULL
 );
 
 -- EDZESTERV - GYAKORLAT
 CREATE TABLE IF NOT EXISTS gyakorlatok_kivalasztasa (
-edzesterv_id INT,
-gyakorlat_id INT,
-PRIMARY KEY (edzesterv_id, gyakorlat_id),
-FOREIGN KEY (edzesterv_id) REFERENCES edzesterv(edzesterv_id),
-FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
+    edzesterv_id INT NOT NULL,
+    gyakorlat_id INT NOT NULL,
+    PRIMARY KEY (edzesterv_id, gyakorlat_id),
+    FOREIGN KEY (edzesterv_id) REFERENCES edzesterv(edzesterv_id),
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
 );
 
 -- GYAKORLAT - KELLEK
 CREATE TABLE IF NOT EXISTS kellekek_kivalasztasa (
-gyakorlat_id INT,
-kellek_id INT,
-PRIMARY KEY (gyakorlat_id, kellek_id),
-FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id),
-FOREIGN KEY (kellek_id) REFERENCES kellek(kellek_id)
+    gyakorlat_id INT NOT NULL,
+    kellek_id INT NOT NULL,
+    PRIMARY KEY (gyakorlat_id, kellek_id),
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id),
+    FOREIGN KEY (kellek_id) REFERENCES kellek(kellek_id)
 );
 
 -- ALLERGEN
 CREATE TABLE IF NOT EXISTS allergen (
-allergen_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150),
-tipus ENUM('a', 'p') DEFAULT 'p'
+    allergen_id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(150) NOT NULL,
+    tipus ENUM('a', 'p') NOT NULL DEFAULT 'p'
 );
 
 -- FELHASZNALO - ALLERGEN
 CREATE TABLE IF NOT EXISTS allergias_ra (
-felhasznalo_id INT,
-allergen_id INT,
-PRIMARY KEY (felhasznalo_id, allergen_id),
-FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
-FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
+    felhasznalo_id INT NOT NULL,
+    allergen_id INT NOT NULL,
+    PRIMARY KEY (felhasznalo_id, allergen_id),
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
+    FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
 );
 
 -- RECEPT
 CREATE TABLE IF NOT EXISTS recept (
-recept_id INT AUTO_INCREMENT PRIMARY KEY,
-nev VARCHAR(150),
-leiras TEXT,
-etkezes_tipus VARCHAR(100),
-zsir FLOAT,
-protein FLOAT,
-szenhidrat FLOAT
+    recept_id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(150) NOT NULL,
+    leiras TEXT NOT NULL,
+    etkezes_tipus VARCHAR(100) NOT NULL,
+    zsir FLOAT NOT NULL,
+    protein FLOAT NOT NULL,
+    szenhidrat FLOAT NOT NULL
 );
 
 -- RECEPT - ALLERGEN
 CREATE TABLE IF NOT EXISTS allergiat_okoz (
-recept_id INT,
-allergen_id INT,
-PRIMARY KEY (recept_id, allergen_id),
-FOREIGN KEY (recept_id) REFERENCES recept(recept_id),
-FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
+    recept_id INT NOT NULL,
+    allergen_id INT NOT NULL,
+    PRIMARY KEY (recept_id, allergen_id),
+    FOREIGN KEY (recept_id) REFERENCES recept(recept_id),
+    FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
 );
 
 -- ETREND
 CREATE TABLE IF NOT EXISTS etrend (
-etrend_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday VARCHAR(20),
-etkezes_sorszama INT,
-felhasznalo_id INT,
-recept_id INT,
-FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
-FOREIGN KEY (recept_id) REFERENCES recept(recept_id)
+    etrend_id INT AUTO_INCREMENT PRIMARY KEY,
+    weekday VARCHAR(20) NOT NULL,
+    etkezes_sorszama INT NOT NULL,
+    felhasznalo_id INT NOT NULL,
+    recept_id INT NOT NULL,
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
+    FOREIGN KEY (recept_id) REFERENCES recept(recept_id)
 );
 
 -- KOMMENT
 CREATE TABLE IF NOT EXISTS komment (
-komment_id INT AUTO_INCREMENT PRIMARY KEY,
-szoveg TEXT,
-ertekeles INT,
-statusz VARCHAR(50),
-edzo_id INT,
-felhasznalo_id INT,
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
-FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
+    komment_id INT AUTO_INCREMENT PRIMARY KEY,
+    szoveg TEXT NOT NULL,
+    ertekeles INT NOT NULL,
+    statusz VARCHAR(50),
+    edzo_id INT NOT NULL,
+    felhasznalo_id INT NOT NULL,
+    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
 -- FOGLALAS
 CREATE TABLE IF NOT EXISTS foglalas (
-foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-start TIME,
-end TIME,
-statusz VARCHAR(50),
-edzo_id INT,
-felhasznalo_id INT,
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
-FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
+    foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
+    datum DATE NOT NULL,
+    start TIME NOT NULL,
+    end TIME NOT NULL,
+    statusz VARCHAR(50) NOT NULL,
+    edzo_id INT NOT NULL,
+    felhasznalo_id INT NOT NULL,
+    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
-beo_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday VARCHAR(20),
-start TIME,
-end TIME,
-mettol_ervenyes DATE,
-edzo_id INT,
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
+    beo_id INT AUTO_INCREMENT PRIMARY KEY,
+    weekday VARCHAR(20) NOT NULL,
+    start TIME NOT NULL,
+    end TIME NOT NULL,
+    mettol_ervenyes DATE NOT NULL,
+    edzo_id INT NOT NULL,
+    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- KULONLEGES_ALKALOM
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
-ka_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-weekday VARCHAR(20),
-start TIME,
-end TIME,
-statusz VARCHAR(50),
-edzo_id INT,
-FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
+    ka_id INT AUTO_INCREMENT PRIMARY KEY,
+    datum DATE NOT NULL,
+    weekday VARCHAR(20) NOT NULL,
+    start TIME NOT NULL,
+    end TIME NOT NULL,
+    statusz VARCHAR(50) NOT NULL,
+    edzo_id INT NOT NULL,
+    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- IZOMCSOPORT TÖRZZSTÁBLA
@@ -210,8 +211,8 @@ CREATE TABLE IF NOT EXISTS izomcsoport (
 
 -- KAPCSOLÓTÁBLA 
 CREATE TABLE IF NOT EXISTS gyakorlat_izomcsoport (
-    gyakorlat_id INT,
-    izom_id INT,
+    gyakorlat_id INT NOT NULL,
+    izom_id INT NOT NULL,
     PRIMARY KEY (gyakorlat_id, izom_id),
     FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id) ON DELETE CASCADE,
     FOREIGN KEY (izom_id) REFERENCES izomcsoport(izom_id) ON DELETE CASCADE
