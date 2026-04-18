@@ -60,27 +60,25 @@ router.post('/userDataInsert', upload.single("file") ,checkUser.checkUserData, l
 });
 
 //?Post /api/userDataUpdate
-router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/userDataUpdate', upload.none() ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
     try {
 
         const { 
             testsuly,
             magassag,
-            edzesIdo,
-            cel_alak,
-            celTestsuly,
-            uzott_sport,
-            edzesen_kivuli_mozgas
+            edzesre_forditott_ido,
+            cel_alak_id,
+            cel_testsuly,
+            EKM_id
         } = request.body;
 
         database.updateUser(
             testsuly,
             magassag,
-            edzesIdo,
-            cel_alak,
-            celTestsuly,
-            uzott_sport,
-            edzesen_kivuli_mozgas,
+            edzesre_forditott_ido,
+            cel_alak_id,
+            cel_testsuly,
+            EKM_id,
             request.session.user.id
         );
 
@@ -92,6 +90,22 @@ router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, l
         console.error(error.message);
         response.status(500).json({
             message: "Hiba a végponton."
+        });
+    }
+});
+
+router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const id = request.session.user.id;
+        const userData = await database.selectFelhDataById(id);
+        response.status(200).json({
+            message: "Személyi adatok sikeresen lekérve",
+            result: userData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Személyi adatok lekérése sikertelen"
         });
     }
 });

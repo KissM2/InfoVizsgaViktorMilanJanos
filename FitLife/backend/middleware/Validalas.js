@@ -1,7 +1,10 @@
 async function validateRegister(request, response, next) { 
-    const { fullname, birthdate, phone, nem } = request.body;
+    const { felh_nev,
+            telszam,
+            nem,
+            szul_datum, } = request.body;
 
-    if (!fullname || !birthdate || !phone || !nem) {
+    if (!felh_nev || !telszam || !nem || !szul_datum) {
         return response.status(400).json({ message: 'Nem megfelelő név, nem, születési dátum vagy telefon szám.' });
     }
 
@@ -9,10 +12,20 @@ async function validateRegister(request, response, next) {
 }
 
 async function validateEmailPassword(request, response, next) {
-    const { email, password } = request.body;
+    const { email, jelszo } = request.body;
 
-    if (!email || !password) {
+    if (!email || !jelszo) {
         return response.status(400).json({ message: 'Nem megfelelő email, password.' });
+    }
+
+    next();
+}
+
+async function validateEmail(request, response, next) {
+    const { email } = request.body;
+
+    if (!email ) {
+        return response.status(400).json({ message: 'Nem megfelelő jelszó.' });
     }
 
     next();
@@ -21,5 +34,6 @@ async function validateEmailPassword(request, response, next) {
 // Export
 module.exports = {
     validateRegister,
-    validateEmailPassword
+    validateEmailPassword,
+    validateEmail,
 };

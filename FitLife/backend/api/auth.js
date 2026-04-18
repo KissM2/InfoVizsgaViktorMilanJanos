@@ -155,4 +155,51 @@ router.get('/getLoginStatus', requireLogin.loginCheck, async (request, response)
     }
  });
 
+router.get('/getAuthData', requireLogin.loginCheck, async (request, response) =>{
+    try {
+        const id = request.session.user.id;
+        const authData = await database.selectLoginDataById(id);
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator.validateEmail ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) =>{
+    try {
+        const {
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+        } = request.body;
+
+        database.updateLoginData(
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+            id,
+        );
+
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
 module.exports = router;

@@ -3,6 +3,11 @@ const db = require('../sql/database.js');
 async function checkIfEmailUsed(request, response, next) {
     try {
         const { email } = request.body;
+
+        if(request.session.user.email && email == request.session.user.email){
+            next();
+        }
+
         const checkUser = await db.checkUser(email);
 
         if(checkUser.length > 0){
