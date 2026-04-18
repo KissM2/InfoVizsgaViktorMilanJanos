@@ -1,5 +1,6 @@
 import { getKeres } from "./kozosFetch.js";
-
+import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
 let currentDate = new Date();
@@ -9,8 +10,14 @@ let calendarData = {
     kulonleges: [],
     foglalas: []
 };
-
+const menuLinkek = [
+    { nev: "Naptár szerkesztése", url: "/esznt" },
+    { nev: "Névjegy szerkesztése", url: "/trainersedit" },
+    { nev: "Adatok szerkesztésee", url: "/traineradat" },
+];
 document.addEventListener("DOMContentLoaded", function () {
+    navbarGeneralas(menuLinkek);
+    footerGeneralas();
     loadCalendar();
 });
 

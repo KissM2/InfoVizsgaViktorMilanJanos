@@ -1,5 +1,6 @@
 import { getKeres, postApi } from "./kozosFetch.js";
-
+import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 let aktualisEv = new Date().getFullYear();
 let aktualisHonap = new Date().getMonth() + 1;
 
@@ -14,8 +15,14 @@ const honapok = [
     "Január", "Február", "Március", "Április", "Május", "Június",
     "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 ];
-
+const menuLinkek = [
+    { nev: "Edző főoldal", url: "/edzofo" },
+    { nev: "Névjegy szerkesztés", url: "/trainersedit" },
+    { nev: "Adatok szerkesztése", url: "/traineradat" },
+];
 document.addEventListener("DOMContentLoaded", async function () {
+    navbarGeneralas(menuLinkek);
+    footerGeneralas();
     genBeo();
     await loadAll();
     general();
