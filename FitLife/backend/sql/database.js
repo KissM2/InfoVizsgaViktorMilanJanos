@@ -40,6 +40,11 @@ async function selectTrainerById(id) {
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
+async function selectLoginDataById(id) {
+    const query = 'SELECT login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum FROM login WHERE login.id = ?;';
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //felhasznalo tábla
 
@@ -58,7 +63,11 @@ async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, c
 }
 
 //select
-
+async function selectFelhDataById(id) {
+    const query = 'SELECT felhasznalo.testsuly, felhasznalo.magassag  FROM felhasznalo WHERE login.id = ?;';
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //edzo tábla
 
@@ -271,6 +280,25 @@ async function checkKulonlegesAlkalomExists(edzoId, datum) {
     return rows.length > 0;
 }
 
+//cel_alak tábla
+
+//select
+async function selectAllCelAlak() {
+    const query = `SELECT * FROM cel_alak`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+
+//EKM tábla
+
+//select
+async function selectAllEKM() {
+    const query = `SELECT * FROM edzesen_kivuli_mozgas`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+
+
 //szét kéne szedni
 async function getCalendarData(edzoId) {
     const hetiQuery = `
@@ -331,5 +359,10 @@ module.exports = {
     checkKulonlegesAlkalomExists,
     insertKulonlegesAlkalom,
     getCalendarData,
-    selectTrainersByDist
+    selectTrainersByDist,
+    selectAllCelAlak,
+    selectLoginDataById,
+    selectFelhDataById,
+    selectAllEKM,
+    updateUserProfile,
 };

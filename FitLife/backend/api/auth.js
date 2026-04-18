@@ -155,4 +155,19 @@ router.get('/getLoginStatus', requireLogin.loginCheck, async (request, response)
     }
  });
 
+router.get('/getAuthData', requireLogin.loginCheck, async (request, response) =>{
+    try {
+        const id = request.session.user.id;
+        const authData = await database.selectLoginDataById(id);
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
 module.exports = router;

@@ -96,4 +96,20 @@ router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, l
     }
 });
 
+router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const id = request.session.user.id;
+        const userData = await database.selectFelhDataById(id);
+        response.status(200).json({
+            message: "Személyi adatok sikeresen lekérve",
+            result: userData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Személyi adatok lekérése sikertelen"
+        });
+    }
+});
+
 module.exports = router;
