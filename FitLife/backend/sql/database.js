@@ -22,7 +22,11 @@ async function insertLogin(felh_nev, jelszo, email, telszam, nem, role, szul_dat
 }
 
 //update
-
+async function updateLoginData(felh_nev, email, telszam, nem, szul_datum) {
+    const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak_id=?,cel_testsuly=?,EKM_id=? WHERE felhasznalo.felhasznalo_id = ?";
+    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id]);
+    return rows;
+}
 
 //select
 async function login(email) {
@@ -56,9 +60,9 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, c
 }
 
 //update
-async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id) {
-    const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak=,cel_testsuly=?,uzott_sport=?,edzesen_kivuli_mozgas=? WHERE felhasznalo.felhasznalo_id = ?";
-    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak, cel_testsuly, uzott_sport, edzesen_kivuli_mozgas, id]);
+async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id) {
+    const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak_id=?,cel_testsuly=?,EKM_id=? WHERE felhasznalo.felhasznalo_id = ?";
+    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id]);
     return rows;
 }
 
@@ -365,4 +369,5 @@ module.exports = {
     selectFelhDataById,
     selectAllEKM,
     updateUserProfile,
+    updateLoginData,
 };

@@ -1,9 +1,16 @@
 async function checkUserData(request, response, next) {
     try {
 
-        const {allergiak, preferenciak, cel_testsuly, cel_alkat, uzott_sport, magassag, testsuly, nem, edzesen_kivuli_mozgas} = request.body;
+        const { 
+            testsuly,
+            magassag,
+            edzesre_forditott_ido,
+            cel_alak_id,
+            cel_testsuly,
+            EKM_id
+        } = request.body;
 
-        if(!allergiak || !preferenciak || !cel_testsuly || !cel_alkat || !uzott_sport || !magassag || !testsuly || !nem || !edzesen_kivuli_mozgas){
+        if(!testsuly || !magassag || !edzesre_forditott_ido || !cel_alak_id || !cel_testsuly || !EKM_id){
             return response.status(400).json({
                 message: "nem megfelelő adatok"
             })

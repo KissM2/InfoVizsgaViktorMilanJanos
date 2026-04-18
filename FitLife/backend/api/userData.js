@@ -60,27 +60,25 @@ router.post('/userDataInsert', upload.single("file") ,checkUser.checkUserData, l
 });
 
 //?Post /api/userDataUpdate
-router.post('/userDataUpdate', upload.single("file") ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/userDataUpdate', upload.none() ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
     try {
 
         const { 
             testsuly,
             magassag,
-            edzesIdo,
-            cel_alak,
-            celTestsuly,
-            uzott_sport,
-            edzesen_kivuli_mozgas
+            edzesre_forditott_ido,
+            cel_alak_id,
+            cel_testsuly,
+            EKM_id
         } = request.body;
 
         database.updateUser(
             testsuly,
             magassag,
-            edzesIdo,
-            cel_alak,
-            celTestsuly,
-            uzott_sport,
-            edzesen_kivuli_mozgas,
+            edzesre_forditott_ido,
+            cel_alak_id,
+            cel_testsuly,
+            EKM_id,
             request.session.user.id
         );
 
