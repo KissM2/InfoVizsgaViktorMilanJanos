@@ -187,17 +187,16 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
             telszam,
             nem,
             szul_datum,
-            id,
+            request.session.user.id,
         );
 
         response.status(200).json({
-            message: "Bejelentkezési adatok sikeresen lekérve",
-            result: authData
+            message: "Bejelentkezési adatok sikeresen frissítve"
         })
     } catch (error) {
         console.error(error.message);
         response.status(500).json({
-            message: "Bejelentkezési adatok lekérése sikertelen"
+            message: "Bejelentkezési adatok frissítése sikertelen"
         });
     }
 });

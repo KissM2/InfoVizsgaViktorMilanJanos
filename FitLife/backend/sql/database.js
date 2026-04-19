@@ -22,9 +22,9 @@ async function insertLogin(felh_nev, jelszo, email, telszam, nem, role, szul_dat
 }
 
 //update
-async function updateLoginData(felh_nev, email, telszam, nem, szul_datum) {
-    const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak_id=?,cel_testsuly=?,EKM_id=? WHERE felhasznalo.felhasznalo_id = ?";
-    const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id]);
+async function updateLoginData(felh_nev, email, telszam, nem, szul_datum, id) {
+    const query = "UPDATE login SET login.felh_nev = ?, login.email = ?, login.telszam = ?, login.nem = ?, login.szul_datum = ? WHERE login.id = ?";
+    const [rows] = await pool.execute(query, [felh_nev, email, telszam, nem, szul_datum, id]);
     return rows;
 }
 
@@ -68,7 +68,7 @@ async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
 
 //select
 async function selectFelhDataById(id) {
-    const query = 'SELECT felhasznalo.testsuly, felhasznalo.magassag  FROM felhasznalo WHERE login.id = ?;';
+    const query = 'SELECT felhasznalo.testsuly, felhasznalo.magassag, felhasznalo.edzesre_forditott_ido, felhasznalo.cel_alak_id, felhasznalo.cel_testsuly, felhasznalo.EKM_id FROM felhasznalo WHERE felhasznalo.felhasznalo_id = ?;';
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
@@ -329,16 +329,7 @@ async function getCalendarData(edzoId) {
 
     return { heti, kulonleges, foglalas };
 }
-//update users?
-async function updateUserProfile(email, felh, telsz, userId) {
-    const sql = `
-        UPDATE users
-        SET login.email = ?, login.felh_nev = ?, login.telszam = ?
-        WHERE login.id= ? AND login.role = 'edzo';
-    `;
 
-    await db.execute(sql, [email, felh, telsz, userId]);
-}
 //!Export
 module.exports = {
     updateEdzo,
@@ -368,6 +359,5 @@ module.exports = {
     selectLoginDataById,
     selectFelhDataById,
     selectAllEKM,
-    updateUserProfile,
     updateLoginData,
 };
