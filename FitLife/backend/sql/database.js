@@ -27,6 +27,11 @@ async function updateLoginData(felh_nev, email, telszam, nem, szul_datum, id) {
     const [rows] = await pool.execute(query, [felh_nev, email, telszam, nem, szul_datum, id]);
     return rows;
 }
+async function updateJelszo(hash, userId) {
+    const query = "UPDATE login SET jelszo = ? WHERE id = ?";
+    const [rows] = await pool.execute(query, [hash, userId]);
+    return rows;
+}
 
 //select
 async function login(email) {
@@ -360,4 +365,5 @@ module.exports = {
     selectFelhDataById,
     selectAllEKM,
     updateLoginData,
+    updateJelszo
 };
