@@ -69,9 +69,13 @@ CREATE TABLE IF NOT EXISTS edzo (
 -- EDZESTERV
 CREATE TABLE IF NOT EXISTS edzesterv (
     edzesterv_id INT AUTO_INCREMENT PRIMARY KEY,
-    weekday VARCHAR(20) NOT NULL,
+    terv_csoport_id VARCHAR(50) NOT NULL,
+    weekday_sorszam INT NOT NULL,
+    gyakorlat_id INT NOT NULL,
+    sorrend INT NOT NULL,
     felhasznalo_id INT NOT NULL,
-    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
+    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
 );
 
 -- GYAKORLAT
