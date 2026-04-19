@@ -67,18 +67,18 @@ router.post('/userDataUpdate', upload.none() ,checkUser.checkUserData, loginChec
             testsuly,
             magassag,
             edzesre_forditott_ido,
-            cel_alak_id,
+            cel_alak,
             cel_testsuly,
-            EKM_id
+            edzesen_kivuli_mozgas
         } = request.body;
 
         database.updateUser(
             testsuly,
             magassag,
             edzesre_forditott_ido,
-            cel_alak_id,
+            cel_alak,
             cel_testsuly,
-            EKM_id,
+            edzesen_kivuli_mozgas,
             request.session.user.id
         );
 

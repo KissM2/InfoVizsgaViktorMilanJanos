@@ -1,16 +1,15 @@
 async function checkUserData(request, response, next) {
     try {
-
         const { 
             testsuly,
             magassag,
             edzesre_forditott_ido,
-            cel_alak_id,
+            cel_alak,
             cel_testsuly,
-            EKM_id
+            edzesen_kivuli_mozgas
         } = request.body;
 
-        if(!testsuly || !magassag || !edzesre_forditott_ido || !cel_alak_id || !cel_testsuly || !EKM_id){
+        if(!testsuly || !magassag || !edzesre_forditott_ido || !cel_alak || !cel_testsuly || !edzesen_kivuli_mozgas){
             return response.status(400).json({
                 message: "nem megfelelő adatok"
             })
