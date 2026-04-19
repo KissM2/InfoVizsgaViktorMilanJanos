@@ -214,5 +214,19 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
         });
     }
 });
+router.post('/updateJelszo', validator.validatePassword, async (request, response) => {
+    try {
+        const userId = request.session.user.id; 
+        const { jelszo } = request.body;
+
+        const hash = await bcrypt.hash(jelszo, 10);
+        await database.updateJelszo(hash, userId);
+        
+        response.status(200).json({ message: "Sikeres jelszócsere!" });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({ message: "Szerverhiba!" });
+    }
+});
 
 module.exports = router;

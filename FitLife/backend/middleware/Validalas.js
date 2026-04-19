@@ -32,10 +32,20 @@ async function validateEmail(request, response, next) {
 
     next();
 }
+async function validatePassword(request, response, next) {
+    const { jelszo } = request.body;
+
+    if ( !jelszo) {
+        return response.status(400).json({ message: 'Nem megfelelő jelszó.' });
+    }
+
+    next();
+} 
 
 // Export
 module.exports = {
     validateRegister,
     validateEmailPassword,
     validateEmail,
+    validatePassword,
 };
