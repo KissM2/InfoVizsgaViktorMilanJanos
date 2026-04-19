@@ -4,7 +4,7 @@ async function checkIfEmailUsed(request, response, next) {
     try {
         const { email } = request.body;
 
-        if(request.session.user.email && email == request.session.user.email){
+        if(request.session.user && email == request.session.user.email){
             next();
         }
 
@@ -18,7 +18,7 @@ async function checkIfEmailUsed(request, response, next) {
         next();
     } catch (error) {
         return response.status(500).json({
-            message: 'Hiba történt az email cím ellenőrzésekor: ' + error.message
+            message: 'Hiba történt az email cím ellenőrzésekor'
         });
     }
 }
