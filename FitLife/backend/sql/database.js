@@ -149,6 +149,18 @@ async function selectTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+//edzesterv tábla
+
+//insert
+async function saveEdzestervSor(adat) {
+    const query = "INSERT INTO edzesterv (terv_csoport_id, weekday_sorszam, gyakorlat_id, sorrend, felhasznalo_id) VALUES (?, ?, ?, ?, ?)";
+    const [rows] = await pool.execute(query, [adat.terv_csoport_id, adat.weekday_sorszam, adat.gyakorlat_id, adat.sorrend, adat.felhasznalo_id]);
+    return rows;
+}
+//update
+
+//select
+
 
 //komment tábla
 
@@ -357,5 +369,6 @@ module.exports = {
     getCalendarData,
     selectTrainersByDist,
     getUserCel,
-    getUserEdzesNapok
+    getUserEdzesNapok,
+    saveEdzestervSor
 };

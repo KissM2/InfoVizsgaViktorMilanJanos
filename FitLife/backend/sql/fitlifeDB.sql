@@ -66,6 +66,16 @@ CREATE TABLE IF NOT EXISTS edzo (
     FOREIGN KEY (edzo_id) REFERENCES login(id)
 );
 
+-- GYAKORLAT
+CREATE TABLE IF NOT EXISTS gyakorlat (
+    gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
+    nev VARCHAR(150) NOT NULL,
+    leiras TEXT,
+    kor INT NOT NULL,
+    ismetles INT NOT NULL,
+    tipus ENUM('sulyzós', 'saját_testsúlyos', 'kardió') NOT NULL
+);
+
 -- EDZESTERV
 CREATE TABLE IF NOT EXISTS edzesterv (
     edzesterv_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -76,16 +86,6 @@ CREATE TABLE IF NOT EXISTS edzesterv (
     felhasznalo_id INT NOT NULL,
     FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
     FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
-);
-
--- GYAKORLAT
-CREATE TABLE IF NOT EXISTS gyakorlat (
-    gyakorlat_id INT AUTO_INCREMENT PRIMARY KEY,
-    nev VARCHAR(150) NOT NULL,
-    leiras TEXT,
-    kor INT NOT NULL,
-    ismetles INT NOT NULL,
-    tipus ENUM('sulyzós', 'saját_testsúlyos', 'kardió') NOT NULL
 );
 
 -- KELLEK
@@ -664,7 +664,7 @@ INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUE
 ('Zabpalacsinta áfonyával','Hozzávalók: zabpehely, tojás, áfonya. Elkészítés: turmixold össze és süsd ki.','reggeli',6,20,40); -- zab, tojás
 
 -- 8. izomcsoport tábla:
-NSERT INTO izomcsoport (izom_id, nev) VALUES 
+INSERT INTO izomcsoport (izom_id, nev) VALUES 
 (1, 'Mell'), 
 (2, 'Váll'), 
 (3, 'Tricepsz'), 
@@ -680,7 +680,7 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 (3, 60.0, 165, 90, 1800, 3, 58.0, 2),
 (4, 78.0, 175, 120, 2800, 4, 85.0, 3),
 (5, 68.0, 170, 30, 2000, 2, 62.0, 2),
-(6, 110.0, 190, 60, 3500, 5, 95.0, 4),
+(6, 110.0, 190, 60, 3500, 4, 95.0, 4),
 (7, 55.0, 160, 45, 1600, 1, 55.0, 2);
 
 -- 10. edzo tábla:
@@ -962,32 +962,32 @@ INSERT INTO kellekek_kivalasztasa (gyakorlat_id, kellek_id) VALUES
 (100,43);
 
 -- 15. gyakorlat_izomcsoport tábla:
+-- Előbb ürítsük a táblát, hogy ne legyen duplikáció a teszteléskor
 INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES 
--- Mell gyakorlatok összekötése a Mellizommal (1-es ID)
+-- Mell (1)
 (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), 
 (6, 1), (7, 1), (8, 1), (9, 1), (10, 1), 
 (11, 1), (12, 1), (13, 1), (14, 1), (15, 1),
--- Hát gyakorlatok összekötése a Hátizommal (2-es ID)
-(16, 2), (17, 2), (18, 2), (19, 2), (20, 2), 
-(21, 2), (22, 2), (23, 2), (24, 2), (25, 2), 
-(26, 2), (27, 2), (28, 2), (29, 2), (30, 2),
--- Váll (3)
-(31, 3), (32, 3), (33, 3), (34, 3), (35, 3), 
-(36, 3), (37, 3), (38, 3), (39, 3), (40, 3), (41, 3), (42, 3),
--- Bicepsz (4)
-(43, 4), (44, 4), (45, 4), (46, 4), (47, 4), 
-(48, 4), (49, 4), (50, 4), (51, 4), (52, 4),
--- Tricepsz (5)
-(53, 5), (54, 5), (55, 5), (56, 5), (57, 5), 
-(58, 5), (59, 5), (60, 5), (61, 5), (62, 5),
--- Alkar (6)
-(63, 6), (64, 6), (65, 6), (66, 6), (67, 6), 
-(68, 6), (69, 6), (70, 6),
--- Quadriceps (7)
-(71, 7), (72, 7), (73, 7), (74, 7), (75, 7), (76, 7), (77, 7), (78, 7), (79, 7), (80, 7),
--- Hamstring (8)
-(81, 8), (82, 8), (83, 8), (84, 8), (85, 8), (86, 8), (87, 8), (88, 8),
--- Farizom (9)
-(89, 9), (90, 9), (91, 9), (92, 9), (93, 9), (94, 9),
--- Vádli (10)
-(95, 10), (96, 10), (97, 10), (98, 10), (99, 10), (100, 10);
+
+-- Váll (2)
+(31, 2), (32, 2), (33, 2), (34, 2), (35, 2), 
+(36, 2), (37, 2), (38, 2), (39, 2), (40, 2), (41, 2), (42, 2),
+
+-- Tricepsz (3) -> Átírva 5-ről 3-ra
+(53, 3), (54, 3), (55, 3), (56, 3), (57, 3), 
+(58, 3), (59, 3), (60, 3), (61, 3), (62, 3),
+
+-- Hát (4)
+(16, 4), (17, 4), (18, 4), (19, 4), (20, 4), 
+(21, 4), (22, 4), (23, 4), (24, 4), (25, 4), 
+(26, 4), (27, 4), (28, 4), (29, 4), (30, 4),
+
+-- Bicepsz (5)
+(43, 5), (44, 5), (45, 5), (46, 5), (47, 5), 
+(48, 5), (49, 5), (50, 5), (51, 5), (52, 5),
+
+-- Láb (6)
+(71, 6), (72, 6), (73, 6), (74, 6), (75, 6), (76, 6), (77, 6), (78, 6), (79, 6), (80, 6),
+(81, 6), (82, 6), (83, 6), (84, 6), (85, 6), (86, 6), (87, 6), (88, 6),
+(89, 6), (90, 6), (91, 6), (92, 6), (93, 6), (94, 6),
+(95, 6), (96, 6), (97, 6), (98, 6), (99, 6), (100, 6);

@@ -1,4 +1,4 @@
-import { getKeres } from '../js/kozosFetch.js';
+import { getKeres, postApi } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
 
@@ -71,19 +71,27 @@ function alapTablaGeneralas() {
     vezerloGombok.classList.add("het-vezerlok");
     const genBtn = document.createElement("button");
     genBtn.textContent = "Hét generálása";
+
+    const mentesBtn = document.createElement("button");
+    mentesBtn.textContent = "Mentés";
+    mentesBtn.classList.add("btn-mentes-het");
+
     const torolBtn = document.createElement("button");
     torolBtn.textContent = "Hét eltávolítása";
     torolBtn.classList.add("btn-torol-het");
     vezerloGombok.appendChild(genBtn);
+    vezerloGombok.appendChild(mentesBtn);
     vezerloGombok.appendChild(torolBtn);
     hetFejlec.appendChild(h3);
     hetFejlec.appendChild(vezerloGombok);
     hetiResz.appendChild(hetFejlec);
+
     const container = document.createElement("div");
     container.classList.add("tabla-container");
     const table = document.createElement("table");
     table.classList.add("tabla");
     torolBtn.addEventListener("click", function () { hetiResz.remove(); });
+    mentesBtn.addEventListener("click", function () { edzestervMentes(table); });
 
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
@@ -119,6 +127,28 @@ function alapTablaGeneralas() {
     container.appendChild(table);
     hetiResz.appendChild(container);
     teljes.appendChild(hetiResz);
+}
+async function edzestervMentes(szuloTabla) {
+    const mentesAdatok = [];
+    for (let nap = 0; nap < 7; nap++) {
+        const napiCellak = szuloTabla.querySelectorAll(`.kaja-cella[data-nap='${nap}']`);
+        let napiSorrend = 1;
+        napiCellak.forEach(td => {
+            const kartya = td.querySelector(".kaja-kartya");
+
+            if (kartya && kartya.dataset.gyakorlatId && bejelentkezettUserId) {
+                mentesAdatok.push({
+                    nap: nap + 1,
+                    gyakorlat_id: parseInt(kartya.dataset.gyakorlatId),
+                    sorrend: napiSorrend,
+                    userId: bejelentkezettUserId
+                });
+                napiSorrend++;
+            }
+        });
+    }
+    await postApi('/api/mentes-edzesterv', { adatok: mentesAdatok });
+    alert("Edzésterv elmentve!");
 }
 function edzestervFeltoltes(szuloTabla) {
     const cellak = szuloTabla.querySelectorAll(".kaja-cella");
@@ -195,6 +225,7 @@ function gyakorlatKartyaKeszites(gyakorlat) {
     const doboz = document.createElement("div");
     doboz.classList.add("kaja-kartya");
 
+    doboz.dataset.gyakorlatId = gyakorlat.gyakorlat_id;
     const xBtn = document.createElement("button");
     xBtn.textContent = "X";
     xBtn.classList.add("torles-x");
@@ -203,7 +234,7 @@ function gyakorlatKartyaKeszites(gyakorlat) {
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
     nev.textContent = gyakorlat.nev;
-    
+
     const leiras = document.createElement("div");
     leiras.classList.add("gyakorlat-leiras");
     leiras.textContent = gyakorlat.leiras;

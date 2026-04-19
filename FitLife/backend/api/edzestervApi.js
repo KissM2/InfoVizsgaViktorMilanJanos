@@ -100,5 +100,27 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
         response.status(500).json({ message: "Hiba a generálás során." });
     }
 });
+router.post('/mentes-edzesterv', async (request, response) => {
+    try {
+        const { adatok } = request.body;
+        if (!adatok || adatok.length === 0) {
+            return response.status(400).json({ message: "Nincs adat." });
+        }
 
+        const tervCsoportId = Date.now().toString(); 
+        
+        for (const elem of adatok) {
+            await database.saveEdzestervSor({
+                terv_csoport_id: tervCsoportId,
+                weekday_sorszam: elem.nap,
+                gyakorlat_id: elem.gyakorlat_id,
+                sorrend: elem.sorrend,
+                felhasznalo_id: elem.userId
+            });
+        }
+        response.status(200).json({ message: "Edzésterv sikeresen mentve!" });
+    } catch (error) {
+        response.status(500).json({ message: "Hiba a mentés során." });
+    }
+});
 module.exports = router;
