@@ -96,6 +96,7 @@ async function getUserEdzesNapok(userId) {
         napok.push(rows[i].nap_sorszam);
     }
     return napok;
+}
 async function selectFelhDataById(id) {
     const query = 'SELECT felhasznalo.testsuly, felhasznalo.magassag, felhasznalo.edzesre_forditott_ido, felhasznalo.cel_alak_id, felhasznalo.cel_testsuly, felhasznalo.EKM_id FROM felhasznalo WHERE felhasznalo.felhasznalo_id = ?;';
     const [rows] = await pool.execute(query, [id]);
