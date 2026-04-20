@@ -28,21 +28,18 @@ router.post('/userDataInsert', upload.single("file") ,checkUser.checkUserData, l
         const { 
             testsuly,
             magassag,
-            edzesIdo,
+            edzesre_forditott_ido,
             cel_alak,
-            celTestsuly,
-            uzott_sport,
+            cel_testsuly,
             edzesen_kivuli_mozgas
         } = request.body;
 
         database.insertUser(
             testsuly,
-            testsuly,
             magassag,
-            edzesIdo,
+            edzesre_forditott_ido,
             cel_alak,
-            celTestsuly,
-            uzott_sport,
+            cel_testsuly,
             edzesen_kivuli_mozgas,
             request.session.user.id
         );
