@@ -41,14 +41,14 @@ router.get('/generalt-gyakorlatok', async (request, response) => {
         }
         let izomSorozat = [];
         if (edzesiNapok.length === 1) {
-            izomSorozat = [ ['Mell', 'Hát', 'Váll', 'Bicepsz', 'Tricepsz', 'Láb', 'Has'] ];
-        } 
+            izomSorozat = [['Mell', 'Hát', 'Váll', 'Bicepsz', 'Tricepsz', 'Láb', 'Has']];
+        }
         else if (edzesiNapok.length === 2) {
             izomSorozat = [
                 ['Mell', 'Hát', 'Váll', 'Bicepsz', 'Tricepsz'],
                 ['Láb', 'Has']
             ];
-        } 
+        }
         else {
             izomSorozat = [
                 ['Mell', 'Váll', 'Tricepsz'],
@@ -107,8 +107,8 @@ router.post('/mentes-edzesterv', async (request, response) => {
             return response.status(400).json({ message: "Nincs adat." });
         }
 
-        const tervCsoportId = Date.now().toString(); 
-        
+        const tervCsoportId = Date.now().toString();
+
         for (const elem of adatok) {
             await database.saveEdzestervSor({
                 terv_csoport_id: tervCsoportId,
@@ -126,13 +126,16 @@ router.post('/mentes-edzesterv', async (request, response) => {
 router.get('/betoltes-edzesterv', async (request, response) => {
     try {
         const userId = request.query.id;
-        if (!adatok) {
+        if (!userId) {
             return response.status(400).json({ message: "Nincs id." });
         }
         const adatok = await database.getLegutobbiEdzesterv(userId);
         const formazott = {};
         for (const sor of adatok) {
             const nap = sor.weekday_sorszam;
+            if (!formazott[nap]) {
+                formazott[nap] = [];
+            }
             formazott[nap].push({
                 gyakorlat_id: sor.gyakorlat_id,
                 nev: sor.nev,
@@ -142,7 +145,7 @@ router.get('/betoltes-edzesterv', async (request, response) => {
                 izomcsoport_nev: sor.izomcsoport_nev
             });
         }
-        
+
         response.status(200).json(formazott);
     } catch (error) {
         response.status(500).json({ message: "Hiba a terv betöltésekor." });
