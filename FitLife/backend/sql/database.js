@@ -72,6 +72,30 @@ async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
 }
 
 //select
+async function getUserCel(userId) {
+    const query = `
+        SELECT felhasznalo.edzesre_forditott_ido, cel_alak.nev AS cel_nev 
+        FROM felhasznalo
+        JOIN cel_alak ON felhasznalo.cel_alak_id = cel_alak.id
+        WHERE felhasznalo.felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [userId]);
+    return rows[0];
+}
+//felhasznalo_edzesi_napok
+
+//insert
+
+//update
+
+//select
+async function getUserEdzesNapok(userId) {
+    const query = `SELECT nap_sorszam FROM felhasznalo_edzesi_napok WHERE felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [userId]);
+    let napok = [];
+    for(let i = 0; i < rows.length; i++) {
+        napok.push(rows[i].nap_sorszam);
+    }
+    return napok;
 async function selectFelhDataById(id) {
     const query = 'SELECT felhasznalo.testsuly, felhasznalo.magassag, felhasznalo.edzesre_forditott_ido, felhasznalo.cel_alak_id, felhasznalo.cel_testsuly, felhasznalo.EKM_id FROM felhasznalo WHERE felhasznalo.felhasznalo_id = ?;';
     const [rows] = await pool.execute(query, [id]);
@@ -143,6 +167,32 @@ async function selectTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+//edzesterv tábla
+
+//insert
+async function saveEdzestervSor(adat) {
+    const query = "INSERT INTO edzesterv (terv_csoport_id, weekday_sorszam, gyakorlat_id, sorrend, felhasznalo_id) VALUES (?, ?, ?, ?, ?)";
+    const [rows] = await pool.execute(query, [adat.terv_csoport_id, adat.weekday_sorszam, adat.gyakorlat_id, adat.sorrend, adat.felhasznalo_id]);
+    return rows;
+}
+//update
+
+//select
+async function getLegutobbiEdzesterv(userId) {
+    const [csoportIdRes] = await pool.execute("SELECT terv_csoport_id FROM edzesterv WHERE felhasznalo_id = ? ORDER BY terv_csoport_id DESC LIMIT 1",[userId]);
+    const legutobbiId = csoportIdRes[0].terv_csoport_id;
+    const query = `
+        SELECT e.weekday_sorszam, e.sorrend, g.gyakorlat_id, g.nev, g.leiras, g.kor, g.ismetles, i.nev AS izomcsoport_nev
+        FROM edzesterv e
+        JOIN gyakorlat g ON e.gyakorlat_id = g.gyakorlat_id
+        LEFT JOIN gyakorlat_izomcsoport gi ON g.gyakorlat_id = gi.gyakorlat_id
+        LEFT JOIN izomcsoport i ON gi.izom_id = i.izom_id
+        WHERE e.terv_csoport_id = ?
+        ORDER BY e.weekday_sorszam, e.sorrend
+    `;
+    const [rows] = await pool.execute(query, [legutobbiId]);
+    return rows;
+}
 
 //komment tábla
 
@@ -179,7 +229,7 @@ async function selectKommentekByEdzoId(edzo_id) {
 
 //select
 async function selectAllGyakorlatok() {
-    const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
+    const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, gyakorlat.tipus, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -360,6 +410,10 @@ module.exports = {
     insertKulonlegesAlkalom,
     getCalendarData,
     selectTrainersByDist,
+    getUserCel,
+    getUserEdzesNapok,
+    saveEdzestervSor,
+    getLegutobbiEdzesterv,
     selectAllCelAlak,
     selectLoginDataById,
     selectFelhDataById,
