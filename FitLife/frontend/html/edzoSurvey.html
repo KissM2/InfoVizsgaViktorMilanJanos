@@ -13,6 +13,7 @@
     <script type="module" src="../js/edzoSurvey.js"></script>
     <!--!CSS-->
     <link rel="stylesheet" href="../css/regisztral.css">
+    <link rel="stylesheet" href="../css/trainer-datas.css">
     <link rel="stylesheet" href="../css/survey.css">
     <link rel="stylesheet" href="../css/map.css">
     <!--!JavaScript-->
@@ -21,44 +22,40 @@
 
 <body>
     <div class="container mt-5">
-        <h1 class="">Kérdőív</h1>
+        <h1 class="text-success">Kérdőív</h1>
         <hr>
         <form id="edzoSurveyForm">
-            <div class="row">
-                <h3 class="secondary-title">Edzőterem kiválasztása</h3>
-                <div class="col" id="mapBefogo">
-                    <div id="autocomplete"></div>
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header">Edzőterem kiválasztása</h3>
+                <div id="autocomplete"></div>
+                <div class="col card-body" id="mapBefogo">
                     <div id="map"></div>
                 </div>
             </div>
-            <hr class="mt-5">
-            <div class="row">
-                <h3 class="secondary-title">Hogyan írnád le magad?</h3>
-                <div><input type="text" id="leirasInput" name="leiras" placeholder="János vagyok, szeretek edzeni..."></div>
+
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header mb-3">Hogyan írnád le magad?</h3>
+                <div class="mb-3"><input type="text" id="leirasInput" name="leiras" class="form-control dark-input" placeholder="János vagyok, szeretek edzeni..." ></div>
             </div>
-            <hr>
-            <div class="row">
-                <h3 class="secondary-title">Adj meg egy idézetet</h3>
-                <div class="col mb-3">
-                    <div><input type="text" id="idezetInput" name="idezet" placeholder='"Bátraké a szerencse"'></div>
+
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header mb-3">Adj meg egy idézetet</h3>
+                <div class="mb-3"><input type="text" id="idezetInput" name="idezet" class="form-control dark-input" placeholder='"Bátraké a szerencse"'></div>
+            </div>
+
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header mb-3">Milyen kompetenciákkal és végzettségekkel rendelkezel?</h3>
+                <div class="mb-3"><input type="text" id="kompetenciakInput" name="kompetenciak" class="form-control dark-input" placeholder='Pl. Erő, kitartás, okj-s személyi edző'></div>
+            </div>
+
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header mb-3">Tölts fel magadról egy képet</h3>
+                <div class="col mb-3 max-width-30">
+                    <div><input type="file" id="kepInput" name="kep" class="form-control dark-input"></div>
                 </div>
             </div>
             <hr>
-            <div class="row">
-                <h3 class="secondary-title">Milyen kompetenciákkal és végzettségekkel rendelkezel?</h3>
-                <div class="col mb-3">
-                    <div><input type="text" id="kompetenciakInput" name="kompetenciak" placeholder='Pl. Erő, kitartás, okj-s személyi edző'></div>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <h3 class="secondary-title">Tölts fel magadról egy képet</h3>
-                <div class="col mb-3 max-width-20">
-                    <div><input type="file" id="kepInput" name="kep"></div>
-                </div>
-            </div>
-            <hr>
-            <button type="submit" class="btn-fitlife" id="submit">adatok mentése</button>
+            <button type="submit" class="btn-fitlife mb-5" id="submit">adatok mentése</button>
         </form>
         
     </div>
