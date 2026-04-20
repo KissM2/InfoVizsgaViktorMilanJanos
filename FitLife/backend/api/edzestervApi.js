@@ -21,7 +21,7 @@ router.get('/gyakorlatok', async (request, response) => {
 });
 router.get('/generalt-gyakorlatok', async (request, response) => {
     try {
-        const userId = request.query.id;
+        const userId = request.session.user.id;
         if (!userId) {
             return response.status(400).json({ message: "Hiányzó felhasználó ID." });
         }
@@ -115,7 +115,6 @@ router.post('/mentes-edzesterv', async (request, response) => {
                 weekday_sorszam: elem.nap,
                 gyakorlat_id: elem.gyakorlat_id,
                 sorrend: elem.sorrend,
-                felhasznalo_id: elem.userId
             });
         }
         response.status(200).json({ message: "Edzésterv sikeresen mentve!" });
@@ -125,7 +124,7 @@ router.post('/mentes-edzesterv', async (request, response) => {
 });
 router.get('/betoltes-edzesterv', async (request, response) => {
     try {
-        const userId = request.query.id;
+        const userId = request.session.user.id;
         if (!userId) {
             return response.status(400).json({ message: "Nincs id." });
         }
