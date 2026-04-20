@@ -123,4 +123,29 @@ router.post('/mentes-edzesterv', async (request, response) => {
         response.status(500).json({ message: "Hiba a mentés során." });
     }
 });
+router.get('/betoltes-edzesterv', async (request, response) => {
+    try {
+        const userId = request.query.id;
+        if (!adatok) {
+            return response.status(400).json({ message: "Nincs id." });
+        }
+        const adatok = await database.getLegutobbiEdzesterv(userId);
+        const formazott = {};
+        for (const sor of adatok) {
+            const nap = sor.weekday_sorszam;
+            formazott[nap].push({
+                gyakorlat_id: sor.gyakorlat_id,
+                nev: sor.nev,
+                leiras: sor.leiras,
+                kor: sor.kor,
+                ismetles: sor.ismetles,
+                izomcsoport_nev: sor.izomcsoport_nev
+            });
+        }
+        
+        response.status(200).json(formazott);
+    } catch (error) {
+        response.status(500).json({ message: "Hiba a terv betöltésekor." });
+    }
+});
 module.exports = router;

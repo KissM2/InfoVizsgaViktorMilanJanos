@@ -24,9 +24,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         vezerloSavKeszites();
         alapTablaGeneralas();
     }
-    const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok?id=${bejelentkezettUserId}`);
-    if (generaltAdatok) {
-        hetiTervAjanlas = generaltAdatok;
+    const table = document.querySelector(".tabla");
+    try {
+        const mentettTerv = await getKeres(`/api/betoltes-edzesterv?id=${bejelentkezettUserId}`);
+        if (mentettTerv) {
+            mentettTervFeltoltes(table, mentettTerv);
+        }
+    } 
+    catch (err) {
+        console.log("Nincs még mentett terv, üres tábla marad.");
+    }
+    try {
+        const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok?id=${bejelentkezettUserId}`);
+        if (generaltAdatok){
+            hetiTervAjanlas = generaltAdatok;
+        }
+    } catch (err) {
+        console.log("Generálási adat nem elérhető.");
     }
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -254,4 +268,22 @@ function gyakorlatKartyaKeszites(gyakorlat) {
     doboz.appendChild(info);
 
     return doboz;
+}
+function mentettTervFeltoltes(szuloTabla, mentettAdatok) {
+    const cellak = szuloTabla.querySelectorAll(".kaja-cella");
+    for (let i = 0; i < cellak.length; i++) cellak[i].innerHTML = "";
+
+    for (const dbNap in mentettAdatok) {
+        let napiGyakorlatok = mentettAdatok[dbNap];
+        let frontendNap = parseInt(dbNap) - 1;
+
+        for (let sorszam = 0; sorszam < napiGyakorlatok.length; sorszam++) {
+            let td = szuloTabla.querySelector(`.kaja-cella[data-nap='${frontendNap}'][data-sorszam='${sorszam}']`);
+            if (!td) {
+                ujSorHozzaadasa(szuloTabla);
+                td = szuloTabla.querySelector(`.kaja-cella[data-nap='${frontendNap}'][data-sorszam='${sorszam}']`);
+            }
+            td.appendChild(gyakorlatKartyaKeszites(napiGyakorlatok[sorszam]));
+        }
+    }
 }

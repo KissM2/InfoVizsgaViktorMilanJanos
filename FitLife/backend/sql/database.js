@@ -160,7 +160,21 @@ async function saveEdzestervSor(adat) {
 //update
 
 //select
-
+async function getLegutobbiEdzesterv(userId) {
+    const [csoportIdRes] = await pool.execute("SELECT terv_csoport_id FROM edzesterv WHERE felhasznalo_id = ? ORDER BY terv_csoport_id DESC LIMIT 1",[userId]);
+    const legutobbiId = csoportIdRes[0].terv_csoport_id;
+    const query = `
+        SELECT e.weekday_sorszam, e.sorrend, g.gyakorlat_id, g.nev, g.leiras, g.kor, g.ismetles, i.nev AS izomcsoport_nev
+        FROM edzesterv e
+        JOIN gyakorlat g ON e.gyakorlat_id = g.gyakorlat_id
+        LEFT JOIN gyakorlat_izomcsoport gi ON g.gyakorlat_id = gi.gyakorlat_id
+        LEFT JOIN izomcsoport i ON gi.izom_id = i.izom_id
+        WHERE e.terv_csoport_id = ?
+        ORDER BY e.weekday_sorszam, e.sorrend
+    `;
+    const [rows] = await pool.execute(query, [legutobbiId]);
+    return rows;
+}
 
 //komment tábla
 
@@ -370,5 +384,6 @@ module.exports = {
     selectTrainersByDist,
     getUserCel,
     getUserEdzesNapok,
-    saveEdzestervSor
+    saveEdzestervSor,
+    getLegutobbiEdzesterv
 };
