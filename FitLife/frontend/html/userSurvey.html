@@ -14,37 +14,64 @@
     <link rel="stylesheet" href="../css/regisztral.css" />
     <link rel="stylesheet" href="../css/survey.css">
     <link rel="stylesheet" href="../css/userSurvey.css">
+    <link rel="stylesheet" href="../css/trainer-datas.css">
     <!--!JavaScript-->
     <title>FitLife | kérdőív</title>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <form id="surveyForm">
-            <h1>Kérdőív</h1>
+            <h1 class="text-success">Kérdőív</h1>
 
             <hr>
+            <div class="card row dark-card mb-4">
+                <h3 class="secondary-title space-evenly card-header">Testi adottságok</h3>
+                <div class="row card-body">
+                    <div class="col-lg-6 col-md-12 ">
+                        <label class="labelWidth label-color" for="testsulyInput">Testsúly(kg):
+                            <input class="inputMargin form-control dark-input" type="number" value="80" min="40" max="500" id="testsulyInput" name="testsuly">
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label class="labelWidth label-color" for="celTestsulyInput">Cél testsúly(kg):
+                            <input class="inputMargin form-control dark-input" type="number" value="80" min="40" max="120" id="celTestsulyInput" name="cel_testsuly">
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label class="labelWidth label-color" for="magassagInput">magassag(cm):
+                            <input class="inputMargin form-control dark-input" type="number" value="140" min="80" max="250" id="magassagInput" name="magassag">
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label class="labelWidth label-color" for="edzesIdoInput">Edzésre fordított idő naponta(min): 
+                            <input class="inputMargin form-control dark-input" type="number" value="60" min="0" max="1440" id="edzesIdoInput" name="edzesre_forditott_ido">
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label class="labelWidth label-color" for="cel_alak">Cel alak: <br>
+                            <select class="inputMargin form-control dark-input" name="cel_alak" id="cel_alak"></select>
+                        </label>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label class="labelWidth label-color" for="edzesen_kivuli_mozgas">Edzésen kívüli mozgás: <br>
+                            <select class="inputMargin form-control dark-input" name="edzesen_kivuli_mozgas" id="edzesen_kivuli_mozgas"></select>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
-            <h3 class="secondary-title d-flex space-evenly">Testi adottságok</h3>
-            <div class="row">
-                <div class="col-12"><label class="labelWidth" for="testsulyInput">Testsúly(kg):<input class="inputWidth " type="number" value="80" min="40" max="500" id="testsulyInput" name="testsuly"></label></div>
-                <div class="col-12"><label class="labelWidth" for="celTestsulyInput">Cél testsúly(kg):<input class="inputWidth" type="number" value="80" min="40" max="120" id="celTestsulyInput" name="celTestsuly"></label></div>
-                <div class="col-12"><label class="labelWidth" for="magassagInput">magassag(cm):<input class="inputWidth" type="number" value="140" min="80" max="250" id="magassagInput" name="magassag"></label></div>
-                <div class="col-12"><label class="labelWidth" for="edzesIdoInput">Edzésre fordított idő naponta(min): <input class="inputWidth" type="number" value="60" min="0" max="1440" id="edzesIdoInput" name="edzesIdo"></label></div>
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title card-header">Alergiák</h3>
+                <div class="col mb-3 d-flex flex-wrap card-body" id="etelAllergiak"> </div>
+            </div>
+            
+            <div class="row card dark-card mb-4">
+                <h3 class="secondary-title card-header">Nem preferált ételek</h3>
+                <div class="col mb-3 d-flex flex-wrap card-body" id="etelPrefferenciak"> </div>
             </div>
             <hr>
-
-            <div class="row">
-                <h3 class="secondary-title">Alergiák</h3>
-                <div class="col mb-3 d-flex flex-wrap" id="etelAllergiak"> </div>
-            </div>
-            <hr>
-            <div class="row">
-                <h3 class="secondary-title">Nem preferált ételek</h3>
-                <div class="col mb-3 d-flex flex-wrap" id="etelPrefferenciak"> </div>
-            </div>
-            <hr>
-            <button type="submit" class="btn-fitlife" id="submit">adatok mentése</button>
+            <button type="submit" class="btn-fitlife mb-5" id="submit">adatok mentése</button>
         </form>
     </div>
     
