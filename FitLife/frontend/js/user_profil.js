@@ -1,22 +1,45 @@
 import { navbarGeneralas } from './navbar.js';
-import { postKeres, getKeres } from './kozosFetch.js';
+import { postKeres, getKeres, postApi } from './kozosFetch.js';
+
 const menuLinkek = [
     { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
     { nev: "Receptek", url: "../html/etrendek.html" },
     { nev: "Edzéstervek", url: "../html/edzesterv.html" },
 ];
 
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded', async function(){
     navbarGeneralas(menuLinkek);
+
     document.getElementById('mentes_profil_adat').addEventListener('click', async function(){
         const formdata = new FormData(document.getElementById('profil_adat_form'));
         postKeres('/api/updateAuthData', formdata);
-    })
+    });
+
     document.getElementById('mentes_szemelyi_adat').addEventListener('click', async function(){
         const formdata = new FormData(document.getElementById('szemelyi_adat_form'));
         postKeres('/api/userDataUpdate', formdata);
-    })
+    });
+
     adatokBetolteseInputba()
+
+    const alergiasRa = await getKeres('/api/getAllergiasRa')
+    let etelAllergiakValasztott = alergiasRa.allergiak;
+    let etelPrefferenciakValasztott = alergiasRa.preferenciak;
+
+    const allergenek = (await getKeres('/api/getAllAllergen')).result;
+    let allergiak = allergenek.filter((allergen) => allergen.tipus == "a")
+    let preferenciak = allergenek.filter((preferencia) => preferencia.tipus == "p")
+
+    valasztoGeneralasa('etelAllergiak', allergiak, etelAllergiakValasztott);
+    valasztoGeneralasa('etelPrefferenciak', preferenciak, etelPrefferenciakValasztott);
+
+    document.getElementById('mentes_allergiak').addEventListener('click', async function(){
+        postApi('/api/postAllergiak', {etelAllergiak: etelAllergiakValasztott});
+    });
+
+    document.getElementById('mentes_preferenciak').addEventListener('click', async function(){
+        postApi('/api/postPreferenciak', {etelPreferenciak: etelPrefferenciakValasztott});
+    });
 });
 
 async function adatokBetolteseInputba() {
@@ -58,4 +81,36 @@ async function adatokBetolteseInputba() {
         }
         EKMselect.appendChild(EKMOptionElement);
     }
+}
+
+function valasztoGeneralasa(id, lista, valasztott) {
+    let befogo = document.getElementById(id);
+    for (let i = 0; i < lista.length; i++) {
+        let div = document.createElement('div');
+        div.classList.add('survey-item', 'form-control', 'dark-input');
+        if(valasztott.length > 0 && hanyadikElem(valasztott, lista[i]) < valasztott.length){
+            div.classList.add('selected');
+        }
+        div.innerText = lista[i].nev;
+        befogo.appendChild(div);
+        div.addEventListener('click', function(){
+            if(valasztott.length > 0 && hanyadikElem(valasztott, lista[i]) < valasztott.length){
+                valasztott.splice(hanyadikElem(valasztott, lista[i]), 1);
+                div.classList.remove('selected');
+                return;
+            }else{
+                valasztott.push({allergen_id: lista[i].allergen_id});
+                div.classList.add('selected');
+            }
+        });
+    }
+}
+
+function hanyadikElem(lista, elem){
+    let i = 0;    
+    
+    while(i < lista.length && lista[i].allergen_id != elem.allergen_id){
+        i++
+    }
+    return i;
 }
