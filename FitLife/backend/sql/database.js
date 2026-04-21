@@ -280,6 +280,13 @@ async function insertAllergiasRa(id, allergia) {
 //update
 
 
+//delete
+async function deleteAllergiasRa(id, allergen_id) {
+    const query = "DELETE FROM allergias_ra WHERE allergias_ra.felhasznalo_id = ? AND allergias_ra.allergen_id = ?";
+    const [rows] = await pool.execute(query, [id, allergen_id]);
+    return rows;
+}
+
 //select
 async function selectAorPById(id, tipus) {
     const query = "SELECT allergen.allergen_id FROM allergias_ra INNER JOIN allergen on allergias_ra.allergen_id = allergen.allergen_id WHERE allergias_ra.felhasznalo_id = ? AND allergen.tipus = ?";
@@ -442,4 +449,5 @@ module.exports = {
     updateJelszo,
     insertAllergiasRa,
     selectAorPById,
+    deleteAllergiasRa,
 };
