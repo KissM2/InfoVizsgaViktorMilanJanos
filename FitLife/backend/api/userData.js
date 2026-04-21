@@ -107,4 +107,76 @@ router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
     }
 });
 
+router.post('postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, async (request,response) =>{
+    try {
+        const {etelAllergiak} = request.body;
+
+        const allergiakMost = database.selectAorPById(request.session.user.id, 'a');
+
+        let hozzaAdandoak = [];
+
+        etelAllergiak.forEach(allergia => {
+            let i = 0;
+            while(i < allergiakMost.length && allergia != allergiakMost[i]){
+                i++
+            }
+            if(i == allergiakMost.length){
+                database.insertAllergiasRa(request.session.user.id, allergia);
+            }
+        });
+        response.status(200).json({
+            message: "Allergia adatok feltöltése sikeres"
+        });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Allergia adatok feltöltése sikertelen"
+        });
+    }
+});
+
+router.post('postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenciak, async (request,response) =>{
+    try {
+        const {etelPreferenciak} = request.body;
+
+        const preferenciakMost = database.selectAorPById(request.session.user.id, 'p');
+
+        etelPreferenciak.forEach(preferencia => {
+            let i = 0;
+            while(i < preferenciakMost.length && preferencia != preferenciakMost[i]){
+                i++
+            }
+            if(i == preferenciakMost.length){
+                database.insertAllergiasRa(request.session.user.id, preferencia);
+            }
+        });
+        response.status(200).json({
+            message: "Preferencia adatok feltöltése sikeres"
+        });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Preferencia adatok feltöltése sikertelen"
+        });
+    }
+});
+
+router.get('getAllergiasRa', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const allergiak = database.selectAorPById(request.session.user.id, 'p');
+        const preferenciak = database.selectAorPById(request.session.user.id, 'a');
+
+        response.status(200).json({
+            message: "Allergiák és preferenciák lekérése sikeres",
+            allergiak: allergiak,
+            preferenciak: preferenciak,
+        });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Allergiák és preferenciák lekérése sikertelen"
+        });
+    }
+});
+
 module.exports = router;
