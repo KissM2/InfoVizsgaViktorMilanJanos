@@ -215,7 +215,26 @@ async function selectAllAllergen() {
     return rows;
 }
 
+//allergias_ra tábla
+
 //heti_beosztas tábla
+
+//insert
+async function insertAllergiasRa(id, allergia) {
+    const query = "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES(?,?)";
+    const [rows] = await pool.execute(query, [id, allergia]);
+    return rows;
+}
+
+//update
+
+
+//select
+async function selectAorPById(id, tipus) {
+    const query = "SELECT allergen.allergen_id FROM allergias_ra INNER JOIN allergen on allergias_ra.allergen_id = allergen.allergen_id WHERE allergias_ra.felhasznalo_id = ? AND allergen.tipus = ?";
+    const [rows] = await pool.execute(query, [id, tipus]);
+    return rows;
+}
 
 //insert
 async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
@@ -365,5 +384,7 @@ module.exports = {
     selectFelhDataById,
     selectAllEKM,
     updateLoginData,
-    updateJelszo
+    updateJelszo,
+    insertAllergiasRa,
+    selectAorPById,
 };
