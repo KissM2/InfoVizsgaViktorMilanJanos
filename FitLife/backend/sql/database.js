@@ -54,6 +54,15 @@ async function selectLoginDataById(id) {
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
+async function getUserPhysicalData(userId) {
+    const query = `
+        SELECT l.nem, l.szul_datum, f.testsuly, f.cel_testsuly, f.magassag, f.EKM_id 
+        FROM login l
+        JOIN felhasznalo f ON l.id = f.login_id
+        WHERE l.id = ?`;
+    const [rows] = await pool.execute(query, [userId]);
+    return rows[0];
+}
 
 //felhasznalo tábla
 
@@ -69,6 +78,10 @@ async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
     const query = "UPDATE felhasznalo SET testsuly=?,magassag=?,edzesre_forditott_ido=?,cel_alak_id=?,cel_testsuly=?,EKM_id=? WHERE felhasznalo.felhasznalo_id = ?";
     const [rows] = await pool.execute(query, [testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id]);
     return rows;
+}
+async function insertCalorieGoal(userId, kcal) {
+    const query = "UPDATE felhasznalo SET napi_kcal_cel = ? WHERE login_id = ?";
+    await pool.execute(query, [kcal, userId]);
 }
 
 //select
@@ -420,5 +433,7 @@ module.exports = {
     selectFelhDataById,
     selectAllEKM,
     updateLoginData,
-    updateJelszo
+    updateJelszo,
+    getUserPhysicalData,
+    updateCalorieGoal
 };
