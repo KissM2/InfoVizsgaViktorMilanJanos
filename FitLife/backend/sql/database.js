@@ -203,27 +203,22 @@ async function selectAllAllergen() {
 //insert
 async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
     const query = `
-        INSERT INTO heti_beosztas 
-        (weekday, start, end, mettol_ervenyes, edzo_id)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO heti_beosztas
+        (weekday, start, end, mettol_ervenyes, edzo_id, statusz)
+        VALUES (?, ?, ?, ?, ?, 'aktiv')
     `;
-
-    const [result] = await pool.execute(query, [
-        weekday,
-        start,
-        end,
-        mettol,
-        edzoId
-    ]);
-
-    return result;
+    await pool.execute(query, [weekday, start, end, mettol, edzoId]);
 }
 
 //delete
-async function deleteHetiBeosztas(edzoId, mettol) {
-    const query="DELETE FROM heti_beosztas WHERE edzo_id = ? AND mettol_ervenyes = ?";
-    const [rows] = await pool.execute(query, [edzoId, mettol]);
-    return rows.affectedRows > 0;
+async function softDeleteHetiBeosztas(edzoId, mettol) {
+    const query = `
+        UPDATE heti_beosztas
+        SET statusz = 'torolt'
+        WHERE edzo_id = ?
+        AND mettol_ervenyes = ?
+    `;
+    await pool.execute(query, [edzoId, mettol]);
 }
 
 //select
@@ -233,29 +228,31 @@ async function getHetiBeosztas(edzoId) {
         SELECT *
         FROM heti_beosztas
         WHERE edzo_id = ?
+        AND statusz = 'aktiv'
     `;
-
     const [rows] = await pool.execute(query, [edzoId]);
     return rows;
 }
 async function checkHetiBeosztasExists(edzoId, mettol) {
     const query = `
-        SELECT 1 
-        FROM heti_beosztas 
-        WHERE edzo_id = ? AND mettol_ervenyes = ?
+        SELECT 1
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+        AND mettol_ervenyes = ?
+        AND statusz = 'aktiv'
         LIMIT 1
     `;
-
     const [rows] = await pool.execute(query, [edzoId, mettol]);
     return rows.length > 0;
 }
 // heti beosztás van-e benne
 async function isInHetiBeosztas(edzoId, weekday, ido) {
     const query = `
-        SELECT *
+        SELECT 1
         FROM heti_beosztas
         WHERE edzo_id = ?
         AND weekday = ?
+        AND statusz = 'aktiv'
         AND start <= ?
         AND end >= ?
         LIMIT 1
@@ -276,10 +273,12 @@ async function getKulonlegesAlkalmak(edzoId) {
         SELECT *
         FROM kulonleges_alkalom
         WHERE edzo_id = ?
+        AND statusz <> 'torolt'
     `;
     const [rows] = await pool.execute(query, [edzoId]);
     return rows;
 }
+
 
 // pontos KA
 async function getKAByExact(edzoId, datum, start, end) {
@@ -290,6 +289,7 @@ async function getKAByExact(edzoId, datum, start, end) {
         AND datum = ?
         AND start = ?
         AND end = ?
+        AND statusz <> 'torolt'
         LIMIT 1
     `;
     const [rows] = await pool.execute(query, [edzoId, datum, start, end]);
@@ -322,7 +322,26 @@ async function updateKAStatus(ka_id, statusz) {
     const [result] = await pool.execute(query, [statusz, ka_id]);
     return result.affectedRows > 0;
 }
-
+//soft delete
+async function markInvalidKAAsDeleted(edzoId, mettol) {
+    const query = `
+        UPDATE kulonleges_alkalom ka
+        SET ka.statusz = 'torolt'
+        WHERE ka.edzo_id = ?
+        AND ka.statusz <> 'torolt'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM heti_beosztas hb
+            WHERE hb.edzo_id = ka.edzo_id
+            AND hb.statusz = 'aktiv'
+            AND hb.weekday = WEEKDAY(ka.datum)
+            AND hb.mettol_ervenyes = ?
+            AND hb.start <= ka.start
+            AND hb.end >= ka.start
+        )
+    `;
+    await pool.execute(query, [edzoId, mettol]);
+}
 
 
 //select
@@ -340,16 +359,14 @@ async function updateKAStatus(ka_id, statusz) {
 
 //szét kéne szedni
 async function getFoglalas(edzoId) {
-
-    const foglalasQuery = `
-        SELECT datum, start, end, statusz, felhasznalo_id
+    const query = `
+        SELECT *
         FROM foglalas
         WHERE edzo_id = ?
+        AND statusz <> 'torolt'
     `;
-
-    const [foglalas] = await pool.execute(foglalasQuery, [edzoId]);
-
-    return foglalas;
+    const [rows] = await pool.execute(query, [edzoId]);
+    return rows;
 }
 //update users?
 // async function updateUserProfile(email, felh, telsz, userId) {
@@ -385,10 +402,11 @@ module.exports = {
     insertKulonlegesAlkalom,
     getFoglalas,
     selectTrainersByDist,
-    deleteHetiBeosztas,
+    softDeleteHetiBeosztas,
     isInHetiBeosztas,
     getKulonlegesAlkalmak,
     getHetiBeosztas,
     getKAByExact,
-    updateKAStatus
+    updateKAStatus,
+    markInvalidKAAsDeleted
 };

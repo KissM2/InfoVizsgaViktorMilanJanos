@@ -14,7 +14,6 @@ export async function postKeres(url, formData) {
         return result;
     } catch (error) {
         console.error('Hiba:', error);
-        alert("Hálózati hiba!");
     }
 }
 export async function getKeres(url) {

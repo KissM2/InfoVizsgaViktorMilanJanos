@@ -52,7 +52,7 @@ router.get("/getHB", loginCheck.loginCheck, async (req, res) => {
     }
 });
 
-// INSERT (slot összevonás JAVÍTVA)
+// INSERT
 router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
@@ -62,9 +62,21 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
 
         const exists = await database.checkHetiBeosztasExists(edzoId, mettolFormatted);
 
+        // soft delete
         if (exists) {
-            await database.deleteHetiBeosztas(edzoId, mettolFormatted);
+            await database.softDeleteHetiBeosztas(edzoId, mettolFormatted);
         }
+
+        const toMinutes = (t) => {
+            const [h = 0, m = 0] = t.split(":").map(Number);
+            return h * 60 + m;
+        };
+
+        const toTime = (mins) => {
+            const h = String(Math.floor(mins / 60)).padStart(2, "0");
+            const m = String(mins % 60).padStart(2, "0");
+            return `${h}:${m}`;
+        };
 
         let insertedCount = 0;
 
@@ -80,8 +92,7 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
             for (let j = 1; j < sorted.length; j++) {
                 const current = toMinutes(sorted[j]);
 
-                // 🔥 JAVÍTÁS: folytonosság check
-                if (current !== prev + 30) {
+                if (current !== prev) {
                     await database.insertHetiBeosztasSingle(
                         i,
                         toTime(start),
@@ -96,7 +107,6 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
                 prev = current;
             }
 
-            // utolsó blokk
             await database.insertHetiBeosztasSingle(
                 i,
                 toTime(start),
@@ -107,6 +117,9 @@ router.post('/insertHB', loginCheck.loginCheck, async (req, res) => {
 
             insertedCount++;
         }
+
+        // KA automatikus törlés
+        await database.markInvalidKAAsDeleted(edzoId, mettolFormatted);
 
         if (insertedCount === 0) {
             return res.status(400).json({
@@ -141,20 +154,20 @@ router.get("/getKA", loginCheck.loginCheck, async (req, res) => {
 });
 
 // TOGGLE
+
 router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
         const { datum, start, end } = req.body;
 
-        const weekdayJs = new Date(datum).getDay();
-        const weekday = weekdayJs === 0 ? 6 : weekdayJs - 1;
+        const weekday = (new Date(datum).getDay() + 6) % 7;
 
-        // VALIDÁCIÓ (csak beosztásban lehet)
         const benneVan = await database.isInHetiBeosztas(
             edzoId,
             weekday,
             start
         );
+
         if (!benneVan) {
             return res.status(400).json({
                 message: "Ez az időpont nincs a beosztásban"
@@ -169,6 +182,14 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
         );
 
         if (existing) {
+
+            //torolt tiltás
+            if (existing.statusz === "torolt") {
+                return res.status(400).json({
+                    message: "Ez az időpont törölve lett"
+                });
+            }
+
             const newStatus =
                 existing.statusz === "aktiv" ? "inaktiv" : "aktiv";
 
@@ -188,10 +209,10 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
         res.json({ statusz: "aktiv" });
 
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: "Hiba történt" });
     }
 });
+
 
 /* =========================
    NAPTÁR
