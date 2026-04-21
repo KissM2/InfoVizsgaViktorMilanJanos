@@ -107,23 +107,30 @@ router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
     }
 });
 
-router.post('postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, async (request,response) =>{
+router.post('/postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, async (request,response) =>{
     try {
         const {etelAllergiak} = request.body;
 
-        const allergiakMost = database.selectAorPById(request.session.user.id, 'a');
-
-        let hozzaAdandoak = [];
+        const allergiakMost = await database.selectAorPById(request.session.user.id, 'a');
 
         etelAllergiak.forEach(allergia => {
             let i = 0;
-            while(i < allergiakMost.length && allergia != allergiakMost[i]){
+            while(i < allergiakMost.length && allergia.allergen_id != allergiakMost[i].allergen_id){
                 i++
             }
             if(i == allergiakMost.length){
-                database.insertAllergiasRa(request.session.user.id, allergia);
-            }
+                database.insertAllergiasRa(request.session.user.id, allergia.allergen_id);
+            }else{
+                if(i < allergiakMost.length){
+                    allergiakMost.splice(i,1);
+                }
+            }            
         });
+
+        allergiakMost.forEach(allergia =>{      
+            database.deleteAllergiasRa(request.session.user.id, allergia.allergen_id);
+        });
+
         response.status(200).json({
             message: "Allergia adatok feltöltése sikeres"
         });
@@ -135,21 +142,30 @@ router.post('postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, as
     }
 });
 
-router.post('postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenciak, async (request,response) =>{
+router.post('/postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenciak, async (request,response) =>{
     try {
         const {etelPreferenciak} = request.body;
 
-        const preferenciakMost = database.selectAorPById(request.session.user.id, 'p');
+        const preferenciakMost = await database.selectAorPById(request.session.user.id, 'p');
 
         etelPreferenciak.forEach(preferencia => {
             let i = 0;
-            while(i < preferenciakMost.length && preferencia != preferenciakMost[i]){
+            while(i < preferenciakMost.length && preferencia.allergen_id != preferenciakMost[i].allergen_id){
                 i++
             }
             if(i == preferenciakMost.length){
-                database.insertAllergiasRa(request.session.user.id, preferencia);
-            }
+                database.insertAllergiasRa(request.session.user.id, preferencia.allergen_id);
+            }else{
+                if(i < preferenciakMost.length){
+                    preferenciakMost.splice(i,1);
+                }
+            } 
         });
+
+        preferenciakMost.forEach(preferencia =>{  
+            database.deleteAllergiasRa(request.session.user.id, preferencia.allergen_id);
+        });
+
         response.status(200).json({
             message: "Preferencia adatok feltöltése sikeres"
         });
@@ -161,10 +177,10 @@ router.post('postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenci
     }
 });
 
-router.get('getAllergiasRa', loginCheck.loginCheck, async (request, response) =>{
+router.get('/getAllergiasRa', loginCheck.loginCheck, async (request, response) =>{
     try {
-        const allergiak = database.selectAorPById(request.session.user.id, 'p');
-        const preferenciak = database.selectAorPById(request.session.user.id, 'a');
+        const allergiak = await database.selectAorPById(request.session.user.id, 'a');
+        const preferenciak = await database.selectAorPById(request.session.user.id, 'p');
 
         response.status(200).json({
             message: "Allergiák és preferenciák lekérése sikeres",
