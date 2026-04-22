@@ -54,6 +54,11 @@ async function selectLoginDataById(id) {
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
+async function selectAllLoginData() {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login;';
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 
 //felhasznalo tábla
 
@@ -450,4 +455,5 @@ module.exports = {
     insertAllergiasRa,
     selectAorPById,
     deleteAllergiasRa,
+    selectAllLoginData,
 };
