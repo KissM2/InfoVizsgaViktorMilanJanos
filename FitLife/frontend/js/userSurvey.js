@@ -31,12 +31,12 @@ function valasztoGeneralasa(id, lista, valasztott) {
         div.innerText = lista[i].nev;
         befogo.appendChild(div);
         div.addEventListener('click', function(){
-            if(valasztott.includes(lista[i].allergen_id)){
-                valasztott.splice(valasztott.indexOf(lista[i].allergen_id), 1);
+            if(hanyadikElem(valasztott, lista[i]) < valasztott.length){
+                valasztott.splice(hanyadikElem(valasztott, lista[i]), 1);
                 div.classList.remove('selected');
                 return;
             }else{
-                valasztott.push(lista[i].allergen_id);
+                valasztott.push({allergen_id: lista[i].allergen_id});
                 div.classList.add('selected');
             }
         });
@@ -63,4 +63,12 @@ async function selectFeltoltes() {
         EKMOptionElement.value = EKMOptions[i].id;
         EKMselect.appendChild(EKMOptionElement);
     }
+}
+
+function hanyadikElem(lista, elem){
+    let i = 0; 
+    while(i < lista.length && lista[i].allergen_id != elem.allergen_id){
+        i++
+    }
+    return i;
 }
