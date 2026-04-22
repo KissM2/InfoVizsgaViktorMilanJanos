@@ -58,11 +58,7 @@ async function selectLoginDataById(id) {
 //felhasznalo tábla
 
 //insert
-async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id) {
-    const query = "INSERT INTO felhasznalo(felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id) VALUES (?,?,?,?,?,?,?)";
-    const [rows] = await pool.execute(query, [id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id]);
-    return rows;
-}
+
 
 //update
 async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id) {
@@ -410,6 +406,61 @@ async function getCalendarData(edzoId) {
     const [foglalas] = await pool.execute(foglalasQuery, [edzoId]);
 
     return { heti, kulonleges, foglalas };
+}
+
+//tranzakció(felhasznalo + allergias_ra)
+async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak) {
+    const conn = await pool.getConnection();
+    try{
+        // Tranzakció indítása
+        await conn.beginTransaction();
+
+        // felhaszbáló rögzítése
+        const [result1] = await conn.execute(
+            "INSERT INTO felhasznalo(felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id) VALUES (?,?,?,?,?,?,?)",
+            [id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id]
+        );
+
+        if (result1.affectedRows !== 1) {
+          throw new Error("Sikertelen levonás");
+        }
+
+        // allergiák hozzá adása
+        for (let i = 0; i < allergiak.length; i++) {   
+            const [result2] = await conn.execute(
+                "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
+                [id, allergiak[i].allergen_id]
+            );
+            if (result2.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+        
+        // allergiák hozzá adása
+        for (let i = 0; i < preferenciak.length; i++) {   
+            const [result3] = await conn.execute(
+                "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
+                [id, preferenciak[i].allergen_id]
+            );
+            if (result3.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+
+        // ✅ Minden sikeres → COMMIT
+        await conn.commit();
+        console.log("Tranzakció sikeres");
+        return "Tranzakció sikeres";
+    } catch (err) {
+        // ❌ Hiba esetén → ROLLBACK
+        await conn.rollback();
+        console.error("Tranzakció visszagörgetve:", err.message);
+        throw err;
+
+    } finally {
+        // Kapcsolat vissza a poolba
+        conn.release();
+    }
 }
 
 //!Export
