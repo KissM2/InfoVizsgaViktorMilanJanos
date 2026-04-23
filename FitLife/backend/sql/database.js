@@ -54,6 +54,16 @@ async function selectLoginDataById(id) {
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
+async function selectAllLoginData() {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role NOT LIKE "admin";';
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectAllAdminLoginData() {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role = "admin";';
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 
 //felhasznalo tábla
 
@@ -217,6 +227,40 @@ async function selectKommentekByEdzoId(edzo_id) {
         ORDER BY k.komment_id DESC
     `;
     const [rows] = await pool.execute(query, [edzo_id]);
+    return rows;
+}
+async function selectKommentekByUserIdForAdmin(user_id) {
+    const query = `
+        SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login f ON k.felhasznalo_id = f.id
+            INNER JOIN login e ON k.edzo_id = e.id
+        WHERE k.felhasznalo_id = ?
+        ORDER BY k.komment_id DESC
+    `;
+    const [rows] = await pool.execute(query, [user_id]);
+    return rows;
+}
+async function selectKommentekByEdzoIdForAdmin(edzo_id) {
+    const query = `
+        SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login e ON k.edzo_id = e.id
+            INNER JOIN login f ON k.felhasznalo_id = f.id
+        WHERE k.edzo_id = ?
+        ORDER BY k.komment_id DESC
+    `;
+    const [rows] = await pool.execute(query, [edzo_id]);
+    return rows;
+}
+async function selectAllKommentek() {
+    const query = `
+    SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login e ON k.edzo_id = e.id
+            INNER JOIN login f ON k.felhasznalo_id = f.id
+    `;
+    const [rows] = await pool.execute(query);
     return rows;
 }
 
@@ -450,4 +494,9 @@ module.exports = {
     insertAllergiasRa,
     selectAorPById,
     deleteAllergiasRa,
+    selectAllLoginData,
+    selectAllKommentek,
+    selectKommentekByUserIdForAdmin,
+    selectKommentekByEdzoIdForAdmin,
+    selectAllAdminLoginData
 };
