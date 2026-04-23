@@ -39,6 +39,38 @@ router.post('/kommentek', async (request, response) => {
     }
 });
 
+//GET /api/getAllKommentek'
+router.get('/getAllKommentek', async (request, response) => {
+    try {
+        const kommentek = await database.selectAllKommentek();
+        response.status(200).json({  
+            message: "Kommentek sikeresen lekérve",
+            results: kommentek 
+        });
+    } catch (error) {
+        response.status(500).json({ message: 'Kommentek lekérése sikertelen' });
+    }
+});
 
+//GET /api/kommentek : egy adott edző kommentjei
+router.get('/getKommentekForAdmin', async (request, response) => {
+    try {
+        const {edzo_id, user_id} = request.query;
+        if (!edzo_id && !user_id){
+            response.status(400).json({ message: 'Hiányzó edző ID.' });
+        }
 
+        let kommentek;
+
+        if (edzo_id){
+            kommentek = await database.selectKommentekByEdzoIdForAdmin(edzo_id);
+        } else if (user_id){
+            kommentek = await database.selectKommentekByUserIdForAdmin(user_id);
+        }
+
+        response.status(200).json({ results: kommentek });
+    } catch (error) {
+        response.status(500).json({ message: 'Szerver hiba.' });
+    }
+});
 module.exports = router;

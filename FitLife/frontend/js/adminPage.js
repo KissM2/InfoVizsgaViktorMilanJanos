@@ -3,8 +3,22 @@ import {getKeres} from '../js/kozosFetch.js';
 document.addEventListener("DOMContentLoaded", async function(){
     const felhasznalok = await getKeres('/api/getAllAuthData')    
     userTablaFeltoltes(felhasznalok.result);
-    //const kommentek = await getKeres('/api/');
-    //kommentKiiras(kommentek);
+    const kommentek = await getKeres('/api/getAllKommentek');
+    kommentKiiras(kommentek.results);
+
+    document.getElementById('ujFelhasznaloBtn').addEventListener('click', function(){
+        //ide jön majd az új felhasználó hozzáadásának a funkciója
+    });
+
+    document.getElementById('felhasznaloFrissites').addEventListener('click', async function(){
+        const felhasznalok = await getKeres('/api/getAllAuthData')    
+        userTablaFeltoltes(felhasznalok.result);
+    });
+
+    document.getElementById('kommentekFrissites').addEventListener('click', async function(){
+        const kommentek = await getKeres('/api/getAllKommentek');
+        kommentKiiras(kommentek.results);
+    });
 });
 
 function userTablaFeltoltes(felhasznalok){
@@ -21,7 +35,11 @@ function userTablaFeltoltes(felhasznalok){
             if(key == "szul_datum"){
                 cella.textContent = user[key].split('T')[0];    
             }else{
-                cella.textContent = user[key];
+                if(key == "role"){
+                    roleSelectGeneralas(cella, user);
+                }else{
+                    cella.textContent = user[key];
+                }
             }
             sor.appendChild(cella);
         }
@@ -31,8 +49,23 @@ function userTablaFeltoltes(felhasznalok){
         let torles = document.createElement('button');
         torles.textContent = 'Törlés';
         torles.classList.add('btn', 'btn-danger', 'btn-sm');
-        torles.addEventListener('click', function () {
+        torles.addEventListener('click', function (event) {            
             //ide jön majd a törlés funkció
+        });
+
+        sor.addEventListener('click', async function(event){
+            //megakadályozzuk, hogy a selectre vagy a gombra kattintva is lefusson ez az event
+            if (event.target.closest('select, button')) {
+                return;
+            }
+
+            if(user.role == "edzo"){
+                const kommentek = await getKeres('/api/getKommentekForAdmin?edzo_id=' + user.id);
+                kommentKiiras(kommentek.results);
+            }else{
+                const kommentek = await getKeres('/api/getKommentekForAdmin?user_id=' + user.id);
+                kommentKiiras(kommentek.results);
+            }            
         });
 
         torlesCella.appendChild(torles);
@@ -42,35 +75,64 @@ function userTablaFeltoltes(felhasznalok){
 }
 
 function kommentKiiras(kommentek){
-    let kommentDiv = document.getElementById('kommentek');
-    kommentDiv.innerHTML = '';    
+    let tbody = document.getElementById('kommentekTableBody');
+    tbody.innerHTML = '';    
 
     kommentek.forEach(komment =>{
-        let card = document.createElement('div');
-        card.classList.add('card', 'mb-3', 'col-lg-4', 'col-md-6', 'col-sm-12');
-        let cardBody = document.createElement('div');
-        cardBody.classList.add('card-body');
-        let title = document.createElement('h5');
-        title.textContent = komment.felhasznaloNev;
-        title.classList.add('card-title');
-        cardBody.appendChild(title);
+        let sor = document.createElement('tr');
+        sor.dataset.id = komment.id;
+        sor.classList.add('row-hover-border')
 
-        let kommentText = document.createElement('p');
-        kommentText.textContent = komment.komment;
-        kommentText.classList.add('card-text');
-        cardBody.appendChild(kommentText);
+        for (const key in komment) {
+            let cella = document.createElement('td');
+            if(key == "szul_datum"){
+                cella.textContent = komment[key].split('T')[0];    
+            }else{
+                cella.textContent = komment[key];
+            }
+            sor.appendChild(cella);
+        }
 
-        let ertekeles = document.createElement('p');
-        ertekeles.textContent = "Értékelés: 4/5";
-        ertekeles.classList.add('card-text');
-        cardBody.appendChild(ertekeles);
+        let torlesCella = document.createElement('td');
 
-        let datum = document.createElement('small');
-        datum.textContent = komment.datum;
-        datum.classList.add('text-muted');
-        cardBody.appendChild(datum);
+        let torles = document.createElement('button');
+        torles.textContent = 'inaktiválás';
+        torles.classList.add('btn', 'btn-danger', 'btn-sm');
+        torles.addEventListener('click', function () {
+            //ide jön majd a törlés funkció
+        });
 
-        card.appendChild(cardBody);
-        kommentDiv.appendChild(card);
+        torlesCella.appendChild(torles);
+        sor.appendChild(torlesCella);
+        tbody.appendChild(sor);
     })
+}
+
+function roleSelectGeneralas(cella, user){
+    let select = document.createElement('select');
+
+    let optionA = document.createElement('option');
+    optionA.value = "felhasznalo";
+    optionA.innerText = "felhasználó";
+
+    let optionB = document.createElement('option');
+    optionB.value = "edzo";
+    optionB.innerText = "edző";
+
+    if(user.role == "felhasznalo"){
+        optionA.selected = true;
+    }else{
+        if(user.role == "edzo"){
+            optionB.selected = true;
+        }
+    }
+
+    select.addEventListener('change', function(){
+        
+        //ide jön majd a role módosító funkció
+    });
+
+    select.appendChild(optionA);
+    select.appendChild(optionB);
+    cella.appendChild(select);
 }
