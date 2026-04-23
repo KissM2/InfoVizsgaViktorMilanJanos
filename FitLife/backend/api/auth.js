@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt'); //?npm install bcrypt
 const validator = require('../middleware/Validalas.js');
 const checkIfEmailUsed = require('../middleware/checkIfEmailUsed.js');
 const requireLogin = require('../middleware/requireLogin.js')
+const crypto = require('crypto');// Beépített Hosszú, kitalálhatatlan azonosító (Token) gyártásá
+const nodemailer = require('nodemailer');
 
 //!Multer
 const multer = require('multer'); //?npm install multer
@@ -226,6 +228,74 @@ router.post('/updateJelszo', validator.validatePassword, async (request, respons
     } catch (error) {
         console.error(error.message);
         response.status(500).json({ message: "Szerverhiba!" });
+    }
+});
+
+// Email küldő beállítása
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'pelda@gmail.com',
+        pass: 'pelda'
+    }
+});
+
+router.post('/forgot-password', async (request, response) => {
+    try {
+        const { email } = request.body;
+        const user = await database.login(email);
+
+        if (!user || user.length === 0) {
+            return response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+        }
+
+        //Token generalas
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 3600000); // Jelenlegi idő + 1 óra
+        await database.saveResetToken(email, token, expires);
+
+        // Email küldése
+        const resetLink = `http://127.0.0.1:3000/html/jelszo_modositas.html?token=${token}`;
+        
+        await transporter.sendMail({
+            from: '"FitLife" <noreply@fitlife.hu>',
+            to: email,
+            subject: 'FitLife - Jelszó visszaállítása',
+            html: `<h3>Szia!</h3>
+                   <p>Kattints az alábbi linkre a jelszavad visszaállításához. Ez a link 1 órán belül lejár.</p>
+                   <a href="${resetLink}">${resetLink}</a>`
+        });
+
+        response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Szerverhiba történt." });
+    }
+});
+router.post('/reset-password', upload.none(), async (request, response) => {
+    try {
+        const { token, jelszo } = request.body;
+
+        if (!token || !jelszo) {
+            return response.status(400).json({ message: "Hiányzó adatok!" });
+        }
+        const user = await database.getUserByToken(token);
+
+        if (!user) {
+            return response.status(400).json({ message: "Érvénytelen vagy lejárt link!" });
+        }
+        const hash = await bcrypt.hash(jelszo, 10);
+        await database.updateJelszo(hash, user.id);
+
+        //linket ne lehessen ujra hasznalni
+        await database.clearResetToken(user.id);
+
+        response.status(200).json({ message: "Sikeres jelszócsere! Most már bejelentkezhetsz." });
+
+    } catch (error) {
+        console.error("Hiba a jelszó visszaállításakor:", error);
+        response.status(500).json({ message: "Szerverhiba történt." });
     }
 });
 

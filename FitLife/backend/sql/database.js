@@ -33,6 +33,15 @@ async function updateJelszo(hash, userId) {
     return rows;
 }
 
+async function saveResetToken(email, token, expires) {
+    const query = "UPDATE login SET reset_token = ?, reset_expires = ? WHERE email = ?";
+    await pool.execute(query, [token, expires, email]);
+}
+async function clearResetToken(userId) {
+    const query = "UPDATE login SET reset_token = NULL, reset_expires = NULL WHERE id = ?";
+    await pool.execute(query, [userId]);
+}
+
 //select
 async function login(email) {
     const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ?;';
@@ -53,6 +62,11 @@ async function selectLoginDataById(id) {
     const query = 'SELECT login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum FROM login WHERE login.id = ?;';
     const [rows] = await pool.execute(query, [id]);
     return rows;
+}
+async function getUserByToken(token) {
+    const query = "SELECT id FROM login WHERE reset_token = ? AND reset_expires > NOW()";
+    const [rows] = await pool.execute(query, [token]);
+    return rows[0];
 }
 
 //felhasznalo tábla
@@ -450,4 +464,7 @@ module.exports = {
     insertAllergiasRa,
     selectAorPById,
     deleteAllergiasRa,
+    saveResetToken,
+    clearResetToken,
+    getUserByToken
 };
