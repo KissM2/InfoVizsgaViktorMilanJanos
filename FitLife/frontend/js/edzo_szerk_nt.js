@@ -1,25 +1,55 @@
-import { postApi } from "./kozosFetch";
+import { getKeres, postApi } from "./kozosFetch.js";
+import { navbarGeneralas } from './navbar.js';
+import { footerGeneralas } from './footer.js';
 let aktualisEv = new Date().getFullYear();
 let aktualisHonap = new Date().getMonth() + 1;
-let kapottbeo = [];
+
 let mentettbeo = [[], [], [], [], [], [], []];
-let mentetttorolt = [];
-document.addEventListener("DOMContentLoaded", function () {
-    genBeo();
-    general();
-    document.getElementById("beoS").addEventListener("click",async function() {await postApi("/api/insertHB",mentettbeo)});
-    document.getElementById("torS").addEventListener("click",async function() {await postApi("/api/insertKA",mentettbeo)});
-});
+
+let kaLista = [];
+let kapottbeo = [];
+let selectedDate = formatDate(new Date());
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
 const honapok = [
     "Január", "Február", "Március", "Április", "Május", "Június",
     "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 ];
+const menuLinkek = [
+    { nev: "Edző főoldal", url: "/edzofo" },
+    { nev: "Névjegy szerkesztés", url: "/trainersedit" },
+    { nev: "Adatok szerkesztése", url: "/traineradat" },
+];
+document.addEventListener("DOMContentLoaded", async function () {
+    navbarGeneralas(menuLinkek);
+    footerGeneralas();
+    genBeo();
+    await loadAll();
+    general();
 
+    document.getElementById("beoS").addEventListener("click", async function () {
+        await postApi("/api/insertHB", mentettbeo);
+        location.reload();
+    });
+});
 
-async function genBeo() {
+// =======================
+// ADAT BETÖLTÉS
+// =======================
+async function loadAll() {
+    kaLista = await getKeres("/api/getKA");
+    kapottbeo = await getKeres("/api/getHB");
+}
+
+// =======================
+// HETI BEOSZTÁS
+// =======================
+function genBeo() {
+
+    mentettbeo = [[], [], [], [], [], [], []];
+
     const host = document.getElementById('beo');
+    host.innerHTML = "";
 
     const fejlecSor = document.createElement('div');
     fejlecSor.classList.add('dt-head');
@@ -32,21 +62,17 @@ async function genBeo() {
 
     for (let i = 0; i < napok.length; i++) {
 
-        // FEJLÉC
         let fej = document.createElement('div');
         fej.innerText = napok[i];
         fej.classList.add("nap", "fejlec");
         fejlecSor.appendChild(fej);
 
-        // OSZLOP
         let oszlop = document.createElement('div');
         oszlop.classList.add("dtc");
 
-        for (let perc = 0; perc < 24 * 60; perc += 30) {
-            let ora = Math.floor(perc / 60);
-            let p = perc % 60;
+        for (let perc = 0; perc < 1440; perc += 30) {
 
-            let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
+            let ido = percToTime(perc);
 
             let cell = document.createElement('div');
             cell.innerText = ido;
@@ -56,20 +82,24 @@ async function genBeo() {
             cell.dataset.di = i;
 
             cell.addEventListener("click", function () {
-                let ez = this;
 
-                if (ez.dataset.bek == 0) {
-                    ez.classList.add("bb");
-                    ez.dataset.bek = 1;
-                    mentettbeo[ez.dataset.di].push(ez.innerText);
+                const napIndex = Number(cell.dataset.di);
+
+                if (cell.dataset.bek == 0) {
+                    cell.classList.add("bb");
+                    cell.dataset.bek = 1;
+
+                    if (!mentettbeo[napIndex].includes(ido)) {
+                        mentettbeo[napIndex].push(ido);
+                    }
+
                 } else {
-                    ez.classList.remove("bb");
-                    ez.dataset.bek = 0;
-                    mentettbeo[ez.dataset.di] =
-                        mentettbeo[ez.dataset.di].filter(e => e !== ez.innerText);
-                }
+                    cell.classList.remove("bb");
+                    cell.dataset.bek = 0;
 
-                console.log(mentettbeo);
+                    mentettbeo[napIndex] =
+                        mentettbeo[napIndex].filter(e => e !== ido);
+                }
             });
 
             oszlop.appendChild(cell);
@@ -78,22 +108,22 @@ async function genBeo() {
         tartalom.appendChild(oszlop);
     }
 }
+
+// =======================
+// NAPTÁR
+// =======================
 function naptarGeneral(ev, honap) {
 
     let hoEleje = new Date(ev, honap - 1, 1);
     let hetnapja = hoEleje.getDay();
-    if (hetnapja == 0) {
-        hetnapja = 7
-    };
+    if (hetnapja == 0) hetnapja = 7;
 
     let napszam = new Date(ev, honap, 0).getDate();
     let hetek = Math.ceil((hetnapja - 1 + napszam) / 7);
 
     let naptarinap = 1;
-
     let naptar = document.createElement("div");
 
-    // napok fejléc
     let napSor = document.createElement("div");
     napSor.classList.add("het");
 
@@ -106,7 +136,6 @@ function naptarGeneral(ev, honap) {
 
     naptar.appendChild(napSor);
 
-    // hetek
     for (let i = 0; i < hetek; i++) {
 
         let het = document.createElement("div");
@@ -118,50 +147,34 @@ function naptarGeneral(ev, honap) {
             nap.classList.add("nap");
 
             if (i * 7 + j + 1 >= hetnapja && naptarinap <= napszam) {
+
+                let currentDate = new Date(ev, honap - 1, naptarinap);
+                let datum = formatDate(currentDate);
+
                 nap.innerText = naptarinap;
+
+                const weekday = getWeekday(datum);
+
+                // beosztás jelölés
+                if (kapottbeo.some(e => {
+                    const beoStart = new Date(e.mettol_ervenyes.split("T")[0]);
+                    return e.weekday === weekday && new Date(datum) >= beoStart;
+                })) {
+                    nap.classList.add("bb");
+                }
+
+                // KA jelölés (csak aktiv)
+                if (kaLista.some(e =>
+                    e.statusz === "aktiv" &&
+                    sameDate(e.datum, datum)
+                )) {
+                    nap.classList.add("rr");
+                }
+
                 nap.addEventListener("click", function () {
-                    let ezz = this;
-                    document.getElementById('naptargombok').innerHTML = "";
-                    document.getElementById('napgombokfejlec').innerHTML = "";
-                    const host = document.getElementById('naptargombok');
-                    host.dataset.datum = aktualisEv + "-" + aktualisHonap + "-" + ezz.innerText;
-                    document.getElementById('napgombokfejlec').innerText = aktualisEv + "." + aktualisHonap + "." + ezz.innerText + ".";
-                    for (let perc = 0; perc < 24 * 60; perc += 30) {
-                        let ora = Math.floor(perc / 60);
-                        let p = perc % 60;
-                        let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
-
-                        let napgomb = document.createElement('button')
-                        napgomb.innerText = ido;
-                        napgomb.dataset.bek = 0;
-                        if (mentetttorolt.includes({ nap: host.dataset.datum, ido: ido })) {
-                            napgomb.dataset.bek = 1;
-                            napgomb.classList.add("rr");
-                        }
-                        napgomb.addEventListener("click", function () {
-                            let ez = this;
-                            if (ez.dataset.bek == 0) {
-                                ez.classList.add("rr");
-                                ez.dataset.bek = 1;
-                                mentetttorolt.push({ nap: document.getElementById('naptargombok').dataset.datum, ido: ez.innerText });
-                            }
-                            else {
-                                if (mentetttorolt.length > 0) {
-                                    ez.classList.remove("rr");
-                                    ez.dataset.bek = 0;
-                                    const nap = document.getElementById('naptargombok').dataset.datum;
-                                    const ido = ez.innerText;
-
-                                    mentetttorolt = mentetttorolt.filter(elem =>
-                                        !(elem.nap === nap && elem.ido === ido)
-                                    );
-                                }
-                            }
-                            console.log(mentetttorolt);
-                        });
-                        host.appendChild(napgomb);
-                    }
+                    openDay(datum);
                 });
+
                 naptarinap++;
             }
             else {
@@ -177,12 +190,84 @@ function naptarGeneral(ev, honap) {
     return naptar;
 }
 
+// =======================
+// NAP
+// =======================
+function openDay(datum) {
+    selectedDate = datum;
+    const host = document.getElementById("naptargombok");
+    host.innerHTML = "";
+
+    // dátum kiírás
+    const d = new Date(datum);
+    document.getElementById("napgombokfejlec").innerText =
+        d.getFullYear() + ". " +
+        (d.getMonth() + 1) + ". " +
+        d.getDate() + ".";
+
+    const weekday = getWeekday(datum);
+
+    for (let perc = 0; perc < 1440; perc += 30) {
+
+        const ido = percToTime(perc);
+        const btn = document.createElement("button");
+        btn.innerText = ido;
+
+        // ===== BEOSZTÁS =====
+        const benneVan = kapottbeo.some(e => {
+
+            const beoStart = new Date(e.mettol_ervenyes.split("T")[0]);
+
+            return (
+                e.weekday === weekday &&
+                new Date(datum) >= beoStart &&
+                toMinutes(ido) >= toMinutes(e.start) &&
+                toMinutes(ido) <= toMinutes(e.end)
+            );
+        });
+
+        btn.disabled = !benneVan;
+
+        // ===== KA (csak aktiv) =====
+        const ka = kaLista.find(e =>
+            e.statusz === "aktiv" &&
+            sameDate(e.datum, datum) &&
+            toMinutes(ido) >= toMinutes(e.start) &&
+            toMinutes(ido) <= toMinutes(e.end)
+        );
+
+        if (ka) {
+            btn.classList.add("rr");
+        }
+
+        btn.addEventListener("click", async () => {
+
+            if (btn.disabled) return;
+
+            const res = await postApi("/api/toggleKA", {
+                datum,
+                start: ido,
+                end: ido
+            });
+
+            if (res?.message) alert(res.message);
+
+            await loadAll();
+            general();
+        });
+
+        host.appendChild(btn);
+    }
+}
+
+// =======================
+// NAVIGÁCIÓ
+// =======================
 function general() {
 
     let kontener = document.getElementById("naptar");
     kontener.innerHTML = "";
 
-    // fejléc
     let fejlec = document.createElement("div");
     fejlec.classList.add("naptarFejlec");
 
@@ -200,32 +285,55 @@ function general() {
     fejlec.appendChild(jobb);
 
     kontener.appendChild(fejlec);
-
     kontener.appendChild(naptarGeneral(aktualisEv, aktualisHonap));
 
-    // események
+    openDay(selectedDate);
+
     bal.addEventListener("click", function () {
-
         aktualisHonap--;
-
         if (aktualisHonap < 1) {
             aktualisHonap = 12;
             aktualisEv--;
         }
-
         general();
     });
 
     jobb.addEventListener("click", function () {
-
         aktualisHonap++;
-
         if (aktualisHonap > 12) {
             aktualisHonap = 1;
             aktualisEv++;
         }
-
         general();
     });
+}
 
+// =======================
+// SEGÉDEK
+// =======================
+function formatDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+}
+
+function percToTime(p) {
+    const h = String(Math.floor(p / 60)).padStart(2, "0");
+    const m = String(p % 60).padStart(2, "0");
+    return `${h}:${m}`;
+}
+
+function toMinutes(t) {
+    const [h, m] = t.split(":");
+    return Number(h) * 60 + Number(m);
+}
+
+function sameDate(dbDate, datum) {
+    return dbDate.startsWith(datum);
+}
+
+function getWeekday(datum) {
+    const d = new Date(datum).getDay();
+    return d === 0 ? 6 : d - 1;
 }

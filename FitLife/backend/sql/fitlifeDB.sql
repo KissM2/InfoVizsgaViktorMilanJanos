@@ -173,38 +173,38 @@ CREATE TABLE IF NOT EXISTS komment (
 
 -- FOGLALAS
 CREATE TABLE IF NOT EXISTS foglalas (
-    foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
-    datum DATE NOT NULL,
-    start TIME NOT NULL,
-    end TIME NOT NULL,
-    statusz VARCHAR(50) NOT NULL,
-    edzo_id INT NOT NULL,
-    felhasznalo_id INT NOT NULL,
-    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
-    FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
+foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
+datum DATE,
+start TIME,
+end TIME,
+statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
+edzo_id INT,
+felhasznalo_id INT,
+FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
+FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
 
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
-    beo_id INT AUTO_INCREMENT PRIMARY KEY,
-    weekday VARCHAR(20) NOT NULL,
-    start TIME NOT NULL,
-    end TIME NOT NULL,
-    mettol_ervenyes DATE NOT NULL,
-    edzo_id INT NOT NULL,
-    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
+beo_id INT AUTO_INCREMENT PRIMARY KEY,
+weekday int,
+start TIME,
+end TIME,
+statusz ENUM('aktiv','torolt') NOT NULL DEFAULT 'aktiv', 
+mettol_ervenyes DATE,
+edzo_id INT,
+FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- KULONLEGES_ALKALOM
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
-    ka_id INT AUTO_INCREMENT PRIMARY KEY,
-    datum DATE NOT NULL,
-    weekday VARCHAR(20) NOT NULL,
-    start TIME NOT NULL,
-    end TIME NOT NULL,
-    statusz VARCHAR(50) NOT NULL,
-    edzo_id INT NOT NULL,
-    FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
+ka_id INT AUTO_INCREMENT PRIMARY KEY,
+datum DATE,
+start TIME,
+end TIME,
+statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
+edzo_id INT,
+FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- IZOMCSOPORT TÖRZZSTÁBLA

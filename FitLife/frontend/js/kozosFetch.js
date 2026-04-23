@@ -14,7 +14,6 @@ export async function postKeres(url, formData) {
         return result;
     } catch (error) {
         console.error('Hiba:', error);
-        alert("Hálózati hiba!");
     }
 }
 export async function getKeres(url) {
@@ -37,9 +36,9 @@ export async function postApi(apiUrl, obj) {
             },
             body: JSON.stringify(obj)
         });
-        if (!response.ok) throw new Error(`Hiba: ${response.status}`);
+        if (!response.ok) throw new Error(`Hiba: ${response.status}; Üzenet: ${(await response.json()).message}`);
         const result = await response.json();
-        console.log('Létrehozott felhasználó:', result);
+        return result;
     } catch (error) {
         console.error('POST hiba:', error);
     }
