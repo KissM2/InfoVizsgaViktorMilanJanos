@@ -298,5 +298,19 @@ router.post('/reset-password', upload.none(), async (request, response) => {
         response.status(500).json({ message: "Szerverhiba történt." });
     }
 });
+router.get('/getAllAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllLoginData();
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
 
 module.exports = router;

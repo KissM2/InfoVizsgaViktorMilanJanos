@@ -10,28 +10,37 @@
     <script src="../bootstrap/js/popper.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <!--!CSS-->
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../css/trainer-datas.css">
     <link rel="stylesheet" href="../css/adminPage.css">
     <!--!JavaScript-->
-    <script src="../js/adminPage.js"></script>
+    <script type="module" src="../js/adminPage.js"></script>
 
     <title>Admin oldal</title>
 </head>
 <body>
-    <div class="container-fluid py-5">
+    <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="card border-0">
+            <div class="col-12 mb-5">
+                <div class="card dark-card border-0">
                     <div class="card-body">
-                        <h4 class="mb-4 text-center fw-bold">Felhasználók kezelése</h4>
-                        <div class="table-responsive">
-                            <table class="table table-secondary table-striped table-hover table-bordered align-middle text-center">
+                        <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
+                            <h4>Felhasználók kezelése</h4>
+                            <div>
+                                <button type="button" id="ujFelhasznaloBtn" class="btn btn-dark">Új felhasználó</button>
+                                <button type="button" id="felhasznaloFrissites" class="btn btn-dark ms-2">Frissítés</button>    
+                            </div>
+                        </div>
+                        <div class="table-responsive scrolable-table">
+                            <table class="table table-dark table-striped table-hover table-bordered align-middle text-center">
 
                                 <thead class="table-dark">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Felhasználónév</th>
                                         <th>Email</th>
-                                        <th>Jelszó</th>
+                                        <th>Felhasználónév</th>
+                                        <th>Telszám</th>
+                                        <th>Nem</th>
                                         <th>Születési dátum</th>
                                         <th>Szerep</th>
                                         <th>Műveletek</th>
@@ -44,17 +53,37 @@
 
                             </table>
                         </div>
-
                     </div>
                 </div>
-
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="card border-0">
+
+            <div class="col-12 mb-5">
+                <div class="card dark-card border-0">
                     <div class="card-body">
-                        <h4 class="mb-4 text-center fw-bold">Kommentek kezelése</h4>
-                        <div id="kommentek" class="row">
-                            <!-- Itt jelennek meg a kommentek -->
+                        <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
+                            <h4>Kommentek kezelése</h4>
+                            <button type="button" id="kommentekFrissites" class="btn btn-dark">Frissítés</button>
+                        </div>
+                        <div class="table-responsive scrolable-table">
+                            <table class="table table-dark table-striped table-hover table-bordered align-middle text-center">
+
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Komment</th>
+                                        <th>Értékelés</th>
+                                        <th>Státusz</th>
+                                        <th>Edző</th>
+                                        <th>Felhasználó</th>
+                                        <th>Műveletek</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="kommentekTableBody">
+                                    <!-- Itt jelennek meg a kommentek -->
+                                </tbody>
+
+                            </table>
                         </div>
                     </div>
                 </div>
