@@ -134,7 +134,7 @@ export async function navbarGeneralas(linkek) {
     menuLista.appendChild(regisztralasTeloElem);
     menuLista.appendChild(profilTeloElem);
 
-    const bejelentkezve = await getKeres('api/getLoginStatus');
+    const bejelentkezve = await getKeres('/api/getLoginStatus');
     console.log(bejelentkezve);
     if(bejelentkezve && bejelentkezve.role && bejelentkezve.id){
         bejelentkezesBtn.style.display = "none";
@@ -144,11 +144,11 @@ export async function navbarGeneralas(linkek) {
         profilBtn.style.display = "block";
         profilLink.style.display = "block";
         profilTeloElem.style.display = "block";
-        if(bejelentkezve.role == "felhasználó"){    
+        if(bejelentkezve.role == "felhasznalo"){    
             profilTeloLink.href = "/userProfil?id=" + bejelentkezve.id;
             profilLink.href = "/userProfil?id=" + bejelentkezve.id;
         }else{
-            if(bejelentkezve.role == "edző"){
+            if(bejelentkezve.role == "edzo"){
                 //még nincs profil oldala a felhasználónak és az edzőnek
 
                 //profilTeloLink.href = "/edzo_profil?id=" + bejelentkezve.id;

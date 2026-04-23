@@ -3,6 +3,11 @@ const db = require('../sql/database.js');
 async function checkIfEmailUsed(request, response, next) {
     try {
         const { email } = request.body;
+
+        if(request.session.user && email == request.session.user.email){
+            next();
+        }
+
         const checkUser = await db.checkUser(email);
 
         if(checkUser.length > 0){
@@ -13,7 +18,7 @@ async function checkIfEmailUsed(request, response, next) {
         next();
     } catch (error) {
         return response.status(500).json({
-            message: 'Hiba történt az email cím ellenőrzésekor: ' + error.message
+            message: 'Hiba történt az email cím ellenőrzésekor'
         });
     }
 }

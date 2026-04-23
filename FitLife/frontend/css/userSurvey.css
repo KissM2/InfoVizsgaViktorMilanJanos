@@ -1,14 +1,8 @@
-.inputWidth{
-    max-width: 500px;
-    color: white;
-    background-color: #1f7d38;
+.inputMargin{
     margin-left: 10px;
 }
 
-input:focus{
-    background-color: #1f7d38 !important;
-}
-
 .labelWidth{
-    width: 500px;
+    max-width: 500px;
+    width: 100%;
 }

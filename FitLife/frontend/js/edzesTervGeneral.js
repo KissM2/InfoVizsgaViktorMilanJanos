@@ -1,4 +1,4 @@
-import { getKeres } from '../js/kozosFetch.js';
+import { getKeres, postApi } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
 
@@ -7,13 +7,41 @@ const menuLinkek = [
     { nev: "Receptek", url: "../html/etrendek.html" }
 ];
 let gyakorlatok = [];
-document.addEventListener("DOMContentLoaded",async function () {
+let hetiTervAjanlas = {};
+let bejelentkezettUserId = null;
+
+document.addEventListener("DOMContentLoaded", async function () {
+    const loginStatus = await getKeres('/api/getLoginStatus');
+    if (loginStatus && loginStatus.id) {
+        bejelentkezettUserId = loginStatus.id;
+    }
+    else {
+        alert("Az edzéstervhez be kell jelentkezned!");
+    }
+
     const adatok = await getKeres('/api/gyakorlatok');
     if (adatok) {
         gyakorlatok = adatok;
-        console.log("Gyakorlatok betöltve:", gyakorlatok);
-    vezerloSavKeszites();
-    alapTablaGeneralas();
+        vezerloSavKeszites();
+        alapTablaGeneralas();
+    }
+    const table = document.querySelector(".tabla");
+    try {
+        const mentettTerv = await getKeres(`/api/betoltes-edzesterv`);
+        if (mentettTerv) {
+            mentettTervFeltoltes(table, mentettTerv);
+        }
+    } 
+    catch (err) {
+        console.log("Nincs még mentett terv, üres tábla marad.");
+    }
+    try {
+        const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok`);
+        if (generaltAdatok){
+            hetiTervAjanlas = generaltAdatok;
+        }
+    } catch (err) {
+        console.log("Generálási adat nem elérhető.");
     }
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -25,7 +53,7 @@ function vezerloSavKeszites() {
     sav.classList.add("vezerlo-sav");
     const ujHetBtn = document.createElement("button");
     ujHetBtn.textContent = "Új hét (Üres tábla)";
-    ujHetBtn.addEventListener("click", function() {alapTablaGeneralas(); });
+    ujHetBtn.addEventListener("click", function () { alapTablaGeneralas(); });
     sav.appendChild(ujHetBtn);
     teljes.appendChild(sav);
 }
@@ -58,20 +86,28 @@ function alapTablaGeneralas() {
     vezerloGombok.classList.add("het-vezerlok");
     const genBtn = document.createElement("button");
     genBtn.textContent = "Hét generálása";
+
+    const mentesBtn = document.createElement("button");
+    mentesBtn.textContent = "Mentés";
+    mentesBtn.classList.add("btn-mentes-het");
+
     const torolBtn = document.createElement("button");
     torolBtn.textContent = "Hét eltávolítása";
     torolBtn.classList.add("btn-torol-het");
     vezerloGombok.appendChild(genBtn);
+    vezerloGombok.appendChild(mentesBtn);
     vezerloGombok.appendChild(torolBtn);
     hetFejlec.appendChild(h3);
     hetFejlec.appendChild(vezerloGombok);
     hetiResz.appendChild(hetFejlec);
+
     const container = document.createElement("div");
     container.classList.add("tabla-container");
     const table = document.createElement("table");
     table.classList.add("tabla");
-    torolBtn.addEventListener("click", function() {hetiResz.remove();});
-    
+    torolBtn.addEventListener("click", function () { hetiResz.remove(); });
+    mentesBtn.addEventListener("click", function () { edzestervMentes(table); });
+
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
     const thUres = document.createElement("th");
@@ -88,10 +124,10 @@ function alapTablaGeneralas() {
         gombSav.classList.add("napi-gombok");
         const tBtn = document.createElement("button");
         tBtn.textContent = "Törlés";
-        tBtn.addEventListener("click", function() {napTorlese(i, table);});
+        tBtn.addEventListener("click", function () { napTorlese(i, table); });
         const uBtn = document.createElement("button");
         uBtn.textContent = "Új felvétel";
-        uBtn.addEventListener("click", function() {napiUjFelvetel(i, table);});
+        uBtn.addEventListener("click", function () { napiUjFelvetel(i, table); });
         gombSav.appendChild(tBtn);
         gombSav.appendChild(uBtn);
         th.appendChild(gombSav);
@@ -102,35 +138,60 @@ function alapTablaGeneralas() {
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
     ujSorHozzaadasa(table);
-    genBtn.addEventListener("click", function() {edzestervFeltoltes(table);});
+    genBtn.addEventListener("click", function () { edzestervFeltoltes(table); });
     container.appendChild(table);
     hetiResz.appendChild(container);
     teljes.appendChild(hetiResz);
+}
+async function edzestervMentes(szuloTabla) {
+    const mentesAdatok = [];
+    for (let nap = 0; nap < 7; nap++) {
+        const napiCellak = szuloTabla.querySelectorAll(`.kaja-cella[data-nap='${nap}']`);
+        let napiSorrend = 1;
+        napiCellak.forEach(td => {
+            const kartya = td.querySelector(".kaja-kartya");
+
+            if (kartya && kartya.dataset.gyakorlatId) {
+                mentesAdatok.push({
+                    nap: nap + 1,
+                    gyakorlat_id: parseInt(kartya.dataset.gyakorlatId),
+                    sorrend: napiSorrend,
+                });
+                napiSorrend++;
+            }
+        });
+    }
+    await postApi('/api/mentes-edzesterv', { adatok: mentesAdatok });
+    alert("Edzésterv elmentve!");
 }
 function edzestervFeltoltes(szuloTabla) {
     const cellak = szuloTabla.querySelectorAll(".kaja-cella");
     for (let i = 0; i < cellak.length; i++) {
         cellak[i].innerHTML = "";
     }
-   for (let j = 0; j < 7; j++) {
-        for (let sorszam = 0; sorszam < 3; sorszam++) {
-            let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
+    for (const dbNap in hetiTervAjanlas) {
+        let napiGyakorlatok = hetiTervAjanlas[dbNap];
+        let frontendNap = parseInt(dbNap) - 1;
+        for (let sorszam = 0; sorszam < napiGyakorlatok.length; sorszam++) {
+            let td = szuloTabla.querySelector(".kaja-cella[data-nap='" + frontendNap + "'][data-sorszam='" + sorszam + "']");
             if (!td) {
                 ujSorHozzaadasa(szuloTabla);
-                td = szuloTabla.querySelector(".kaja-cella[data-nap='" + j + "'][data-sorszam='" + sorszam + "']");
+                td = szuloTabla.querySelector(".kaja-cella[data-nap='" + frontendNap + "'][data-sorszam='" + sorszam + "']");
             }
-            const rnd = gyakorlatok[Math.floor(Math.random() * gyakorlatok.length)];
-            td.appendChild(gyakorlatKartyaKeszites(rnd));
+            const aktGyakorlat = napiGyakorlatok[sorszam];
+            td.appendChild(gyakorlatKartyaKeszites(aktGyakorlat));
         }
     }
 }
 function napiUjFelvetel(napIndex, szuloTabla) {
     const cellak = szuloTabla.querySelectorAll(".kaja-cella[data-nap='" + napIndex + "']");
     let uresCella = null;
-    for (let i = 0; i < cellak.length; i++) {
+    let i = 0;
+    while (i < cellak.length && uresCella === null) {
         if (!cellak[i].firstChild) {
             uresCella = cellak[i];
         }
+        i++;
     }
     if (!uresCella) {
         ujSorHozzaadasa(szuloTabla);
@@ -178,14 +239,19 @@ function gyakorlatKartyaKeszites(gyakorlat) {
     const doboz = document.createElement("div");
     doboz.classList.add("kaja-kartya");
 
+    doboz.dataset.gyakorlatId = gyakorlat.gyakorlat_id;
     const xBtn = document.createElement("button");
     xBtn.textContent = "X";
     xBtn.classList.add("torles-x");
-    xBtn.addEventListener("click", function() {doboz.remove();});
+    xBtn.addEventListener("click", function () { doboz.remove(); });
 
     const nev = document.createElement("div");
     nev.classList.add("etelNev");
-    nev.textContent = gyakorlat.gyakorlat_nev;
+    nev.textContent = gyakorlat.nev;
+
+    const leiras = document.createElement("div");
+    leiras.classList.add("gyakorlat-leiras");
+    leiras.textContent = gyakorlat.leiras;
 
     const badge = document.createElement("div");
     badge.classList.add("kcal-badge");
@@ -193,12 +259,31 @@ function gyakorlatKartyaKeszites(gyakorlat) {
 
     const info = document.createElement("div");
     info.classList.add("adatok");
-    info.textContent = gyakorlat.izomcsoport_nev || "Általános"
+    info.textContent = gyakorlat.izomcsoport_nev;
 
     doboz.appendChild(xBtn);
     doboz.appendChild(nev);
+    doboz.appendChild(leiras);
     doboz.appendChild(badge);
     doboz.appendChild(info);
-    
+
     return doboz;
+}
+function mentettTervFeltoltes(szuloTabla, mentettAdatok) {
+    const cellak = szuloTabla.querySelectorAll(".kaja-cella");
+    for (let i = 0; i < cellak.length; i++) cellak[i].innerHTML = "";
+
+    for (const dbNap in mentettAdatok) {
+        let napiGyakorlatok = mentettAdatok[dbNap];
+        let frontendNap = parseInt(dbNap) - 1;
+
+        for (let sorszam = 0; sorszam < napiGyakorlatok.length; sorszam++) {
+            let td = szuloTabla.querySelector(`.kaja-cella[data-nap='${frontendNap}'][data-sorszam='${sorszam}']`);
+            if (!td) {
+                ujSorHozzaadasa(szuloTabla);
+                td = szuloTabla.querySelector(`.kaja-cella[data-nap='${frontendNap}'][data-sorszam='${sorszam}']`);
+            }
+            td.appendChild(gyakorlatKartyaKeszites(napiGyakorlatok[sorszam]));
+        }
+    }
 }

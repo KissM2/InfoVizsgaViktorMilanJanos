@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--!Bootstrap-->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <!--!CSS-->
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/trainer-datas.css">
+    <!--!JavaScript-->
+    <script type="module" src="../js/jelszo_modositas.js"></script>
+
+    <title>Jelszó Módosítása</title>
+</head>
+
+<body>
+    <h1 class="text-center text-success mt-120px">Jelszó Módosítása</h1>
+    <div class="container pt-5">
+        <div class="card dark-card mb-4" style="max-width: 500px; margin: auto;">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="label-color">Új jelszó</label>
+                    <input type="password" id="jelszo1" class="form-control dark-input">
+                </div>
+                <div class="mb-3">
+                    <label class="label-color">Jelszó megerősítése</label>
+                    <input type="password" id="jelszo2" class="form-control dark-input">
+                </div>
+                <button id="mentes_jelszo" class="btn btn-success w-100 mt-3">Mentés</button>
+                <p id="hiba_uzenet" class="text-danger mt-2 text-center"></p>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="../js/jelszo_modositas.js"></script>
+</body>
+
+</html>

@@ -72,6 +72,8 @@ const mapApi = require('./api/mapVegpontok.js');
 const allergenApi = require('./api/allergenek.js');
 const kommentek = require('./api/kommentek.js');
 const naptarak=require('./api/naptarakApi.js');
+const celAlakVegpontok = require('./api/celAlakVegpontok.js');
+const EKMVegpontok = require('./api/EKMVegpontok.js');
 
 app.use('/api', authEndpoints);
 app.use('/api', userDataEndpoints);
@@ -83,6 +85,8 @@ app.use('/api', mapApi);
 app.use('/api', allergenApi);
 app.use('/api', kommentek);
 app.use('/api',naptarak);
+app.use('/api', celAlakVegpontok);
+app.use('/api', EKMVegpontok);
 
 //!Szerver futtatása
 app.use(express.static(path.join(__dirname, '../frontend'))); //?frontend mappa tartalmának betöltése az oldal működéséhez

@@ -1,11 +1,17 @@
 async function checkUserData(request, response, next) {
     try {
+        const { 
+            testsuly,
+            magassag,
+            edzesre_forditott_ido,
+            cel_alak,
+            cel_testsuly,
+            edzesen_kivuli_mozgas
+        } = request.body;
 
-        const {allergiak, preferenciak, cel_testsuly, cel_alkat, uzott_sport, magassag, testsuly, nem, edzesen_kivuli_mozgas} = request.body;
-
-        if(!allergiak || !preferenciak || !cel_testsuly || !cel_alkat || !uzott_sport || !magassag || !testsuly || !nem || !edzesen_kivuli_mozgas){
+        if(!testsuly || !magassag || !edzesre_forditott_ido || !cel_alak || !cel_testsuly || !edzesen_kivuli_mozgas){
             return response.status(400).json({
-                message: "nem megfelelő adatok"
+                message: "nem megfelelő személyes adatok"
             })
         }
 
@@ -13,11 +19,51 @@ async function checkUserData(request, response, next) {
 
     } catch (error) {
         return response.status(500).json({
-            message: "hiba az adatok hitelesítése közben"
+            message: "hiba a személyes adatok hitelesítése közben"
+        });
+    }
+}
+
+async function checkAllergiak(request, response, next) {
+    try {
+        const { etelAllergiak } = request.body;
+
+        if(!etelAllergiak){
+            return response.status(400).json({
+                message: "nem megfelelő allergia adatok"
+            })
+        }
+
+        next();
+
+    } catch (error) {
+        return response.status(500).json({
+            message: "hiba az allergia adatok hitelesítése közben"
+        });
+    }
+}
+
+async function checkPreferenciak(request, response, next) {
+    try {
+        const { etelPreferenciak } = request.body;
+
+        if(!etelPreferenciak){
+            return response.status(400).json({
+                message: "nem megfelelő preferencia adatok"
+            })
+        }
+
+        next();
+
+    } catch (error) {
+        return response.status(500).json({
+            message: "hiba a prefernia adatok hitelesítése közben"
         });
     }
 }
 
 module.exports = {
-    checkUserData
+    checkUserData,
+    checkAllergiak,
+    checkPreferenciak,      
 }

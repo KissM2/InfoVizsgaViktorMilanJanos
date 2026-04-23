@@ -48,11 +48,18 @@ router.get('/testsql', async (request, response) => {
 //?Post /api/userRegister
 router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
-        const { fullname, email, password, birthdate, phone, nem} = request.body;
+        const { 
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+            password,
+        } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertLogin = await database.insertLogin(fullname, hashedPassword, email, phone, nem, "felhasznalo", birthdate, );
+        const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, telszam, nem, "felhasznalo", szul_datum, );
 
         request.session.user = {
             id: insertLogin.insertId,
@@ -75,11 +82,18 @@ router.post('/userRegister', upload.none(), validator.validateEmailPassword ,val
 //?Post /api/edzoRegister
 router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
     try {
-        const { fullname, email, password, birthdate, nem ,phone } = request.body;
+        const {
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+            password, 
+        } = request.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertLogin = await database.insertLogin(fullname, hashedPassword, email, phone, nem, "edzo", birthdate, );
+        const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, telszam, nem, "edzo", szul_datum, );
 
         request.session.user = {
             id: insertLogin.insertId,
@@ -154,5 +168,80 @@ router.get('/getLoginStatus', requireLogin.loginCheck, async (request, response)
         });
     }
  });
+
+router.get('/getAuthData', requireLogin.loginCheck, async (request, response) =>{
+    try {
+        const id = request.session.user.id;
+        const authData = await database.selectLoginDataById(id);
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator.validateEmail ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) =>{
+    try {
+        const {
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+        } = request.body;
+
+        database.updateLoginData(
+            felh_nev,
+            email,
+            telszam,
+            nem,
+            szul_datum,
+            request.session.user.id,
+        );
+
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen frissítve"
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok frissítése sikertelen"
+        });
+    }
+});
+router.post('/updateJelszo', validator.validatePassword, async (request, response) => {
+    try {
+        const userId = request.session.user.id; 
+        const { jelszo } = request.body;
+
+        const hash = await bcrypt.hash(jelszo, 10);
+        await database.updateJelszo(hash, userId);
+        
+        response.status(200).json({ message: "Sikeres jelszócsere!" });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({ message: "Szerverhiba!" });
+    }
+});
+
+router.get('/getAllAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllLoginData();
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
 
 module.exports = router;
