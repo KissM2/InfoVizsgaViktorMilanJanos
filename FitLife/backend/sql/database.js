@@ -220,6 +220,7 @@ async function selectKommentekByEdzoId(edzo_id) {
         SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, k.edzo_id, l.felh_nev AS felhasznalo_nev 
         FROM komment k
             LEFT JOIN login l ON k.felhasznalo_id = l.id
+        WHERE k.edzo_id = ? AND k.statusz LIKE "aktív"
         ORDER BY k.komment_id DESC
     `;
     const [rows] = await pool.execute(query, [edzo_id]);
