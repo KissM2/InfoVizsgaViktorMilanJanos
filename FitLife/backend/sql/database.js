@@ -616,7 +616,6 @@ module.exports = {
     getKAByExact,
     updateKAStatus,
     markInvalidKAAsDeleted,
-    getCalendarData,
     selectTrainersByDist,
     getUserCel,
     getUserEdzesNapok,
