@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../sql/database.js');
+const requireLogin = require('../middleware/requireLogin');
 
 //GET /api/kommentek : egy adott edző kommentjei
 router.get('/kommentek', async (request, response) => {
@@ -18,18 +19,14 @@ router.get('/kommentek', async (request, response) => {
 });
 
 // POST: uj komment
-router.post('/kommentek', async (request, response) => {
+router.post('/kommentek', requireLogin.loginCheck, async (request, response) => {
     try {
         const { szoveg, ertekeles, edzo_id} = request.body;
         
         const felhasznalo_id = request.session.user.id;
 
-        if (!felhasznalo_id) {
-            return response.status(401).json({ message: 'Be kell jelentkezned!' });
-        }
-
         if (!szoveg || !ertekeles || !edzo_id) {
-            response.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
+            return response.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
         }
 
         await database.insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id);
