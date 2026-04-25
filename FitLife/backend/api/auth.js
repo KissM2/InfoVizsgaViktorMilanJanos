@@ -216,7 +216,7 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
         });
     }
 });
-router.post('/updateJelszo', validator.validatePassword, async (request, response) => {
+router.post('/updateJelszo', requireLogin.loginCheck, validator.validatePassword, async (request, response) => {
     try {
         const userId = request.session.user.id; 
         const { jelszo } = request.body;
