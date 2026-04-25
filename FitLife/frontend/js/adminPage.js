@@ -7,12 +7,10 @@ document.addEventListener("DOMContentLoaded", async function(){
 
     document.getElementById('felhKommPageBtn').addEventListener('click', async function(){
         felhTablaPageBetoltes();
-
-        document.getElementById('felhKommPage').classList.remove('d-none');
-        document.getElementById('adminokPage').classList.add('d-none');
-
+        setAllPageDNone();
         setAllNavBtnDefault();
-
+        
+        document.getElementById('felhKommPage').classList.remove('d-none');
         document.getElementById('felhKommPageBtn').classList.add('btn-dark');
         document.getElementById('felhKommPageBtn').classList.remove('color-green');
 
@@ -20,14 +18,32 @@ document.addEventListener("DOMContentLoaded", async function(){
 
     document.getElementById('adminokPageBtn').addEventListener('click', async function(){
         adminPageBetoltes();
-
-        document.getElementById('adminokPage').classList.remove('d-none');
-        document.getElementById('felhKommPage').classList.add('d-none');
-
+        setAllPageDNone();
         setAllNavBtnDefault();
 
+        document.getElementById('adminokPage').classList.remove('d-none');
         document.getElementById('adminokPageBtn').classList.add('btn-dark');
         document.getElementById('adminokPageBtn').classList.remove('color-green');
+    });
+        
+    document.getElementById('gyakReceptPageBtn').addEventListener('click', async function(){
+        gyakorlatReceptPageBetoltes();
+        setAllPageDNone();
+        setAllNavBtnDefault();
+
+        document.getElementById('gyakorlatReceptPage').classList.remove('d-none');
+        document.getElementById('gyakReceptPageBtn').classList.add('btn-dark');
+        document.getElementById('gyakReceptPageBtn').classList.remove('color-green');
+    });
+
+    document.getElementById('ujEdzoPageBtn').addEventListener('click', async function(){
+        ujEdzoPageBetoltes();
+        setAllPageDNone();
+        setAllNavBtnDefault();
+
+        document.getElementById('ujEdzoPage').classList.remove('d-none');
+        document.getElementById('ujEdzoPageBtn').classList.add('btn-dark');
+        document.getElementById('ujEdzoPageBtn').classList.remove('color-green');
     });
 
     document.getElementById('megerositesBtn').addEventListener('click', async function(event){            
@@ -88,9 +104,80 @@ document.addEventListener("DOMContentLoaded", async function(){
                 }
                 break;
             }
+            case 'deleteGyakorlat': {
+                const response = await deleteKeres('/api/deleteGyakorlat?id=' + event.target.value);
+                if(await response.message == 'Gyakorlat sikeresen törölve.'){
+                    const gyakorlatok = await getKeres('/api/gyakorlatok');
+                    gyakorlatTablaFeltoltes(gyakorlatok);
+                }
+                break;
+            }
         }
     });
 
+    document.getElementById('gyakorlatokFrissites').addEventListener('click', async function(){
+        const gyakorlatok = await getKeres('/api/gyakorlatok');
+        gyakorlatTablaFeltoltes(gyakorlatok);
+    });
+
+    document.getElementById('receptekFrissites').addEventListener('click', async function(){
+        const receptek = await getKeres('/api/receptek');
+        receptTablaFeltoltes(receptek);
+    });
+
+    document.getElementById('ujGyakorlatBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+        const formData = new FormData(document.getElementById('newGyakorlatForm'));
+        const response = await postKeres('/api/postUjGyakorlat', formData);
+        if(await response.message == 'Sikeres új gyakorlat rögzítés.'){
+            const gyakorlatok = await getKeres('/api/gyakorlatok');
+            gyakorlatTablaFeltoltes(gyakorlatok);
+        }
+    });
+
+    document.getElementById('ujFelhBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+        const formData = new FormData(document.getElementById('newUserForm'));
+        let response;
+        if(formData.get('role') == "felhasznalo"){
+            response = await postKeres('/api/userRegister', formData);
+        }
+        else{
+            response = await postKeres('/api/edzoRegister', formData);
+        }
+        if(await response.message == 'Sikeres felhasználó rögzítés.' || await response.message == 'Sikeres edző rögzítés.'){
+            const felhasznalok = await getKeres('/api/getAllAuthData')
+            userTablaFeltoltes(felhasznalok.result);
+        }
+    });
+
+    document.getElementById('felhasznaloFrissites').addEventListener('click', async function(){
+        const felhasznalok = await getKeres('/api/getAllAuthData')    
+        userTablaFeltoltes(felhasznalok.result);
+    });
+
+    document.getElementById('kommentekFrissites').addEventListener('click', async function(){
+        const kommentek = await getKeres('/api/getAllKommentek');
+        kommentKiiras(kommentek.results);
+    });
+
+    document.getElementById('ujAdminBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+
+        const formdata = new FormData(document.getElementById('newAdminForm'));
+        const response = await postKeres('/api/adminRegister', formdata);
+        if(await response.message == 'Sikeres admin rögzítés.'){
+            const adminok = await getKeres('/api/getAllAdminAuthData');
+            adminTablaFeltoltes(adminok.result);
+        }
+    });
+
+    document.getElementById('adminokFrissites').addEventListener('click', async function(){
+        const adminok = await getKeres('/api/getAllAdminAuthData');
+        adminTablaFeltoltes(adminok.result);
+    });
+
+    selectekFeltoltese();
 });
 
 function userTablaFeltoltes(felhasznalok){
@@ -273,6 +360,7 @@ function kommentKiiras(kommentek){
 
 function roleSelectGeneralas(cella, user){
     let select = document.createElement('select');
+    select.classList.add('dark-input', 'form-select');
 
     let optionA = document.createElement('option');
     optionA.value = "felhasznalo";
@@ -396,47 +484,11 @@ async function felhTablaPageBetoltes(){
 
     const kommentek = await getKeres('/api/getAllKommentek');
     kommentKiiras(kommentek.results);
-
-    document.getElementById('ujFelhasznaloBtn').addEventListener('click', async function(e){
-        e.preventDefault();
-        const formData = new FormData(document.getElementById('newUserForm'));
-        let response;
-        if(formData.get('role') == "felhasznalo"){
-            response = await postKeres('/api/userRegister', formData);
-        }
-        else{
-            response = await postKeres('/api/edzoRegister', formData);
-        }
-        if(await response.message == 'Sikeres felhasználó rögzítés.' || await response.message == 'Sikeres edző rögzítés.'){
-            const felhasznalok = await getKeres('/api/getAllAuthData')
-            userTablaFeltoltes(felhasznalok.result);
-        }
-    });
-
-    document.getElementById('felhasznaloFrissites').addEventListener('click', async function(){
-        const felhasznalok = await getKeres('/api/getAllAuthData')    
-        userTablaFeltoltes(felhasznalok.result);
-    });
-
-    document.getElementById('kommentekFrissites').addEventListener('click', async function(){
-        const kommentek = await getKeres('/api/getAllKommentek');
-        kommentKiiras(kommentek.results);
-    });
 }
 
 async function adminPageBetoltes(){
     const adminok = await getKeres('/api/getAllAdminAuthData');
     adminTablaFeltoltes(adminok.result);
-
-    document.getElementById('ujAdminBtn').addEventListener('click', async function(e){
-        e.preventDefault();
-        //ide jön az új admin létrehozásának a logikája
-    });
-
-    document.getElementById('adminokFrissites').addEventListener('click', async function(){
-        const adminok = await getKeres('/api/getAllAdminAuthData');
-        adminTablaFeltoltes(adminok.result);
-    });
 }
 
 function setAllNavBtnDefault(){
@@ -451,4 +503,129 @@ function setAllNavBtnDefault(){
 
     document.getElementById('gyakReceptPageBtn').classList.remove('btn-dark');
     document.getElementById('gyakReceptPageBtn').classList.add('color-green');
+}
+
+function setAllPageDNone(){
+    document.getElementById('adminokPage').classList.add('d-none');
+    document.getElementById('felhKommPage').classList.add('d-none');
+    document.getElementById('ujEdzoPage').classList.add('d-none');
+    document.getElementById('gyakorlatReceptPage').classList.add('d-none');
+}
+
+async function gyakorlatReceptPageBetoltes() {
+    const gyakorlatok = await getKeres('/api/gyakorlatok');
+    gyakorlatTablaFeltoltes(gyakorlatok);
+    const receptek = await getKeres('/api/receptek');
+    receptTablaFeltoltes(receptek);
+}
+
+function gyakorlatTablaFeltoltes(gyakorlatok){
+    let tbody = document.getElementById('gyakorlatTableBody');
+    tbody.innerHTML = '';
+
+    gyakorlatok.forEach(gyakorlat => {
+        let sor = document.createElement('tr');
+        sor.dataset.id = gyakorlat.gyakorlat_id;
+        sor.classList.add('row-hover-border')
+
+        for (const key in gyakorlat) {
+            let cella = document.createElement('td');
+            cella.textContent = gyakorlat[key];
+            sor.appendChild(cella);
+        }
+
+        let megerositesCella = document.createElement('td');
+        let megerosites = document.createElement('button');
+        megerosites.setAttribute('data-bs-toggle', 'modal');
+        megerosites.setAttribute('data-bs-target', '#megerositesModal');
+        megerosites.classList.add('btn', 'btn-sm');
+        megerosites.textContent = 'Törlés';
+        megerosites.classList.add('btn-danger');
+        megerosites.addEventListener('click', function () {
+            document.getElementById('megerositesModalLabel').textContent = 'Gyakorlat törlése';
+            document.getElementById('megerositoKerdes').textContent = 'Biztosan törölni szeretnéd ezt a gyakorlatot?';
+            const modalContent = document.getElementById('megerositesModalContent');
+            modalContent.innerHTML = `
+                <ul>
+                    <li><strong>ID:</strong> ${gyakorlat.gyakorlat_id}</li>
+                    <li><strong>Név:</strong> ${gyakorlat.gyakorlat_nev}</li>
+                    <li><strong>Leírás:</strong> ${gyakorlat.leiras}</li>
+                    <li><strong>Kör:</strong> ${gyakorlat.kor}</li>
+                    <li><strong>Ismétlés:</strong> ${gyakorlat.ismetles}</li>
+                    <li><strong>Típus:</strong> ${gyakorlat.tipus}</li>
+                    <li><strong>Izomcsoport:</strong> ${gyakorlat.izomcsoport_nev}</li>
+                </ul>
+            `;
+            let megerositesBtn = document.getElementById('megerositesBtn');
+            megerositesBtn.value = gyakorlat.gyakorlat_id; //gombra tesszük a törlendő gyakorlat id-jét, hogy onnan tudjuk majd lekérni
+            megerositesBtn.classList.add('btn-danger');
+            megerositesBtn.classList.remove('btn-success');
+            megerositesBtn.dataset.action = 'deleteGyakorlat'; //gombra teszünk egy data attribútumot, hogy tudjuk majd, hogy mi lesz a művelet
+        });
+
+        megerositesCella.appendChild(megerosites);
+        sor.appendChild(megerositesCella);
+        tbody.appendChild(sor);
+    });
+}
+
+function receptTablaFeltoltes(receptek){
+    let tbody = document.getElementById('receptTableBody');
+    tbody.innerHTML = '';
+
+    receptek.forEach(recept => {
+        let sor = document.createElement('tr');
+        sor.dataset.id = recept.recept_id;
+        sor.classList.add('row-hover-border')
+
+        for (const key in recept) {
+            let cella = document.createElement('td');
+            cella.textContent = recept[key];
+            sor.appendChild(cella);
+        }
+
+        let megerositesCella = document.createElement('td');
+        let megerosites = document.createElement('button');
+        megerosites.setAttribute('data-bs-toggle', 'modal');
+        megerosites.setAttribute('data-bs-target', '#megerositesModal');
+        megerosites.classList.add('btn', 'btn-sm');
+        megerosites.textContent = 'Törlés';
+        megerosites.classList.add('btn-danger');
+        megerosites.addEventListener('click', function () {
+            document.getElementById('megerositesModalLabel').textContent = 'Recept törlése';
+            document.getElementById('megerositoKerdes').textContent = 'Biztosan törölni szeretnéd ezt a receptet?';
+            const modalContent = document.getElementById('megerositesModalContent');
+            modalContent.innerHTML = `
+                <ul>
+                    <li><strong>ID:</strong> ${recept.recept_id}</li>
+                    <li><strong>Név:</strong> ${recept.recept_nev}</li>
+                    <li><strong>Leírás:</strong> ${recept.leiras}</li>
+                    <li><strong>Kör:</strong> ${recept.kor}</li>
+                    <li><strong>Ismétlés:</strong> ${recept.ismetles}</li>
+                    <li><strong>Típus:</strong> ${recept.tipus}</li>
+                    <li><strong>Izomcsoport:</strong> ${recept.izomcsoport_nev}</li>
+                </ul>
+            `;
+            let megerositesBtn = document.getElementById('megerositesBtn');
+            megerositesBtn.value = recept.recept_id; //gombra tesszük a törlendő recept id-jét, hogy onnan tudjuk majd lekérni
+            megerositesBtn.classList.add('btn-danger');
+            megerositesBtn.classList.remove('btn-success');
+            megerositesBtn.dataset.action = 'deleteRecept'; //gombra teszünk egy data attribútumot, hogy tudjuk majd, hogy mi lesz a művelet
+        });
+
+        megerositesCella.appendChild(megerosites);
+        sor.appendChild(megerositesCella);
+        tbody.appendChild(sor);
+    });
+}
+
+async function selectekFeltoltese(){
+    const izomcsoportok = await getKeres('/api/getIzomcsoportok');
+    let izomcsoportSelect = document.getElementById('izomcsoportSelect');
+    izomcsoportok.results.forEach(izomcsoport => {
+        let option = document.createElement('option');
+        option.value = izomcsoport.izom_id;
+        option.textContent = izomcsoport.nev;
+        izomcsoportSelect.appendChild(option);
+    });
 }

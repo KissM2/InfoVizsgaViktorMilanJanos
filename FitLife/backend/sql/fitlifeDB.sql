@@ -111,8 +111,8 @@ CREATE TABLE IF NOT EXISTS kellekek_kivalasztasa (
     gyakorlat_id INT NOT NULL,
     kellek_id INT NOT NULL,
     PRIMARY KEY (gyakorlat_id, kellek_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id),
-    FOREIGN KEY (kellek_id) REFERENCES kellek(kellek_id)
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id) ON DELETE CASCADE,
+    FOREIGN KEY (kellek_id) REFERENCES kellek(kellek_id) ON DELETE CASCADE
 );
 
 -- ALLERGEN

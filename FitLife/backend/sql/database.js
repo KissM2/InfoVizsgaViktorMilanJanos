@@ -299,6 +299,13 @@ async function selectAllKommentek() {
 //update
 
 
+//delete
+async function deleteGyakorlat(id) {
+    const query = "DELETE FROM gyakorlat WHERE gyakorlat_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
+
 //select
 async function selectAllGyakorlatok() {
     const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, gyakorlat.tipus, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
@@ -524,6 +531,14 @@ async function selectAllEKM() {
     return rows;
 }
 
+//izomcsoport tábla
+
+//select
+async function selectAllIzomcsoport() {
+    const query = `SELECT * FROM izomcsoport`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 
 //select
 // async function checkKulonlegesAlkalomExists(edzoId, datum) {
@@ -615,6 +630,41 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
     }
 }
 
+//gyakorlat tábla + izomcsoport kapcsoló tábla tranzakció
+async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id
+) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO gyakorlat (nev, leiras, kor, ismetles, tipus) VALUES (?, ?, ?, ?, ?)",
+            [nev, leiras, kor, ismetles, tipus]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const gyakorlatId = result.insertId;
+
+        await conn.execute(
+            "INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES (?, ?)",
+            [gyakorlatId, izomcsoport_id]
+        );
+
+        await conn.commit();
+        console.log("Gyakorlat sikeresen felvéve");
+        return "Sikeres gyakorlat felvétel";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Gyakorlat felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
 //!Export
 module.exports = {
     updateEdzo,
@@ -671,4 +721,7 @@ module.exports = {
     kommentInaktivalas,
     kommentAktivalas,
     updateFelhasznaloRole,
+    selectAllIzomcsoport,
+    insertGyakorlat,
+    deleteGyakorlat,
 };
