@@ -313,4 +313,14 @@ router.get('/getAllAuthData', async (request, response) =>{
     }
 });
 
+router.post('/kijelentkezes', (request, response) => {
+    request.session.destroy((err) => {
+        if (err) {
+            return response.status(500).json({ message: "Hiba a kijelentkezés során." });
+        }
+        response.clearCookie('connect.sid');
+        response.status(200).json({ message: "Sikeres kijelentkezés." });
+    });
+});
+
 module.exports = router;
