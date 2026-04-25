@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS login (
     telszam VARCHAR(30),
     nem VARCHAR(20),
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
-    szul_datum DATE
+    szul_datum DATE,
+    deleted_at DATE DEFAULT NULL
 );
 
 -- CEL_ALAK
@@ -164,7 +165,7 @@ CREATE TABLE IF NOT EXISTS komment (
     komment_id INT AUTO_INCREMENT PRIMARY KEY,
     szoveg TEXT NOT NULL,
     ertekeles INT NOT NULL,
-    statusz VARCHAR(50),
+    statusz ENUM('aktiv', 'inaktiv') NOT NULL DEFAULT 'aktiv',
     edzo_id INT NOT NULL,
     felhasznalo_id INT NOT NULL,
     FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),

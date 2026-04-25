@@ -33,6 +33,21 @@ async function updateJelszo(hash, userId) {
     const [rows] = await pool.execute(query, [hash, userId]);
     return rows;
 }
+async function deleteFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NOW() WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function restoreFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NULL WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function updateFelhasznaloRole(id, ujRole) {
+    const query = "UPDATE login SET role = ? WHERE id = ?";
+    const [rows] = await pool.execute(query, [ujRole, id]);
+    return rows;
+}
 
 //select
 async function login(email) {
@@ -56,13 +71,18 @@ async function selectLoginDataById(id) {
     return rows;
 }
 async function selectAllLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role NOT LIKE "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
     const [rows] = await pool.execute(query);
     return rows;
 }
 async function selectAllAdminLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role = "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role = "admin";';
     const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectLoginDataByKommentId(komment_id) {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN komment a ON login.id = a.felhasznalo_id LEFT JOIN komment b ON login.id = b.edzo_id WHERE a.komment_id = ? OR b.komment_id = ?;';
+    const [rows] = await pool.execute(query, [komment_id, komment_id]);
     return rows;
 }
 
@@ -212,7 +232,17 @@ async function insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id) {
 }
 
 //update
+async function kommentInaktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'inaktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
+async function kommentAktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'aktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
 //select
 async function selectKommentekByEdzoId(edzo_id) {
@@ -635,5 +665,11 @@ module.exports = {
     selectAllKommentek,
     selectKommentekByUserIdForAdmin,
     selectKommentekByEdzoIdForAdmin,
-    selectAllAdminLoginData
+    selectAllAdminLoginData,
+    selectLoginDataByKommentId,
+    deleteFelhasznalo,
+    restoreFelhasznalo,
+    kommentInaktivalas,
+    kommentAktivalas,
+    updateFelhasznaloRole,
 };
