@@ -60,7 +60,7 @@ async function clearResetToken(userId) {
 
 //select
 async function login(email) {
-    const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ?;';
+    const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ? AND deleted_at IS NULL;';
     const [rows] = await pool.execute(query, [email]);
     return rows;
 }

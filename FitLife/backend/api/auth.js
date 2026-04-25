@@ -124,7 +124,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
 
         if (login.length === 0) {    
             return response.status(401).json({
-                message: 'Hibás email cím.'
+                message: 'Hibás belépési adatok, vagy a fiók megszűnt.'
             });
         }
 
@@ -309,6 +309,32 @@ router.get('/getAllAuthData', async (request, response) =>{
         console.error(error.message);
         response.status(500).json({
             message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.delete('/deleteUser', requireLogin.loginCheck, async (request, response) => {
+    try {
+        const felhasznalo_id = request.session.user.id; 
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+        request.session.destroy((err) => {
+            if (err) {
+                console.error("Hiba a session törlésekor:", err);
+            }
+            response.clearCookie('connect.sid');
+            response.status(200).json({
+                message: "Felhasználó törlése és kijelentkeztetése sikeres."
+            });
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: "Szerverhiba a felhasználó törlése során."
         });
     }
 });

@@ -965,7 +965,6 @@ INSERT INTO kellekek_kivalasztasa (gyakorlat_id, kellek_id) VALUES
 (100,43);
 
 -- 15. gyakorlat_izomcsoport tábla:
--- Előbb ürítsük a táblát, hogy ne legyen duplikáció a teszteléskor
 INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES 
 -- Mell (1)
 (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), 
@@ -976,7 +975,7 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (31, 2), (32, 2), (33, 2), (34, 2), (35, 2), 
 (36, 2), (37, 2), (38, 2), (39, 2), (40, 2), (41, 2), (42, 2),
 
--- Tricepsz (3) -> Átírva 5-ről 3-ra
+-- Tricepsz (3)
 (53, 3), (54, 3), (55, 3), (56, 3), (57, 3), 
 (58, 3), (59, 3), (60, 3), (61, 3), (62, 3),
 
