@@ -322,6 +322,14 @@ async function selectAllGyakorlatok() {
 //update
 
 
+//delete
+
+async function deleteRecept(id) {
+    const query = "DELETE FROM recept WHERE recept_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
+
 //select
 async function selectAllReceptek() {
     const query = "SELECT * FROM recept";
@@ -603,7 +611,7 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
             }
         }
         
-        // allergiák hozzá adása
+        // preferenciák hozzá adása
         for (let i = 0; i < preferenciak.length; i++) {   
             const [result3] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
@@ -631,8 +639,7 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
 }
 
 //gyakorlat tábla + izomcsoport kapcsoló tábla tranzakció
-async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id
-) {
+async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id) {
     const conn = await pool.getConnection();
     try {
         await conn.beginTransaction();
@@ -659,6 +666,48 @@ async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id
     } catch (err) {
         await conn.rollback();
         console.error("Gyakorlat felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+//recept tábala + allergiat_okoz tábla tranzakció
+async function insertRecept(nev, leiras, etkezes_tipus, zsir, protein, szenhidrat, allergenek ) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES (?, ?, ?, ?, ?, ?)",
+            [nev, leiras, etkezes_tipus, zsir, protein, szenhidrat]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const receptId = result.insertId;
+
+        // allergének hozzá adása
+        if (allergenek && allergenek.length > 0){
+            for (let i = 0; i < allergenek.length; i++) {   
+                const [result2] = await conn.execute(
+                    "INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES (?,?)",
+                    [receptId, allergenek[i].allergen_id]
+                );
+                if (result2.affectedRows !== 1) {
+                    throw new Error("Sikertelen jóváírás");
+                }
+            }
+        }
+
+        await conn.commit();
+        console.log("Recept sikeresen felvéve");
+        return "sikeres recept rögzítés";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Recept felvétel visszagörgetve:", err.message);
         throw err;
     } finally {
         conn.release();
@@ -724,4 +773,6 @@ module.exports = {
     selectAllIzomcsoport,
     insertGyakorlat,
     deleteGyakorlat,
+    insertRecept,
+    deleteRecept,
 };

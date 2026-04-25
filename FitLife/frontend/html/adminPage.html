@@ -196,7 +196,7 @@
                         <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
                             <h4>Receptek kezelése</h4>
                             <div>
-                                <button type="button" id="ujReceptBtn" class="btn btn-dark ms-2">Új recept</button>
+                                <button type="button" id="ujReceptModalBtn" class="btn btn-dark ms-2" data-bs-toggle="modal" data-bs-target="#newReceptModal">Új recept</button>
                                 <button type="button" id="receptekFrissites" class="btn btn-dark ms-2">Frissítés</button>    
                             </div>
                         </div>
@@ -448,6 +448,76 @@
       </div>
     </div>
 
+    <!-- Új recept Modal -->
+    <div class="modal fade dark-card" id="newReceptModal" tabindex="-1" aria-labelledby="newReceptModalLabel">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light border-secondary">
+
+          <div class="modal-header">
+            <h5 class="modal-title " id="newReceptModalLabel">Új recept létrehozása</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="newReceptForm" name="newReceptForm">
+
+              <div class="row g-3 mb-3">
+
+                <div class="col-md-6">
+                  <label class="form-label">Név</label>
+                  <input type="text" class="form-control" name="nev" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Leírás</label>
+                  <input type="text" class="form-control" name="leiras" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label">Típus</label>
+                    <select name="etkezes_tipus" id="tipusSelect" class="form-select">
+                        <option value="reggeli">Reggeli</option>
+                        <option value="ebed">Ebéd</option>
+                        <option value="vacsora">Vacsora</option>
+                        <option value="csemege">Csemege</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Zsír(g)</label>
+                  <input type="number" class="form-control" name="zsir" min="0" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">protein(g)</label>
+                  <input type="number" class="form-control" name="protein" min="0" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Szénhidrát(g)</label>
+                  <input type="number" class="form-control" name="szenhidrat" min="0" required>
+                </div>
+
+                <h4>Allergének kiválasztása</h4>
+                <div id ="allergenekContainer" class="col-12 justify-content-evenly d-flex flex-wrap">
+                </div>
+
+              </div>
+
+            </form>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+                <button type="submit" id="ujReceptBtn" class="btn btn-primary" data-bs-dismiss="modal">Létrehozás</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Megerősítő Modal -->
     <div class="modal fade dark-card" id="megerositesModal" tabindex="-1" aria-labelledby="megerositesModalLabel">
       <div class="modal-dialog modal-lg">
         <div class="modal-content bg-dark text-light border-secondary">

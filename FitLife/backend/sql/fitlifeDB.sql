@@ -147,8 +147,8 @@ CREATE TABLE IF NOT EXISTS allergiat_okoz (
     recept_id INT NOT NULL,
     allergen_id INT NOT NULL,
     PRIMARY KEY (recept_id, allergen_id),
-    FOREIGN KEY (recept_id) REFERENCES recept(recept_id),
-    FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id)
+    FOREIGN KEY (recept_id) REFERENCES recept(recept_id) ON DELETE CASCADE,
+    FOREIGN KEY (allergen_id) REFERENCES allergen(allergen_id) ON DELETE CASCADE
 );
 
 -- ETREND

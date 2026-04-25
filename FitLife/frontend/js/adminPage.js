@@ -112,6 +112,14 @@ document.addEventListener("DOMContentLoaded", async function(){
                 }
                 break;
             }
+            case 'deleteRecept': {
+                const response = await deleteKeres('/api/deleteRecept?id=' + event.target.value);
+                if(await response.message == 'Recept sikeresen törölve.'){
+                    const receptek = await getKeres('/api/receptek');
+                    receptTablaFeltoltes(receptek);
+                }
+                break;
+            }
         }
     });
 
@@ -178,6 +186,24 @@ document.addEventListener("DOMContentLoaded", async function(){
     });
 
     selectekFeltoltese();
+    const allergenek = await getKeres('/api/getAllAllergen');
+    let valasztottAllergenek = [];
+    document.getElementById('ujReceptModalBtn').addEventListener('click', function(){
+        valasztottAllergenek.slice(0, valasztottAllergenek.length); //tömb kiürítése
+    });
+    valasztoGeneralasa('allergenekContainer', allergenek.result, valasztottAllergenek);
+
+    document.getElementById('ujReceptBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+        const formData = new FormData(document.getElementById('newReceptForm'));
+        console.log(valasztottAllergenek);
+        formData.append('allergenek', JSON.stringify(valasztottAllergenek));
+        const response = await postKeres('/api/postUjRecept', formData);
+        if(await response.message == 'Recept sikeresen rögzítve.'){
+            const receptek = await getKeres('/api/receptek');
+            receptTablaFeltoltes(receptek);
+        }
+    });
 });
 
 function userTablaFeltoltes(felhasznalok){
@@ -598,12 +624,12 @@ function receptTablaFeltoltes(receptek){
             modalContent.innerHTML = `
                 <ul>
                     <li><strong>ID:</strong> ${recept.recept_id}</li>
-                    <li><strong>Név:</strong> ${recept.recept_nev}</li>
+                    <li><strong>Név:</strong> ${recept.nev}</li>
                     <li><strong>Leírás:</strong> ${recept.leiras}</li>
-                    <li><strong>Kör:</strong> ${recept.kor}</li>
-                    <li><strong>Ismétlés:</strong> ${recept.ismetles}</li>
-                    <li><strong>Típus:</strong> ${recept.tipus}</li>
-                    <li><strong>Izomcsoport:</strong> ${recept.izomcsoport_nev}</li>
+                    <li><strong>Etkezés típusa:</strong> ${recept.etkezes_tipus}</li>
+                    <li><strong>Zsír:</strong> ${recept.zsir}</li>
+                    <li><strong>Protein:</strong> ${recept.protein}</li>
+                    <li><strong>Szénhidrat:</strong> ${recept.szenhidrat}</li>
                 </ul>
             `;
             let megerositesBtn = document.getElementById('megerositesBtn');
@@ -629,3 +655,33 @@ async function selectekFeltoltese(){
         izomcsoportSelect.appendChild(option);
     });
 }
+
+function valasztoGeneralasa(id, lista, valasztott) {
+    let befogo = document.getElementById(id);
+    for (let i = 0; i < lista.length; i++) {
+        let div = document.createElement('div');
+        div.classList.add('survey-item', 'form-control', 'dark-input');
+        div.innerText = lista[i].nev;
+        befogo.appendChild(div);
+        div.addEventListener('click', function(){
+            console.log(valasztott);
+            if(hanyadikElem(valasztott, lista[i]) < valasztott.length){
+                valasztott.splice(hanyadikElem(valasztott, lista[i]), 1);
+                div.classList.remove('selected');
+                return;
+            }else{
+                valasztott.push({allergen_id: lista[i].allergen_id});
+                div.classList.add('selected');
+            }
+        });
+    }
+}
+
+function hanyadikElem(lista, elem){
+    let i = 0; 
+    while(i < lista.length && lista[i].allergen_id != elem.allergen_id){
+        i++
+    }
+    return i;
+}
+
