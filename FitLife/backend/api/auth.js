@@ -323,4 +323,92 @@ router.post('/kijelentkezes', (request, response) => {
     });
 });
 
+router.get('/getErintettekForAdmin', async (request, response) =>{
+    try {
+        const komment_id = request.query.komment_id;
+        const authData = await database.selectLoginDataByKommentId(komment_id);
+        response.status(200).json({
+            message: "Kommenthez tartozók adatai sikeresen lekérve",
+            results: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Kommenthez tartozók adatai lekérése sikertelen"
+        });
+    }
+});
+
+router.delete('/deleteUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.query.id;
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó törlése sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó törlése sikertelen."
+        });
+    }
+});
+
+router.post('/restoreUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.body.id;
+        const result = await database.restoreFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó visszaállításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó visszaállítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó visszaállítása sikertelen."
+        });
+    }
+});
+
+router.post('/felhasznaloSzerepModositas', async (request, response) =>{
+    try {
+        if(request.body.ujRole == 'admin'){
+            return response.status(403).json({
+                message: "Nem lehetséges admin szerepre módosítani egy felhasználó szerepét."
+            });
+        }
+        const felhasznalo_id = request.body.id;
+        const ujRole = request.body.ujRole;
+        const result = await database.updateFelhasznaloRole(felhasznalo_id, ujRole);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó szerepének módosításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó szerepének módosítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó szerepének módosítása sikertelen."
+        });
+    }
+});
+
 module.exports = router;

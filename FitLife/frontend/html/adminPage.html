@@ -19,7 +19,7 @@
     <title>Admin oldal</title>
 </head>
 <body>
-    <div class="container py-5">
+    <div class="container-fluid max-width-1800px py-5">
         <div class="row justify-content-center">
             <div class="col-12 mb-5">
                 <div class="card dark-card border-0">
@@ -27,7 +27,7 @@
                         <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
                             <h4>Felhasználók kezelése</h4>
                             <div>
-                                <button type="button" id="ujFelhasznaloBtn" class="btn btn-dark">Új felhasználó</button>
+                                <button type="button" id="ujFelhasznaloBtn" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newUserModal">Új felhasználó</button>
                                 <button type="button" id="felhasznaloFrissites" class="btn btn-dark ms-2">Frissítés</button>    
                             </div>
                         </div>
@@ -43,6 +43,7 @@
                                         <th>Nem</th>
                                         <th>Születési dátum</th>
                                         <th>Szerep</th>
+                                        <th>Törölve</th>
                                         <th>Műveletek</th>
                                     </tr>
                                 </thead>
@@ -89,6 +90,102 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Új felhasználó Modal -->
+    <div class="modal fade dark-card" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light border-secondary">
+
+          <div class="modal-header">
+            <h5 class="modal-title " id="newUserModalLabel">Új felhasználó létrehozása</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="newUserForm">
+
+              <div class="row g-3">
+
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" name="email" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Felhasználónév</label>
+                  <input type="text" class="form-control" name="felh_nev" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Telefonszám</label>
+                  <input type="tel" class="form-control" name="telszam">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Nem</label>
+                  <select class="form-select" name="nem">
+                    <option value="férfi">Férfi</option>
+                    <option value="nő">Nő</option>
+                    <option value="egyéb">Egyéb</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Születési dátum</label>
+                  <input type="date" class="form-control" name="szul_datum">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Jelszó</label>
+                  <input type="password" class="form-control" name="password" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Szerep</label>
+                  <select class="form-select" id="c" name="role" required>
+                    <option value="felhasznalo">Felhasználó</option>
+                    <option value="edzo">Edző</option>
+                  </select>
+                </div>
+
+              </div>
+
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+            <button type="submit" id="ujFelhBtn" class="btn btn-primary" data-bs-dismiss="modal">Létrehozás</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade dark-card" id="megerositesModal" tabindex="-1" aria-labelledby="megerositesModalLabel">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light border-secondary">
+
+          <div class="modal-header">
+            <h5 class="modal-title " id="megerositesModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <p id="megerositoKerdes"></p>
+            <div id="megerositesModalContent">
+
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" id="megerositesBtn" data-bs-dismiss="modal">Megerősítés</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+          </div>
+
+        </div>
+      </div>
     </div>
 
 </body>

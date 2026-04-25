@@ -15,3 +15,7 @@ td{
     overflow-y: auto;
     white-space: nowrap;
 }
+
+.max-width-1800px{
+    max-width: 1800px;
+}
