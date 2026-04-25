@@ -13,9 +13,9 @@
     <!-- Saját CSS -->
     <link rel="stylesheet" href="../css/edzofo.css">
     <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/komment.css">
 
-  <link rel="stylesheet" href="../css/footer.css">
-  
     <!-- Saját JS -->
 
     <script type="module" src="../js/edzofo.js"></script>
@@ -24,7 +24,21 @@
 <body>
     <div class="naptarkeret">
         <h1 class="text-center text-success">Heti beosztás</h1>
-        <div id="naptar"></div></div>
+        <div id="naptar"></div>
+    </div>
+
+    <div class="container mt-5 mb-5">
+        <div class="komment-szekcio">
+            <h2 class="text-success text-center mb-4">Érkezett értékelések</h2>
+
+            <div id="komment-lista" class="komment-lista">
+            </div>
+
+            <div class="text-center mt-3">
+                <button id="tobb-komment-btn" class="komment-btn gomb-elsodleges rejtett">Összes megtekintése</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

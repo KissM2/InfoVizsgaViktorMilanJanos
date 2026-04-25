@@ -15,10 +15,82 @@ const menuLinkek = [
     { nev: "Névjegy szerkesztése", url: "/trainersedit" },
     { nev: "Adatok szerkesztésee", url: "/traineradat" },
 ];
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     navbarGeneralas(menuLinkek);
     footerGeneralas();
     loadCalendar();
+
+    const listaKontener = document.getElementById("komment-lista");
+    const tobbBtn = document.getElementById("tobb-komment-btn");
+    let aktualisKommentek = [];
+
+    const profilAdat = await getKeres("/api/getLoginStatus"); 
+    const edzoId = profilAdat.id; 
+    if (edzoId) {
+        fetchSajatKommentek(edzoId);
+    }
+
+    async function fetchSajatKommentek(id) {
+        const adatok = await getKeres(`/api/kommentek?edzo_id=${id}`);
+        if (adatok && adatok.results) {
+            aktualisKommentek = adatok.results;
+            renderSajatKommentek();
+        }
+    }
+
+    function renderSajatKommentek() {
+        listaKontener.innerHTML = "";
+        const lathatoKommentek = [];
+        
+        for (let i = 0; i < aktualisKommentek.length; i++) {
+            const komment = aktualisKommentek[i];
+            if (komment.szoveg && komment.szoveg.trim() !== "") {
+                lathatoKommentek.push(komment);
+            }
+        }
+        if (lathatoKommentek.length === 0) {
+            listaKontener.innerText = "Még nem érkezett értékelés az edzéseidre.";
+            tobbBtn.classList.add("rejtett");
+        } else {
+            lathatoKommentek.forEach(komment => {
+                const kartya = document.createElement("div");
+                kartya.className = "komment-kartya";
+
+                const fejlec = document.createElement("div");
+                fejlec.className = "komment-kartya-fejlec";
+
+                const nevSpan = document.createElement("span");
+                nevSpan.className = "komment-neve";
+                nevSpan.textContent = "👤 " + komment.felhasznalo_nev;
+
+                const csillagokSpan = document.createElement("span");
+                csillagokSpan.className = "komment-csillagok";
+                csillagokSpan.textContent = `⭐ ${komment.ertekeles} / 5`;
+
+                const tartalomDiv = document.createElement("div");
+                tartalomDiv.className = "komment-szoveg-tartalom";
+                tartalomDiv.textContent = komment.szoveg;
+
+                fejlec.appendChild(nevSpan);
+                fejlec.appendChild(csillagokSpan);
+                kartya.appendChild(fejlec);
+                kartya.appendChild(tartalomDiv);
+
+                listaKontener.appendChild(kartya);
+            });
+
+            if (aktualisKommentek.length > 4) {
+                tobbBtn.classList.remove("rejtett");
+            } else {
+                tobbBtn.classList.add("rejtett");
+            }
+        }
+    }
+
+    tobbBtn.addEventListener("click", () => {
+        listaKontener.classList.toggle("kibontva");
+        tobbBtn.textContent = listaKontener.classList.contains("kibontva") ? "Kevesebb mutatása" : "Összes megtekintése";
+    });
 });
 
 /* =========================
