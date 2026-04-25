@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS login (
     nem VARCHAR(20),
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
+    reset_token VARCHAR(255) NULL,
+    reset_expires DATETIME NULL,,
     deleted_at DATE DEFAULT NULL
 );
 
@@ -242,7 +244,7 @@ INSERT INTO edzesen_kivuli_mozgas (id, intenzitas) VALUES
 -- 3. login tábla:
 INSERT INTO login (id, felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES 
 (1, 'teszt_elek', '$2b$10$85wY6ThuC9.OkKaXnkoK4ezXmmluG0v3fIkK7AYRYBUHguDGsDM5O', 'elek@gmail.com', '+36201112233', 'Férfi', 'felhasznalo', '1995-05-10'), -- jelszo1
-(2, 'kovacs_bela', '$2b$10$z5TWZ0KF1ulKMLV/XCH0vOfOOcbGD47RUfpJ6JOLphs0wU.lLPM5G', 'bela@gmail.com', '+36202223344', 'Férfi', 'felhasznalo', '1988-11-20'), -- jelszo2
+(2, 'kovacs_bela', '$2b$10$z5TWZ0KF1ulKMLV/XCH0vOfOOcbGD47RUfpJ6JOLphs0wU.lLPM5G', 'fitlife123123@gmail.com', '+36202223344', 'Férfi', 'felhasznalo', '1988-11-20'), -- jelszo2
 (3, 'nagy_anna', '$2b$10$GdvOHW2kXCrNeo5Bozby1OZHkjjtr20J0yClzi9Az8BwcIDTezf5u', 'anna@gmail.com', '+36203334455', 'Nő', 'felhasznalo', '2000-01-15'), -- jelszo3
 (4, 'szabo_peti', '$2b$10$kz/bxutu/RMIKsD4ou2rre1.Y.zj2jYgn3N4F79dSq1YyqTEsBYtC', 'peti@gmail.com', '+36204445566', 'Férfi', 'felhasznalo', '1992-07-30'), -- jelszo4
 (5, 'horvath_kata', '$2b$10$eb8zzmXS8E0Kv9NGr4XPDelWWfguIOZ3BexnNkosblOjt/AXlHmgi', 'kata@gmail.com', '+36205556677', 'Nő', 'felhasznalo', '1998-03-22'), -- jelszo5
