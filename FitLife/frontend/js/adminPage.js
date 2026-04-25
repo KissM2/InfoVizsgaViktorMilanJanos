@@ -1,35 +1,33 @@
 import {getKeres, postKeres, deleteKeres, postApi} from '../js/kozosFetch.js';
 
 document.addEventListener("DOMContentLoaded", async function(){
-    const felhasznalok = await getKeres('/api/getAllAuthData')    
-    userTablaFeltoltes(felhasznalok.result);
-    const kommentek = await getKeres('/api/getAllKommentek');
-    kommentKiiras(kommentek.results);
 
-    document.getElementById('ujFelhBtn').addEventListener('click', async function(e){
-        e.preventDefault();
-        const formData = new FormData(document.getElementById('newUserForm'));
-        let response;
-        if(formData.get('role') == "felhasznalo"){
-            response = await postKeres('/api/userRegister', formData);
-        }
-        else{
-            response = await postKeres('/api/edzoRegister', formData);
-        }
-        if(await response.message == 'Sikeres felhasználó rögzítés.' || await response.message == 'Sikeres edző rögzítés.'){
-            const felhasznalok = await getKeres('/api/getAllAuthData')
-            userTablaFeltoltes(felhasznalok.result);
-        }
+    felhTablaPageBetoltes();
+    document.getElementById('felhKommPage').classList.remove('d-none');
+
+    document.getElementById('felhKommPageBtn').addEventListener('click', async function(){
+        felhTablaPageBetoltes();
+
+        document.getElementById('felhKommPage').classList.remove('d-none');
+        document.getElementById('adminokPage').classList.add('d-none');
+
+        setAllNavBtnDefault();
+
+        document.getElementById('felhKommPageBtn').classList.add('btn-dark');
+        document.getElementById('felhKommPageBtn').classList.remove('color-green');
+
     });
 
-    document.getElementById('felhasznaloFrissites').addEventListener('click', async function(){
-        const felhasznalok = await getKeres('/api/getAllAuthData')    
-        userTablaFeltoltes(felhasznalok.result);
-    });
+    document.getElementById('adminokPageBtn').addEventListener('click', async function(){
+        adminPageBetoltes();
 
-    document.getElementById('kommentekFrissites').addEventListener('click', async function(){
-        const kommentek = await getKeres('/api/getAllKommentek');
-        kommentKiiras(kommentek.results);
+        document.getElementById('adminokPage').classList.remove('d-none');
+        document.getElementById('felhKommPage').classList.add('d-none');
+
+        setAllNavBtnDefault();
+
+        document.getElementById('adminokPageBtn').classList.add('btn-dark');
+        document.getElementById('adminokPageBtn').classList.remove('color-green');
     });
 
     document.getElementById('megerositesBtn').addEventListener('click', async function(event){            
@@ -56,7 +54,6 @@ document.addEventListener("DOMContentLoaded", async function(){
                     const kommentek = await getKeres('/api/getAllKommentek');
                     kommentKiiras(kommentek.results);
                 }
-
                 break;
             }
             case 'kommentAktivalas': {
@@ -73,6 +70,23 @@ document.addEventListener("DOMContentLoaded", async function(){
                     const felhasznalok = await getKeres('/api/getAllAuthData');
                     userTablaFeltoltes(felhasznalok.result);
                 }
+                break;
+            }
+            case 'deleteAdmin': {
+                const response = await deleteKeres('/api/deleteUser?id=' + event.target.value);
+                if(await response.message == 'Felhasználó törlése sikeres.'){
+                    const adminok = await getKeres('/api/getAllAdminAuthData');
+                    adminTablaFeltoltes(adminok.result);
+                }
+                break;
+            }
+            case 'adminVisszaAllitas': {
+                const response = await postApi('/api/restoreUser', {id: event.target.value});
+                if(await response.message == 'Felhasználó visszaállítása sikeres.'){
+                    const adminok = await getKeres('/api/getAllAdminAuthData');
+                    adminTablaFeltoltes(adminok.result);
+                }
+                break;
             }
         }
     });
@@ -306,4 +320,135 @@ function roleSelectGeneralas(cella, user){
     select.appendChild(optionA);
     select.appendChild(optionB);
     cella.appendChild(select);
+}
+
+function adminTablaFeltoltes(felhasznalok){
+    let tbody = document.getElementById('adminTableBody');
+    tbody.innerHTML = '';
+
+    felhasznalok.forEach(user => {
+        let sor = document.createElement('tr');
+        sor.dataset.id = user.id;
+        sor.classList.add('row-hover-border')
+
+        for (const key in user) {
+            let cella = document.createElement('td');
+            cella.textContent = user[key];
+            sor.appendChild(cella);
+        }
+
+        let megerositesCella = document.createElement('td');
+        let megerosites = document.createElement('button');
+        megerosites.setAttribute('data-bs-toggle', 'modal');
+        megerosites.setAttribute('data-bs-target', '#megerositesModal');
+        megerosites.classList.add('btn', 'btn-sm');
+        if(user.deleted_at == null){
+            megerosites.textContent = 'Törlés';
+            megerosites.classList.add('btn-danger');
+            megerosites.addEventListener('click', function () {
+                document.getElementById('megerositesModalLabel').textContent = 'Felhasználó törlése';
+                document.getElementById('megerositoKerdes').textContent = 'Biztosan törölni szeretnéd ezt a felhasználót?';
+                const modalContent = document.getElementById('megerositesModalContent');
+                modalContent.innerHTML = `
+                    <ul>
+                        <li><strong>ID:</strong> ${user.id}</li>
+                        <li><strong>Név:</strong> ${user.felh_nev}</li>
+                        <li><strong>Email:</strong> ${user.email}</li>
+                    </ul>
+                `;
+                let megerositesBtn = document.getElementById('megerositesBtn');
+                megerositesBtn.value = user.id; //gombra tesszük a törlendő user id-jét, hogy onnan tudjuk majd lekérni
+                megerositesBtn.classList.add('btn-danger');
+                megerositesBtn.classList.remove('btn-success');
+                megerositesBtn.dataset.action = 'deleteAdmin'; //gombra teszünk egy data attribútumot, hogy tudjuk majd, hogy mi lesz a művelet
+            });
+        }else{
+            megerosites.textContent = 'visszaállítás';
+            megerosites.classList.add('btn-success');
+            megerosites.addEventListener('click', async function (event) {       
+                document.getElementById('megerositesModalLabel').textContent = 'Felhasználó visszaállítása';
+                document.getElementById('megerositoKerdes').textContent = 'Biztosan szeretnéd visszaállítani ezt a felhasználót?';
+                const modalContent = document.getElementById('megerositesModalContent');
+                modalContent.innerHTML = `
+                    <ul>
+                        <li><strong>ID:</strong> ${user.id}</li>
+                        <li><strong>Név:</strong> ${user.felh_nev}</li>
+                        <li><strong>Email:</strong> ${user.email}</li>
+                    </ul>
+                `;
+                let megerositesBtn = document.getElementById('megerositesBtn');
+                megerositesBtn.value = user.id; //gombra tesszük a törlendő user id-jét, hogy onnan tudjuk majd lekérni
+                megerositesBtn.classList.remove('btn-danger');
+                megerositesBtn.classList.add('btn-success');
+                megerositesBtn.dataset.action = 'adminVisszaAllitas'; //gombra teszünk egy data attribútumot, hogy tudjuk majd, hogy mi lesz a művelet
+            });
+        }
+
+        megerositesCella.appendChild(megerosites);
+        sor.appendChild(megerositesCella);
+        tbody.appendChild(sor);
+    });
+}
+
+async function felhTablaPageBetoltes(){
+    const felhasznalok = await getKeres('/api/getAllAuthData')    
+    userTablaFeltoltes(felhasznalok.result);
+
+    const kommentek = await getKeres('/api/getAllKommentek');
+    kommentKiiras(kommentek.results);
+
+    document.getElementById('ujFelhasznaloBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+        const formData = new FormData(document.getElementById('newUserForm'));
+        let response;
+        if(formData.get('role') == "felhasznalo"){
+            response = await postKeres('/api/userRegister', formData);
+        }
+        else{
+            response = await postKeres('/api/edzoRegister', formData);
+        }
+        if(await response.message == 'Sikeres felhasználó rögzítés.' || await response.message == 'Sikeres edző rögzítés.'){
+            const felhasznalok = await getKeres('/api/getAllAuthData')
+            userTablaFeltoltes(felhasznalok.result);
+        }
+    });
+
+    document.getElementById('felhasznaloFrissites').addEventListener('click', async function(){
+        const felhasznalok = await getKeres('/api/getAllAuthData')    
+        userTablaFeltoltes(felhasznalok.result);
+    });
+
+    document.getElementById('kommentekFrissites').addEventListener('click', async function(){
+        const kommentek = await getKeres('/api/getAllKommentek');
+        kommentKiiras(kommentek.results);
+    });
+}
+
+async function adminPageBetoltes(){
+    const adminok = await getKeres('/api/getAllAdminAuthData');
+    adminTablaFeltoltes(adminok.result);
+
+    document.getElementById('ujAdminBtn').addEventListener('click', async function(e){
+        e.preventDefault();
+        //ide jön az új admin létrehozásának a logikája
+    });
+
+    document.getElementById('adminokFrissites').addEventListener('click', async function(){
+        const adminok = await getKeres('/api/getAllAdminAuthData');
+        adminTablaFeltoltes(adminok.result);
+    });
+}
+
+function setAllNavBtnDefault(){
+    document.getElementById('adminokPageBtn').classList.remove('btn-dark');
+    document.getElementById('adminokPageBtn').classList.add('color-green');
+
+    document.getElementById('felhKommPageBtn').classList.remove('btn-dark');
+    document.getElementById('felhKommPageBtn').classList.add('color-green');
+
+    document.getElementById('ujEdzoPageBtn').classList.remove('btn-dark');
+    document.getElementById('ujEdzoPageBtn').classList.add('color-green');
+
+    document.getElementById('gyakReceptPageBtn').classList.remove('btn-dark');
+    document.getElementById('gyakReceptPageBtn').classList.add('color-green');
 }

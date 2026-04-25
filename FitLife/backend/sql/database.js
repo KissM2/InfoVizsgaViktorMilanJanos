@@ -76,7 +76,7 @@ async function selectAllLoginData() {
     return rows;
 }
 async function selectAllAdminLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role = "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.role, login.deleted_at FROM login where login.role = "admin";';
     const [rows] = await pool.execute(query);
     return rows;
 }

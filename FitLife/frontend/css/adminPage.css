@@ -19,3 +19,23 @@ td{
 .max-width-1800px{
     max-width: 1800px;
 }
+
+.gray-bg{
+    background-color: #161616;
+}
+
+.color-green{
+    color: #28a745;
+}
+
+.navbtn{
+    font-weight: bold;
+    height: 50px;
+    border-radius: 0px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.b-0{
+    border: none;
+}

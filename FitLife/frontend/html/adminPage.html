@@ -19,8 +19,33 @@
     <title>Admin oldal</title>
 </head>
 <body>
-    <div class="container-fluid max-width-1800px py-5">
-        <div class="row justify-content-center">
+    <div class="container-fluid max-width-1800px pt-5">
+
+        <nav class="gray-bg navbar navbar-expand-xl navbar-dark d-flex p-0 pt-2 b-0">
+
+          <button class="navbar-toggler ms-auto mb-2 me-5" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto container-fluid d-flex justify-content-evenly">
+              <li class="nav-item">
+                <button class="btn color-green navbtn" id="ujEdzoPageBtn">Új edző jelentkezések kezelése</button>
+              </li>
+              <li class="nav-item">
+                <button class="btn btn-dark navbtn" id="felhKommPageBtn">Felhasználók és kommentek kezelése</button>
+              </li>
+              <li class="nav-item">
+                <button class="btn color-green navbtn" id="adminokPageBtn">Adminok kezelése</button>
+              </li>
+              <li class="nav-item">
+                <button class="btn color-green navbtn" id="gyakReceptPageBtn">Gyakorlatok és receptek kezelése</button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="row card bg-dark justify-content-center pt-3 b-0 d-none" id="felhKommPage">
             <div class="col-12 mb-5">
                 <div class="card dark-card border-0">
                     <div class="card-body">
@@ -58,7 +83,7 @@
                 </div>
             </div>
 
-            <div class="col-12 mb-5">
+            <div class="col-12 mb-3">
                 <div class="card dark-card border-0">
                     <div class="card-body">
                         <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
@@ -89,7 +114,46 @@
                     </div>
                 </div>
             </div>
+
         </div>
+
+        <div class="row card bg-dark justify-content-center pt-3 b-0 d-none" id="adminokPage">
+            <div class="col-12 mb-3">
+                <div class="card dark-card border-0">
+                    <div class="card-body">
+                        <div class="mb-4 text-center fw-bold card-header d-flex justify-content-between">
+                            <h4>Adminok kezelése</h4>
+                            <div>
+                                <button type="button" id="ujAdminBtn" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#newUserModal">Új admin</button>
+                                <button type="button" id="adminokFrissites" class="btn btn-dark ms-2">Frissítés</button>    
+                            </div>
+                        </div>
+                        <div class="table-responsive scrolable-table">
+                            <table class="table table-dark table-striped table-hover table-bordered align-middle text-center">
+
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Email</th>
+                                        <th>Felhasználónév</th>
+                                        <th>Szerep</th>
+                                        <th>Törölve</th>
+                                        <th>Műveletek</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="adminTableBody">
+                                    <!-- Itt jelennek meg a felhasználók -->
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
     <!-- Új felhasználó Modal -->
@@ -157,6 +221,45 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
             <button type="submit" id="ujFelhBtn" class="btn btn-primary" data-bs-dismiss="modal">Létrehozás</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Új admin Modal -->
+    <div class="modal fade dark-card" id="newAdminModal" tabindex="-1" aria-labelledby="newAdminModalLabel">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light border-secondary">
+
+          <div class="modal-header">
+            <h5 class="modal-title " id="newAdminModalLabel">Új admin létrehozása</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="newAdminForm">
+
+              <div class="row g-3">
+
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" name="email" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Felhasználónév</label>
+                  <input type="text" class="form-control" name="felh_nev" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label">Jelszó</label>
+                  <input type="password" class="form-control" name="password" required>
+                </div>
+
+              </div>
+
+            </form>
           </div>
 
         </div>

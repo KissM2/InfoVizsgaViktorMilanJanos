@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS login (
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
     reset_token VARCHAR(255) NULL,
-    reset_expires DATETIME NULL,,
+    reset_expires DATETIME NULL,
     deleted_at DATE DEFAULT NULL
 );
 
@@ -241,29 +241,38 @@ INSERT INTO edzesen_kivuli_mozgas (id, intenzitas) VALUES
 (3, 'Aktív fizikai munka'), 
 (4, 'Rendszeres sport naponta');
 
--- 3. login tábla:
-INSERT INTO login (id, felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES 
-(1, 'teszt_elek', '$2b$10$85wY6ThuC9.OkKaXnkoK4ezXmmluG0v3fIkK7AYRYBUHguDGsDM5O', 'elek@gmail.com', '+36201112233', 'Férfi', 'felhasznalo', '1995-05-10'), -- jelszo1
-(2, 'kovacs_bela', '$2b$10$z5TWZ0KF1ulKMLV/XCH0vOfOOcbGD47RUfpJ6JOLphs0wU.lLPM5G', 'fitlife123123@gmail.com', '+36202223344', 'Férfi', 'felhasznalo', '1988-11-20'), -- jelszo2
-(3, 'nagy_anna', '$2b$10$GdvOHW2kXCrNeo5Bozby1OZHkjjtr20J0yClzi9Az8BwcIDTezf5u', 'anna@gmail.com', '+36203334455', 'Nő', 'felhasznalo', '2000-01-15'), -- jelszo3
-(4, 'szabo_peti', '$2b$10$kz/bxutu/RMIKsD4ou2rre1.Y.zj2jYgn3N4F79dSq1YyqTEsBYtC', 'peti@gmail.com', '+36204445566', 'Férfi', 'felhasznalo', '1992-07-30'), -- jelszo4
-(5, 'horvath_kata', '$2b$10$eb8zzmXS8E0Kv9NGr4XPDelWWfguIOZ3BexnNkosblOjt/AXlHmgi', 'kata@gmail.com', '+36205556677', 'Nő', 'felhasznalo', '1998-03-22'), -- jelszo5
-(6, 'kiss_gergo', '$2b$10$NAxxRxqe0NhdMaA8VC6hhOPS9fWn8AP6e94a65T/AiswynIE7XDaO', 'gergo@gmail.com', '+36206667788', 'Férfi', 'felhasznalo', '1990-09-05'), -- jelszo6
-(7, 'molnar_zsofia', '$2b$10$JSVc8ofgkhE9LA5BvtIXaefNunM/xoxp6SuDJpiXEiVt.S8TrOjJu', 'zsofia@gmail.com', '+36207778899', 'Nő', 'felhasznalo', '2002-12-10'), -- jelszo7
-(101, 'Togi', '$2b$10$7P1Jd4/xLmCpz.y2syZPxubyxrPUhdrxkgXydQw0LvHZPX3RvemnO', 'togi@fitlife.hu', '+36301112233', 'Férfi', 'edzo', '1998-05-12'), -- jelszo8
-(102, 'Chris Tren', '$2b$10$NCNMNwhBaM7tAs7ga1rsyOQdfjt0gnJCn1UTf4IGNZtOe9KKSQgyO', 'chris@fitlife.hu', '+36302223344', 'Férfi', 'edzo', '2001-08-20'), -- jelszo9
-(103, 'Mike Tren', '$2b$10$T8tb9l0D/tx0EsHNP1kbzeaKG1rI5rTU7GLCg0PISFuvSZ4uYz0t.', 'mike@fitlife.hu', '+36303334455', 'Férfi', 'edzo', '2001-08-20'), -- jelszo10
-(104, 'Sara Saffari', '$2b$10$TF8piZtTMXchk8pdakgQreoS8fdfSupRztoCyh4JVZBnyqVrwJQAK', 'sara@fitlife.hu', '+36304445566', 'Nő', 'edzo', '2001-02-28'), -- jelszo11
-(105, 'Rich Piana', '$2b$10$bBjGJwfBibiZykx0QTirN.GSamM6bDCWccbXYAwpr.UvoRAk.W9Ia', 'rich@fitlife.hu', '+36305556677', 'Férfi', 'edzo', '1970-02-21'), -- jelszo12
-(106, 'Annabel Lucinda', '$2b$10$MwfyU50O47dVq8esK.Y5oOQ/8Eav4J/8qNKTR/JcCFZr2WETgddPq', 'annabel@fitlife.hu', '+36306667788', 'Nő', 'edzo', '1999-11-15'), -- jelszo13
-(107, 'Keiani', '$2b$10$.Dd2HJ9ZNZWU1Cld6fNrnOgyvLosovy51a9J0X.2Tpo6xj59BziCC', 'keiani@fitlife.hu', '+36307778899', 'Nő', 'edzo', '2000-03-10'), -- jelszo14
-(108, 'Krissy Cela', '$2b$10$xCgnJrNazlKK6aa5hI0Qde9lAi6SBFOF0ofNHAgMKu9dw.sSXRauu', 'krissy@fitlife.hu', '+36308889900', 'Nő', 'edzo', '1994-10-07'), -- jelszo15
-(109, 'LeanBeefPatty', '$2b$10$jv80VhgQKqSWomukNnpZS.PCP3cgcW6cSXQxqwj.ckq0aDUr271J.', 'patty@fitlife.hu', '+36309990011', 'Nő', 'edzo', '1997-01-21'), -- jelszo16
-(110, 'Alex Eubank', '$2b$10$aZZaO8zQpU/UhCWN5lK9.ueSZDWByA8HTHt3JU4Cb51vFHxN0s3KS', 'alex@fitlife.hu', '+36300001122', 'Férfi', 'edzo', '2000-05-23'), -- jelszo17
-(111, 'Sam Sulek', '$2b$10$lJAZ3uel0KEm1lIaxflNhOP1Qyr401JoncdXqmpPIrrmBPloSLxsK', 'sam@fitlife.hu', '+36300002233', 'Férfi', 'edzo', '2002-02-07'), -- jelszo18
-(112, 'David Laid', '$2b$10$9UqffWtV6z0Yy057l2SPyOu/qzr1QLGKUT40NazWTXpFfJE2XVZqK', 'david@fitlife.hu', '+36300003344', 'Férfi', 'edzo', '1998-01-29'), -- jelszo19
-(113, 'Whitney Simmons', '$2b$10$XpnQTUH6j2A0WekJjlCt3uwwc3rAdBeXpJTOI9UaKlqZuo/Km4M96', 'whitney@fitlife.hu', '+36300004455', 'Nő', 'edzo', '1993-02-27'), -- jelszo20
-(114, 'Pamela Reif', '$2b$10$9MyhOgI2tacQQlQOv/UH7.je1fouxwIwZs37n115fnVvbnESfP8ce', 'pamela@fitlife.hu', '+36300005566', 'Nő', 'edzo', '1996-07-09'); -- jelszo21
+-- 3. login tábla(felhasználók):
+INSERT INTO login (felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES 
+('teszt_elek', '$2b$10$85wY6ThuC9.OkKaXnkoK4ezXmmluG0v3fIkK7AYRYBUHguDGsDM5O', 'elek@gmail.com', '+36201112233', 'Férfi', 'felhasznalo', '1995-05-10'), -- jelszo1
+('kovacs_bela', '$2b$10$z5TWZ0KF1ulKMLV/XCH0vOfOOcbGD47RUfpJ6JOLphs0wU.lLPM5G', 'fitlife123123@gmail.com', '+36202223344', 'Férfi', 'felhasznalo', '1988-11-20'), -- jelszo2
+('nagy_anna', '$2b$10$GdvOHW2kXCrNeo5Bozby1OZHkjjtr20J0yClzi9Az8BwcIDTezf5u', 'anna@gmail.com', '+36203334455', 'Nő', 'felhasznalo', '2000-01-15'), -- jelszo3
+('szabo_peti', '$2b$10$kz/bxutu/RMIKsD4ou2rre1.Y.zj2jYgn3N4F79dSq1YyqTEsBYtC', 'peti@gmail.com', '+36204445566', 'Férfi', 'felhasznalo', '1992-07-30'), -- jelszo4
+('horvath_kata', '$2b$10$eb8zzmXS8E0Kv9NGr4XPDelWWfguIOZ3BexnNkosblOjt/AXlHmgi', 'kata@gmail.com', '+36205556677', 'Nő', 'felhasznalo', '1998-03-22'), -- jelszo5
+('kiss_gergo', '$2b$10$NAxxRxqe0NhdMaA8VC6hhOPS9fWn8AP6e94a65T/AiswynIE7XDaO', 'gergo@gmail.com', '+36206667788', 'Férfi', 'felhasznalo', '1990-09-05'), -- jelszo6
+('molnar_zsofia', '$2b$10$JSVc8ofgkhE9LA5BvtIXaefNunM/xoxp6SuDJpiXEiVt.S8TrOjJu', 'zsofia@gmail.com', '+36207778899', 'Nő', 'felhasznalo', '2002-12-10'), -- jelszo7
+('Togi', '$2b$10$7P1Jd4/xLmCpz.y2syZPxubyxrPUhdrxkgXydQw0LvHZPX3RvemnO', 'togi@fitlife.hu', '+36301112233', 'Férfi', 'edzo', '1998-05-12'), -- jelszo8
+('Chris Tren', '$2b$10$NCNMNwhBaM7tAs7ga1rsyOQdfjt0gnJCn1UTf4IGNZtOe9KKSQgyO', 'chris@fitlife.hu', '+36302223344', 'Férfi', 'edzo', '2001-08-20'), -- jelszo9
+('Mike Tren', '$2b$10$T8tb9l0D/tx0EsHNP1kbzeaKG1rI5rTU7GLCg0PISFuvSZ4uYz0t.', 'mike@fitlife.hu', '+36303334455', 'Férfi', 'edzo', '2001-08-20'), -- jelszo10
+('Sara Saffari', '$2b$10$TF8piZtTMXchk8pdakgQreoS8fdfSupRztoCyh4JVZBnyqVrwJQAK', 'sara@fitlife.hu', '+36304445566', 'Nő', 'edzo', '2001-02-28'), -- jelszo11
+('Rich Piana', '$2b$10$bBjGJwfBibiZykx0QTirN.GSamM6bDCWccbXYAwpr.UvoRAk.W9Ia', 'rich@fitlife.hu', '+36305556677', 'Férfi', 'edzo', '1970-02-21'), -- jelszo12
+('Annabel Lucinda', '$2b$10$MwfyU50O47dVq8esK.Y5oOQ/8Eav4J/8qNKTR/JcCFZr2WETgddPq', 'annabel@fitlife.hu', '+36306667788', 'Nő', 'edzo', '1999-11-15'), -- jelszo13
+('Keiani', '$2b$10$.Dd2HJ9ZNZWU1Cld6fNrnOgyvLosovy51a9J0X.2Tpo6xj59BziCC', 'keiani@fitlife.hu', '+36307778899', 'Nő', 'edzo', '2000-03-10'), -- jelszo14
+('Krissy Cela', '$2b$10$xCgnJrNazlKK6aa5hI0Qde9lAi6SBFOF0ofNHAgMKu9dw.sSXRauu', 'krissy@fitlife.hu', '+36308889900', 'Nő', 'edzo', '1994-10-07'), -- jelszo15
+('LeanBeefPatty', '$2b$10$jv80VhgQKqSWomukNnpZS.PCP3cgcW6cSXQxqwj.ckq0aDUr271J.', 'patty@fitlife.hu', '+36309990011', 'Nő', 'edzo', '1997-01-21'), -- jelszo16
+('Alex Eubank', '$2b$10$aZZaO8zQpU/UhCWN5lK9.ueSZDWByA8HTHt3JU4Cb51vFHxN0s3KS', 'alex@fitlife.hu', '+36300001122', 'Férfi', 'edzo', '2000-05-23'), -- jelszo17
+('Sam Sulek', '$2b$10$lJAZ3uel0KEm1lIaxflNhOP1Qyr401JoncdXqmpPIrrmBPloSLxsK', 'sam@fitlife.hu', '+36300002233', 'Férfi', 'edzo', '2002-02-07'), -- jelszo18
+('David Laid', '$2b$10$9UqffWtV6z0Yy057l2SPyOu/qzr1QLGKUT40NazWTXpFfJE2XVZqK', 'david@fitlife.hu', '+36300003344', 'Férfi', 'edzo', '1998-01-29'), -- jelszo19
+('Whitney Simmons', '$2b$10$XpnQTUH6j2A0WekJjlCt3uwwc3rAdBeXpJTOI9UaKlqZuo/Km4M96', 'whitney@fitlife.hu', '+36300004455', 'Nő', 'edzo', '1993-02-27'), -- jelszo20
+('Pamela Reif', '$2b$10$9MyhOgI2tacQQlQOv/UH7.je1fouxwIwZs37n115fnVvbnESfP8ce', 'pamela@fitlife.hu', '+36300005566', 'Nő', 'edzo', '1996-07-09'); -- jelszo21
+
+-- 3. login tábla(adminok):
+INSERT INTO login(felh_nev, jelszo, email, role) VALUES 
+('Admin János', '$2b$10$0HCK1iiFSfA1viP8LT4G.eF6Wlf0wWtCsQJJhbpxQP88Awsa43zCi', 'admin.janos@fitlife.hu','admin'), -- jelszo22
+('Admin Anna', '$2b$10$krPgMJVf3uN.qfII6pJlHehtQ9lK5W9OeJiUp0lUaHd4nyoguo6F6', 'admin.anna@fitlife.hu','admin'), -- jelszo23
+('Admin Milán', '$2b$10$SaGyx1ZnFFhXLCq0QXtlxeRplNMqp0oFm./q6EuQ2Co48uR6b5gEG', 'admin.milan@fitlife.hu','admin'), -- jelszo24
+('Admin Bálint', '$2b$10$ayGcbvMeSaZa2w.V2zpnGePY.xNqOzSN32itMvueuZHgwriwhgbri', 'admin.balint@fitlife.hu','admin'), -- jelszo25
+('Admin Gergely', '$2b$10$w8VGjHxXECKIQXQjmJkk4O2ArMg1JqGTnlfYz.k47fHK/IC/DDH02', 'admin.gergely@fitlife.hu','admin'), -- jelszo26
+('Admin Béla', '$2b$10$5bFSgJGtJh4L7g96Q82qqOeL1s4MHm5679HL47pdE.LW6RvR52BQG', 'admin.bela@fitlife.hu','admin'); -- jelszo27
 
 -- 4. gyakorlat tábla:
 INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES 
@@ -688,67 +697,67 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 
 -- 10. edzo tábla:
 INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras) VALUES 
-(101, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
-(102, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
-(103, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.'),
-(104, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.'),
-(105, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.'),
-(106, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.'),
-(107, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.'),
-(108, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.'),
-(109, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.'),
-(110, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.'),
-(111, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.'),
-(112, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.'),
-(113, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.'),
-(114, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.');
+(8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.'),
+(9, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.'),
+(10, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.'),
+(11, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.'),
+(12, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.'),
+(13, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.'),
+(14, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.'),
+(15, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.'),
+(16, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.'),
+(17, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.'),
+(18, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.'),
+(19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.'),
+(20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.'),
+(21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.');
 
 -- 11. edzesterv tábla:
 
 -- 12. komment tábla:
 INSERT INTO komment (szoveg, ertekeles, statusz, edzo_id, felhasznalo_id) VALUES
--- Togi (101)
-('A Kebab-diéta tényleg működik, köszi!', 5, 'aktív', 101, 1),
-('', 4, 'aktív', 101, 2),
--- Chris Tren (102)
-('Brutális edzések, azóta csak üvöltve nyomok fekve.', 5, 'aktív', 102, 3),
-('', 5, 'aktív', 102, 4),
--- Mike Tren (103)
-('Szigorú de igazságos, kemények a súlyok.', 4, 'aktív', 103, 5),
-('', 5, 'aktív', 103, 6),
--- Sara Saffari (104)
-('Nagyon kedves, és segített beállítani a fényeket is a videómhoz!', 5, 'aktív', 104, 7),
-('', 3, 'aktív', 104, 1),
--- Rich Piana (105)
-('8 órás karezés után nem érzem a kezeim, 5% forever!', 5, 'aktív', 105, 2),
-('', 5, 'aktív', 105, 3),
--- Annabel Lucinda (106)
-('Precíz étrend, látványos fejlődés pár hét alatt.', 5, 'aktív', 106, 4),
-('', 4, 'aktív', 106, 5),
--- Keiani (107)
-('Szuper hangulatú funkcionális edzések!', 5, 'aktív', 107, 6),
-('', 5, 'aktív', 107, 7),
--- Krissy Cela (108)
-('A közösség és a program is zseniális.', 5, 'aktív', 108, 1),
-('', 4, 'aktív', 108, 2),
--- LeanBeefPatty (109)
-('A mobilitási gyakorlatok megváltoztatták az életem.', 5, 'aktív', 109, 3),
-('', 5, 'aktív', 109, 4),
--- Alex Eubank (110)
-('Esztétika mindenek felett, remek tanácsok.', 5, 'aktív', 110, 5),
-('', 4, 'aktív', 110, 6),
--- Sam Sulek (111)
-('Rövid, tömör, intenzív. Pont ahogy szeretem.', 5, 'aktív', 111, 7),
-('', 5, 'aktív', 111, 1),
--- David Laid (112)
-('Nagyon következetes edzéstervet kaptam.', 5, 'aktív', 112, 2),
-('', 4, 'aktív', 112, 3),
--- Whitney Simmons (113)
-('Sugárzik belőle a pozitivitás, öröm vele az edzés.', 5, 'aktív', 113, 4),
-('', 5, 'aktív', 113, 5),
--- Pamela Reif (114)
-('A HIIT edzései kinyírtak, de imádom!', 5, 'aktív', 114, 6),
-('', 4, 'aktív', 114, 7);
+-- Togi (8)
+('A Kebab-diéta tényleg működik, köszi!', 5, 'aktív', 8, 1),
+('', 4, 'aktív', 8, 2),
+-- Chris Tren (9)
+('Brutális edzések, azóta csak üvöltve nyomok fekve.', 5, 'aktív', 9, 3),
+('', 5, 'aktív', 9, 4),
+-- Mike Tren (10)
+('Szigorú de igazságos, kemények a súlyok.', 4, 'aktív', 10, 5),
+('', 5, 'aktív', 10, 6),
+-- Sara Saffari (11)
+('Nagyon kedves, és segített beállítani a fényeket is a videómhoz!', 5, 'aktív', 11, 7),
+('', 3, 'aktív', 11, 1),
+-- Rich Piana (12)
+('8 órás karezés után nem érzem a kezeim, 5% forever!', 5, 'aktív', 12, 2),
+('', 5, 'aktív', 12, 3),
+-- Annabel Lucinda (13)
+('Precíz étrend, látványos fejlődés pár hét alatt.', 5, 'aktív', 13, 4),
+('', 4, 'aktív', 13, 5),
+-- Keiani (14)
+('Szuper hangulatú funkcionális edzések!', 5, 'aktív', 14, 6),
+('', 5, 'aktív', 14, 7),
+-- Krissy Cela (15)
+('A közösség és a program is zseniális.', 5, 'aktív', 15, 1),
+('', 4, 'aktív', 15, 2),
+-- LeanBeefPatty (16)
+('A mobilitási gyakorlatok megváltoztatták az életem.', 5, 'aktív', 16, 3),
+('', 5, 'aktív', 16, 4),
+-- Alex Eubank (17)
+('Esztétika mindenek felett, remek tanácsok.', 5, 'aktív', 17, 5),
+('', 4, 'aktív', 17, 6),
+-- Sam Sulek (18)
+('Rövid, tömör, intenzív. Pont ahogy szeretem.', 5, 'aktív', 18, 7),
+('', 5, 'aktív', 18, 1),
+-- David Laid (19)
+('Nagyon következetes edzéstervet kaptam.', 5, 'aktív', 19, 2),
+('', 4, 'aktív', 19, 3),
+-- Whitney Simmons (20)
+('Sugárzik belőle a pozitivitás, öröm vele az edzés.', 5, 'aktív', 20, 4),
+('', 5, 'aktív', 20, 5),
+-- Pamela Reif (21)
+('A HIIT edzései kinyírtak, de imádom!', 5, 'aktív', 21, 6),
+('', 4, 'aktív', 21, 7);
 
 -- 13. allergiat_okoz tábla:
 INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES

@@ -332,4 +332,19 @@ router.post('/felhasznaloSzerepModositas', async (request, response) =>{
     }
 });
 
+router.get('/getAllAdminAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllAdminLoginData();
+        response.status(200).json({
+            message: "Admin bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Admin bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
 module.exports = router;
