@@ -70,4 +70,49 @@ router.get('/getKommentekForAdmin', async (request, response) => {
         response.status(500).json({ message: 'Szerver hiba.' });
     }
 });
+
+router.delete('/kommentInaktivalas', async (request, response) =>{
+    try {
+        const komment_id = request.query.komment_id;
+        const result = await database.kommentInaktivalas(komment_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a komment inaktiválása során."
+            });
+        }
+
+        response.status(200).json({
+            message: "Komment inaktiválása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Komment inaktiválása sikertelen."
+        });
+    }
+});
+
+router.post('/kommentAktivalas', async (request, response) =>{
+    try {
+        const komment_id = request.body.komment_id;
+        const result = await database.kommentAktivalas(komment_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a komment aktiválása során."
+            });
+        }
+
+        response.status(200).json({
+            message: "Komment aktiválása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Komment aktiválása sikertelen."
+        });
+    }
+});
+
 module.exports = router;

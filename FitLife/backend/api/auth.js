@@ -244,4 +244,131 @@ router.get('/getAllAuthData', async (request, response) =>{
     }
 });
 
+router.get('/getErintettekForAdmin', async (request, response) =>{
+    try {
+        const komment_id = request.query.komment_id;
+        const authData = await database.selectLoginDataByKommentId(komment_id);
+        response.status(200).json({
+            message: "Kommenthez tartozók adatai sikeresen lekérve",
+            results: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Kommenthez tartozók adatai lekérése sikertelen"
+        });
+    }
+});
+
+router.delete('/deleteUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.query.id;
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó törlése sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó törlése sikertelen."
+        });
+    }
+});
+
+router.post('/restoreUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.body.id;
+        const result = await database.restoreFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó visszaállításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó visszaállítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó visszaállítása sikertelen."
+        });
+    }
+});
+
+router.post('/felhasznaloSzerepModositas', async (request, response) =>{
+    try {
+        if(request.body.ujRole == 'admin'){
+            return response.status(403).json({
+                message: "Nem lehetséges admin szerepre módosítani egy felhasználó szerepét."
+            });
+        }
+        const felhasznalo_id = request.body.id;
+        const ujRole = request.body.ujRole;
+        const result = await database.updateFelhasznaloRole(felhasznalo_id, ujRole);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó szerepének módosításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó szerepének módosítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó szerepének módosítása sikertelen."
+        });
+    }
+});
+
+router.get('/getAllAdminAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllAdminLoginData();
+        response.status(200).json({
+            message: "Admin bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Admin bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/adminRegister', upload.none(), validator.validateEmailPassword , checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
+    try {
+        const {email, password, felh_nev} = request.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, null, null, "admin", null);
+        
+        if(insertLogin.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt az admin rögzítésekor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Sikeres admin rögzítés."
+        });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Admin rögzítése sikertelen"
+        });
+    }
+});
+
 module.exports = router;
