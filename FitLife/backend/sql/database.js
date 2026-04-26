@@ -33,6 +33,21 @@ async function updateJelszo(hash, userId) {
     const [rows] = await pool.execute(query, [hash, userId]);
     return rows;
 }
+async function deleteFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NOW() WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function restoreFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NULL WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function updateFelhasznaloRole(id, ujRole) {
+    const query = "UPDATE login SET role = ? WHERE id = ?";
+    const [rows] = await pool.execute(query, [ujRole, id]);
+    return rows;
+}
 
 //select
 async function login(email) {
@@ -56,13 +71,18 @@ async function selectLoginDataById(id) {
     return rows;
 }
 async function selectAllLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role NOT LIKE "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
     const [rows] = await pool.execute(query);
     return rows;
 }
 async function selectAllAdminLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role FROM login where login.role = "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.role, login.deleted_at FROM login where login.role = "admin";';
     const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectLoginDataByKommentId(komment_id) {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN komment a ON login.id = a.felhasznalo_id LEFT JOIN komment b ON login.id = b.edzo_id WHERE a.komment_id = ? OR b.komment_id = ?;';
+    const [rows] = await pool.execute(query, [komment_id, komment_id]);
     return rows;
 }
 
@@ -212,7 +232,17 @@ async function insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id) {
 }
 
 //update
+async function kommentInaktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'inaktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
+async function kommentAktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'aktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
 //select
 async function selectKommentekByEdzoId(edzo_id) {
@@ -269,6 +299,13 @@ async function selectAllKommentek() {
 //update
 
 
+//delete
+async function deleteGyakorlat(id) {
+    const query = "DELETE FROM gyakorlat WHERE gyakorlat_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
+
 //select
 async function selectAllGyakorlatok() {
     const query = "SELECT gyakorlat.gyakorlat_id, gyakorlat.nev AS gyakorlat_nev, gyakorlat.leiras, gyakorlat.kor, gyakorlat.ismetles, gyakorlat.tipus, izomcsoport.nev AS izomcsoport_nev FROM gyakorlat LEFT JOIN gyakorlat_izomcsoport ON gyakorlat.gyakorlat_id = gyakorlat_izomcsoport.gyakorlat_id LEFT JOIN izomcsoport ON gyakorlat_izomcsoport.izom_id = izomcsoport.izom_id";
@@ -284,6 +321,14 @@ async function selectAllGyakorlatok() {
 
 //update
 
+
+//delete
+
+async function deleteRecept(id) {
+    const query = "DELETE FROM recept WHERE recept_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //select
 async function selectAllReceptek() {
@@ -494,6 +539,14 @@ async function selectAllEKM() {
     return rows;
 }
 
+//izomcsoport tábla
+
+//select
+async function selectAllIzomcsoport() {
+    const query = `SELECT * FROM izomcsoport`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 
 //select
 // async function checkKulonlegesAlkalomExists(edzoId, datum) {
@@ -558,7 +611,7 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
             }
         }
         
-        // allergiák hozzá adása
+        // preferenciák hozzá adása
         for (let i = 0; i < preferenciak.length; i++) {   
             const [result3] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
@@ -581,6 +634,82 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
 
     } finally {
         // Kapcsolat vissza a poolba
+        conn.release();
+    }
+}
+
+//gyakorlat tábla + izomcsoport kapcsoló tábla tranzakció
+async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO gyakorlat (nev, leiras, kor, ismetles, tipus) VALUES (?, ?, ?, ?, ?)",
+            [nev, leiras, kor, ismetles, tipus]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const gyakorlatId = result.insertId;
+
+        await conn.execute(
+            "INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES (?, ?)",
+            [gyakorlatId, izomcsoport_id]
+        );
+
+        await conn.commit();
+        console.log("Gyakorlat sikeresen felvéve");
+        return "Sikeres gyakorlat felvétel";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Gyakorlat felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+//recept tábala + allergiat_okoz tábla tranzakció
+async function insertRecept(nev, leiras, etkezes_tipus, zsir, protein, szenhidrat, allergenek ) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES (?, ?, ?, ?, ?, ?)",
+            [nev, leiras, etkezes_tipus, zsir, protein, szenhidrat]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const receptId = result.insertId;
+
+        // allergének hozzá adása
+        if (allergenek && allergenek.length > 0){
+            for (let i = 0; i < allergenek.length; i++) {   
+                const [result2] = await conn.execute(
+                    "INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES (?,?)",
+                    [receptId, allergenek[i].allergen_id]
+                );
+                if (result2.affectedRows !== 1) {
+                    throw new Error("Sikertelen jóváírás");
+                }
+            }
+        }
+
+        await conn.commit();
+        console.log("Recept sikeresen felvéve");
+        return "sikeres recept rögzítés";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Recept felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
         conn.release();
     }
 }
@@ -634,5 +763,16 @@ module.exports = {
     selectAllKommentek,
     selectKommentekByUserIdForAdmin,
     selectKommentekByEdzoIdForAdmin,
-    selectAllAdminLoginData
+    selectAllAdminLoginData,
+    selectLoginDataByKommentId,
+    deleteFelhasznalo,
+    restoreFelhasznalo,
+    kommentInaktivalas,
+    kommentAktivalas,
+    updateFelhasznaloRole,
+    selectAllIzomcsoport,
+    insertGyakorlat,
+    deleteGyakorlat,
+    insertRecept,
+    deleteRecept,
 };
