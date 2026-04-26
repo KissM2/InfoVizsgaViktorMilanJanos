@@ -33,18 +33,44 @@ export function letrehozEdzoProfil(celElemId, adatObj) {
     pLeiras.classList.add("fs-5", "text-light");
     pLeiras.textContent = adatObj.leiras;
     const h3Eredmeny = document.createElement("h3");
-    h3Eredmeny.classList.add("text-white", "mt-4", "h5");
+    h3Eredmeny.classList.add("text-white", "mt-4", "mb-3", "h5");
     h3Eredmeny.textContent = "További információk:";
     const lista = document.createElement("ul");
     lista.classList.add("list-group", "list-group-flush", "bg-transparent", "mb-4");
     adatObj.eredmenyek.forEach(eredmeny => {
         const li = document.createElement("li");
-        li.classList.add("list-group-item", "bg-transparent", "text-white", "border-success");
+        li.classList.add("mb-4", "d-flex", "align-items-start");
+        const kettospontIndex = eredmeny.indexOf(':');
+        let cimkeStr = eredmeny;
+        let ertekStr = "";
+
+        if (kettospontIndex !== -1) {
+            cimkeStr = eredmeny.substring(0, kettospontIndex + 1);
+            ertekStr = eredmeny.substring(kettospontIndex + 1).trim();
+        }
+        let iconClass = "fa-check";
+        let iconColor = "text-success";
+        if (cimkeStr.includes("Email")) {
+            iconClass = "fa-envelope";
+        } 
+        else if (cimkeStr.includes("Telefon")) {
+            iconClass = "fa-phone";
+        } 
+        else if (cimkeStr.includes("Átlagos")) {
+            iconClass = "fa-star";
+            iconColor = "text-warning";
+        }
         const icon = document.createElement("i");
-        icon.classList.add("fas", "fa-check", "text-success", "me-2");
-        const span = document.createElement("span");
-        span.textContent = eredmeny;
-        li.append(icon, span);
+        icon.classList.add("fas", iconClass, iconColor, "me-3", "mt-1");
+        const szovegBefogo = document.createElement("div");
+        const strongCimke = document.createElement("strong");
+        strongCimke.classList.add("text-white");
+        strongCimke.textContent = cimkeStr + " ";
+        const spanErtek = document.createElement("span");
+        spanErtek.classList.add("text-light");
+        spanErtek.textContent = ertekStr;
+        szovegBefogo.append(strongCimke, spanErtek);
+        li.append(icon, szovegBefogo);
         lista.appendChild(li);
     });
 

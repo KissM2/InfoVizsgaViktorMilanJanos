@@ -69,5 +69,50 @@ router.get('/szamitott-kaloria', requireLogin.loginCheck, async (request, respon
         response.status(500).json({ message: "Szerverhiba a számítás során." });
     }
 });
+router.post('/postUjRecept', upload.none(), async (request, response) => {
+    try {
+        const { 
+            nev,
+            leiras,
+            etkezes_tipus,
+            zsir,
+            protein,
+            szenhidrat,
+        } = request.body;
+        
+        const allergenek = JSON.parse(request.body.allergenek);
 
+        const result = await database.insertRecept(
+            nev,
+            leiras,
+            etkezes_tipus,
+            zsir,
+            protein,
+            szenhidrat,
+            allergenek
+        );
+
+        if(result != "sikeres recept rögzítés"){
+            return response.status(400).json({ message: "DB hiba a recept rögzítésekor." });
+        }
+
+        response.status(200).json({ message: "Recept sikeresen rögzítve." });
+
+    } catch (error) {
+        response.status(500).json({ message: "Nem sikerült rögzíteni a receptet." });
+    }
+});
+router.delete('/deleteRecept', async (request, response) => {
+    try {
+        const receptId = request.query.id;
+        const result = await database.deleteRecept(receptId);
+        if(result.affectedRows !== 1){
+            return response.status(400).json({ message: "DB hiba a recept törlésekor." });
+        }
+        response.status(200).json({ message: "Recept sikeresen törölve." });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Nem sikerült törölni a receptet." });
+    }
+});
 module.exports = router;

@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     else {
         alert("Az edzéstervhez be kell jelentkezned!");
     }
+
     const adatok = await getKeres('/api/gyakorlatok');
     if (adatok) {
         gyakorlatok = adatok;
@@ -26,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     const table = document.querySelector(".tabla");
     try {
-        const mentettTerv = await getKeres(`/api/betoltes-edzesterv?id=${bejelentkezettUserId}`);
+        const mentettTerv = await getKeres(`/api/betoltes-edzesterv`);
         if (mentettTerv) {
             mentettTervFeltoltes(table, mentettTerv);
         }
@@ -35,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.log("Nincs még mentett terv, üres tábla marad.");
     }
     try {
-        const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok?id=${bejelentkezettUserId}`);
+        const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok`);
         if (generaltAdatok){
             hetiTervAjanlas = generaltAdatok;
         }
@@ -150,12 +151,11 @@ async function edzestervMentes(szuloTabla) {
         napiCellak.forEach(td => {
             const kartya = td.querySelector(".kaja-kartya");
 
-            if (kartya && kartya.dataset.gyakorlatId && bejelentkezettUserId) {
+            if (kartya && kartya.dataset.gyakorlatId) {
                 mentesAdatok.push({
                     nap: nap + 1,
                     gyakorlat_id: parseInt(kartya.dataset.gyakorlatId),
                     sorrend: napiSorrend,
-                    userId: bejelentkezettUserId
                 });
                 napiSorrend++;
             }

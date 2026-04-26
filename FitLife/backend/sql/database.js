@@ -5,6 +5,7 @@ const pool = mysql.createPool({
     user: 'root',
     password: '',
     database: 'fitlife',
+    dateStrings:true,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -32,6 +33,21 @@ async function updateJelszo(hash, userId) {
     const [rows] = await pool.execute(query, [hash, userId]);
     return rows;
 }
+async function deleteFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NOW() WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function restoreFelhasznalo(userId) {
+    const query = "UPDATE login SET deleted_at = NULL WHERE id = ?";
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+async function updateFelhasznaloRole(id, ujRole) {
+    const query = "UPDATE login SET role = ? WHERE id = ?";
+    const [rows] = await pool.execute(query, [ujRole, id]);
+    return rows;
+}
 
 //select
 async function login(email) {
@@ -45,7 +61,7 @@ async function checkUser(email) {
     return rows;
 }
 async function selectTrainerById(id) {
-    const query = "SELECT login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterem_cim, edzo.kep, edzo.idezet, edzo.leiras,(SELECT AVG(ertekeles) FROM komment WHERE edzo_id = edzo.edzo_id) AS ertekeles_atlag  FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
+    const query = "SELECT edzo.kompetenciak, login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterem_cim, edzo.kep, edzo.idezet, edzo.leiras,(SELECT AVG(ertekeles) FROM komment WHERE edzo_id = edzo.edzo_id AND statusz = 'aktív') AS ertekeles_atlag  FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
@@ -63,15 +79,31 @@ async function getUserPhysicalData(userId) {
     const [rows] = await pool.execute(query, [userId]);
     return rows[0];
 }
+async function selectAllLoginData() {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectAllAdminLoginData() {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.role, login.deleted_at FROM login where login.role = "admin";';
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+async function selectLoginDataByKommentId(komment_id) {
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN komment a ON login.id = a.felhasznalo_id LEFT JOIN komment b ON login.id = b.edzo_id WHERE a.komment_id = ? OR b.komment_id = ?;';
+    const [rows] = await pool.execute(query, [komment_id, komment_id]);
+    return rows;
+}
+async function selectJelentkezok() {
+    const query = "SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum FROM login INNER JOIN edzo on login.id = edzo.edzo_id WHERE edzo.statusz = 'jelentkezett'";
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 
 //felhasznalo tábla
 
 //insert
-async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id) {
-    const query = "INSERT INTO felhasznalo(felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id) VALUES (?,?,?,?,?,?,?)";
-    const [rows] = await pool.execute(query, [id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id]);
-    return rows;
-}
+
 
 //update
 async function updateUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id) {
@@ -119,16 +151,16 @@ async function selectFelhDataById(id) {
 //edzo tábla
 
 //insert
-async function insertEdzo(edzo_id,edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak) {
-    const query = "INSERT INTO edzo(edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak) VALUES (?,POINT(?,?),?,?,?,?)";
-    const [rows] = await pool.execute(query, [edzo_id, edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak]);
-    return rows;
-}
 
 //update
-async function updateEdzo(edzoterem_cim_lat, edzoterem_cim_lng, kep, idezet, leiras, id) {
-    const query = 'UPDATE edzo SET edzoterem_cim=POINT(?,?),kep=?,idezet=?,leiras=? WHERE edzo.edzo_id = ?;';
-    const [rows] = await pool.execute(query, [edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, id]);
+async function updateEdzo(edzoterem_cim_lat, edzoterem_cim_lng, kep, idezet, leiras,kompetenciak, id) {
+    const query = 'UPDATE edzo SET edzoterem_cim=POINT(?,?),kep=?,idezet=?,leiras=?,kompetenciak=? WHERE edzo.edzo_id = ?;';
+    const [rows] = await pool.execute(query, [edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak, id]);
+    return rows;
+}
+async function updateStatuszElfogadva(id) {
+    const query = 'UPDATE edzo SET statusz = "elfogadva" WHERE edzo.edzo_id = ?;';
+    const [rows] = await pool.execute(query, [id]);
     return rows;
 }
 
@@ -181,6 +213,7 @@ async function selectTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+
 //edzesterv tábla
 
 //insert
@@ -218,7 +251,17 @@ async function insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id) {
 }
 
 //update
+async function kommentInaktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'inaktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
+async function kommentAktivalas(komment_id) {
+    const query = "UPDATE komment SET statusz = 'aktiv' WHERE komment_id = ?";
+    const [rows] = await pool.execute(query, [komment_id]);
+    return rows;
+}
 
 //select
 async function selectKommentekByEdzoId(edzo_id) {
@@ -226,10 +269,44 @@ async function selectKommentekByEdzoId(edzo_id) {
         SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, k.edzo_id, l.felh_nev AS felhasznalo_nev 
         FROM komment k
             LEFT JOIN login l ON k.felhasznalo_id = l.id
+        WHERE k.edzo_id = ? AND k.statusz LIKE "aktív"
+        ORDER BY k.komment_id DESC
+    `;
+    const [rows] = await pool.execute(query, [edzo_id]);
+    return rows;
+}
+async function selectKommentekByUserIdForAdmin(user_id) {
+    const query = `
+        SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login f ON k.felhasznalo_id = f.id
+            INNER JOIN login e ON k.edzo_id = e.id
+        WHERE k.felhasznalo_id = ?
+        ORDER BY k.komment_id DESC
+    `;
+    const [rows] = await pool.execute(query, [user_id]);
+    return rows;
+}
+async function selectKommentekByEdzoIdForAdmin(edzo_id) {
+    const query = `
+        SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login e ON k.edzo_id = e.id
+            INNER JOIN login f ON k.felhasznalo_id = f.id
         WHERE k.edzo_id = ?
         ORDER BY k.komment_id DESC
     `;
     const [rows] = await pool.execute(query, [edzo_id]);
+    return rows;
+}
+async function selectAllKommentek() {
+    const query = `
+    SELECT k.komment_id, k.szoveg, k.ertekeles, k.statusz, e.felh_nev as edzo_nev, f.felh_nev
+        FROM komment k
+            INNER JOIN login e ON k.edzo_id = e.id
+            INNER JOIN login f ON k.felhasznalo_id = f.id
+    `;
+    const [rows] = await pool.execute(query);
     return rows;
 }
 
@@ -240,6 +317,13 @@ async function selectKommentekByEdzoId(edzo_id) {
 
 //update
 
+
+//delete
+async function deleteGyakorlat(id) {
+    const query = "DELETE FROM gyakorlat WHERE gyakorlat_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //select
 async function selectAllGyakorlatok() {
@@ -256,6 +340,14 @@ async function selectAllGyakorlatok() {
 
 //update
 
+
+//delete
+
+async function deleteRecept(id) {
+    const query = "DELETE FROM recept WHERE recept_id = ?";
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //select
 async function selectAllReceptek() {
@@ -279,53 +371,136 @@ async function selectAllAllergen() {
     return rows;
 }
 
+//allergias_ra tábla
+
 //heti_beosztas tábla
 
 //insert
-async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
-    const query = `
-        INSERT INTO heti_beosztas 
-        (weekday, start, end, mettol_ervenyes, edzo_id)
-        VALUES (?, ?, ?, ?, ?)
-    `;
-
-    const [result] = await pool.execute(query, [
-        weekday,
-        start,
-        end,
-        mettol,
-        edzoId
-    ]);
-
-    return result;
+async function insertAllergiasRa(id, allergia) {
+    const query = "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES(?,?)";
+    const [rows] = await pool.execute(query, [id, allergia]);
+    return rows;
 }
 
 //update
 
 
+//delete
+async function deleteAllergiasRa(id, allergen_id) {
+    const query = "DELETE FROM allergias_ra WHERE allergias_ra.felhasznalo_id = ? AND allergias_ra.allergen_id = ?";
+    const [rows] = await pool.execute(query, [id, allergen_id]);
+    return rows;
+}
+
 //select
+async function selectAorPById(id, tipus) {
+    const query = "SELECT allergen.allergen_id FROM allergias_ra INNER JOIN allergen on allergias_ra.allergen_id = allergen.allergen_id WHERE allergias_ra.felhasznalo_id = ? AND allergen.tipus = ?";
+    const [rows] = await pool.execute(query, [id, tipus]);
+    return rows;
+}
+
+//insert
+async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
+    const query = `
+        INSERT INTO heti_beosztas
+        (weekday, start, end, mettol_ervenyes, edzo_id, statusz)
+        VALUES (?, ?, ?, ?, ?, 'aktiv')
+    `;
+    await pool.execute(query, [weekday, start, end, mettol, edzoId]);
+}
+
+//delete
+async function softDeleteHetiBeosztas(edzoId, mettol) {
+    const query = `
+        UPDATE heti_beosztas
+        SET statusz = 'torolt'
+        WHERE edzo_id = ?
+        AND mettol_ervenyes = ?
+    `;
+    await pool.execute(query, [edzoId, mettol]);
+}
+
+//select
+// heti beosztás lekérése
+async function getHetiBeosztas(edzoId) {
+    const query = `
+        SELECT *
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+        AND statusz = 'aktiv'
+    `;
+    const [rows] = await pool.execute(query, [edzoId]);
+    return rows;
+}
 async function checkHetiBeosztasExists(edzoId, mettol) {
     const query = `
-        SELECT 1 
-        FROM heti_beosztas 
-        WHERE edzo_id = ? AND mettol_ervenyes = ?
+        SELECT 1
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+        AND mettol_ervenyes = ?
+        AND statusz = 'aktiv'
         LIMIT 1
     `;
-
     const [rows] = await pool.execute(query, [edzoId, mettol]);
     return rows.length > 0;
 }
-
+// heti beosztás van-e benne
+async function isInHetiBeosztas(edzoId, weekday, ido) {
+    const query = `
+        SELECT 1
+        FROM heti_beosztas
+        WHERE edzo_id = ?
+        AND weekday = ?
+        AND statusz = 'aktiv'
+        AND start <= ?
+        AND end >= ?
+        LIMIT 1
+    `;
+    const [rows] = await pool.execute(query, [
+        edzoId,
+        weekday,
+        ido,
+        ido
+    ]);
+    return rows.length > 0;
+}
 //kulonleges_alkalom tábla
 
-//insert
+// összes KA
+async function getKulonlegesAlkalmak(edzoId) {
+    const query = `
+        SELECT *
+        FROM kulonleges_alkalom
+        WHERE edzo_id = ?
+        AND statusz <> 'torolt'
+    `;
+    const [rows] = await pool.execute(query, [edzoId]);
+    return rows;
+}
+
+
+// pontos KA
+async function getKAByExact(edzoId, datum, start, end) {
+    const query = `
+        SELECT *
+        FROM kulonleges_alkalom
+        WHERE edzo_id = ?
+        AND datum = ?
+        AND start = ?
+        AND end = ?
+        AND statusz <> 'torolt'
+        LIMIT 1
+    `;
+    const [rows] = await pool.execute(query, [edzoId, datum, start, end]);
+    return rows[0];
+}
+
+// insert
 async function insertKulonlegesAlkalom(datum, start, end, statusz, edzoId) {
     const query = `
-        INSERT INTO kulonleges_alkalom 
-        (datum, start, end, statusz, edzo_id)
+        INSERT INTO kulonleges_alkalom (datum, start, end, statusz, edzo_id)
         VALUES (?, ?, ?, ?, ?)
     `;
-
     const [result] = await pool.execute(query, [
         datum,
         start,
@@ -333,26 +508,38 @@ async function insertKulonlegesAlkalom(datum, start, end, statusz, edzoId) {
         statusz,
         edzoId
     ]);
-
-    return result;
+    return result.affectedRows > 0;
 }
 
-//update
-
-
-//select
-async function checkKulonlegesAlkalomExists(edzoId, datum) {
+// update
+async function updateKAStatus(ka_id, statusz) {
     const query = `
-        SELECT 1 
-        FROM kulonleges_alkalom 
-        WHERE edzo_id = ? AND datum = ?
-        LIMIT 1
+        UPDATE kulonleges_alkalom
+        SET statusz = ?
+        WHERE ka_id = ?
     `;
-
-    const [rows] = await pool.execute(query, [edzoId, datum]);
-    return rows.length > 0;
+    const [result] = await pool.execute(query, [statusz, ka_id]);
+    return result.affectedRows > 0;
 }
-
+//soft delete
+async function markInvalidKAAsDeleted(edzoId, mettol) {
+    const query = `
+        UPDATE kulonleges_alkalom ka
+        SET ka.statusz = 'torolt'
+        WHERE ka.edzo_id = ?
+        AND ka.statusz <> 'torolt'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM heti_beosztas hb
+            WHERE hb.edzo_id = ka.edzo_id
+            AND hb.statusz = 'aktiv'
+            AND hb.weekday = WEEKDAY(ka.datum)
+            AND hb.mettol_ervenyes = ?
+            AND hb.start <= ka.start
+            AND hb.end >= ka.start
+        ) `;
+    await pool.execute(query, [edzoId, mettol]);
+}
 //cel_alak tábla
 
 //select
@@ -371,32 +558,241 @@ async function selectAllEKM() {
     return rows;
 }
 
+//izomcsoport tábla
+
+//select
+async function selectAllIzomcsoport() {
+    const query = `SELECT * FROM izomcsoport`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
+
+//select
+// async function checkKulonlegesAlkalomExists(edzoId, datum) {
+//     const query = `
+//         SELECT 1 
+//         FROM kulonleges_alkalom 
+//         WHERE edzo_id = ? AND datum = ?
+//         LIMIT 1
+//     `;
+
+//     const [rows] = await pool.execute(query, [edzoId, datum]);
+//     return rows.length > 0;
+// }
 
 //szét kéne szedni
-async function getCalendarData(edzoId) {
-    const hetiQuery = `
-        SELECT weekday, start, end, mettol_ervenyes
-        FROM heti_beosztas
-        WHERE edzo_id = ?
-    `;
-
-    const kulonlegesQuery = `
-        SELECT datum, start, end, statusz
-        FROM kulonleges_alkalom
-        WHERE edzo_id = ?
-    `;
-
-    const foglalasQuery = `
-        SELECT datum, start, end, statusz, felhasznalo_id
+async function getFoglalas(edzoId) {
+    const query = `
+        SELECT *
         FROM foglalas
         WHERE edzo_id = ?
+        AND statusz <> 'torolt'
     `;
+    const [rows] = await pool.execute(query, [edzoId]);
+    return rows;
+}
+//update users?
+// async function updateUserProfile(email, felh, telsz, userId) {
+//     const query = `
+//         UPDATE users
+//         SET login.email = ?, login.felh_nev = ?, login.telszam = ?
+//         WHERE login.id= ? AND login.role = 'edzo';
+//     `;
 
-    const [heti] = await pool.execute(hetiQuery, [edzoId]);
-    const [kulonleges] = await pool.execute(kulonlegesQuery, [edzoId]);
-    const [foglalas] = await pool.execute(foglalasQuery, [edzoId]);
+//     await pool.execute(query, [email, felh, telsz, userId]);
+// }
 
-    return { heti, kulonleges, foglalas };
+//tranzakció(felhasznalo + allergias_ra)
+async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak) {
+    const conn = await pool.getConnection();
+    try{
+        // Tranzakció indítása
+        await conn.beginTransaction();
+
+        // felhasználó rögzítése
+        const [result1] = await conn.execute(
+            "INSERT INTO felhasznalo(felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id) VALUES (?,?,?,?,?,?,?)",
+            [id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id]
+        );
+
+        if (result1.affectedRows !== 1) {
+          throw new Error("Sikertelen levonás");
+        }
+
+        // allergiák hozzá adása
+        for (let i = 0; i < allergiak.length; i++) {   
+            const [result2] = await conn.execute(
+                "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
+                [id, allergiak[i].allergen_id]
+            );
+            if (result2.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+        
+        // preferenciák hozzá adása
+        for (let i = 0; i < preferenciak.length; i++) {   
+            const [result3] = await conn.execute(
+                "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
+                [id, preferenciak[i].allergen_id]
+            );
+            if (result3.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+
+        // ✅ Minden sikeres → COMMIT
+        await conn.commit();
+        console.log("Tranzakció sikeres");
+        return "Tranzakció sikeres";
+    } catch (err) {
+        // ❌ Hiba esetén → ROLLBACK
+        await conn.rollback();
+        console.error("Tranzakció visszagörgetve:", err.message);
+        throw err;
+
+    } finally {
+        // Kapcsolat vissza a poolba
+        conn.release();
+    }
+}
+
+//gyakorlat tábla + izomcsoport kapcsoló tábla tranzakció
+async function insertGyakorlat(nev, leiras, kor, ismetles, tipus, izomcsoport_id) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO gyakorlat (nev, leiras, kor, ismetles, tipus) VALUES (?, ?, ?, ?, ?)",
+            [nev, leiras, kor, ismetles, tipus]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const gyakorlatId = result.insertId;
+
+        await conn.execute(
+            "INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES (?, ?)",
+            [gyakorlatId, izomcsoport_id]
+        );
+
+        await conn.commit();
+        console.log("Gyakorlat sikeresen felvéve");
+        return "Sikeres gyakorlat felvétel";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Gyakorlat felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+//recept tábala + allergiat_okoz tábla tranzakció
+async function insertRecept(nev, leiras, etkezes_tipus, zsir, protein, szenhidrat, allergenek ) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES (?, ?, ?, ?, ?, ?)",
+            [nev, leiras, etkezes_tipus, zsir, protein, szenhidrat]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen gyakorlat felvétel");
+        }
+
+        const receptId = result.insertId;
+
+        // allergének hozzá adása
+        if (allergenek && allergenek.length > 0){
+            for (let i = 0; i < allergenek.length; i++) {   
+                const [result2] = await conn.execute(
+                    "INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES (?,?)",
+                    [receptId, allergenek[i].allergen_id]
+                );
+                if (result2.affectedRows !== 1) {
+                    throw new Error("Sikertelen jóváírás");
+                }
+            }
+        }
+
+        await conn.commit();
+        console.log("Recept sikeresen felvéve");
+        return "sikeres recept rögzítés";
+    } catch (err) {
+        await conn.rollback();
+        console.error("Recept felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+//tranzakció jelentkezéshez (login + edzo)
+async function insertJelentkezes(felh_nev, jelszo, email, telszam, nem, role, szul_datum) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO login (felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [felh_nev, jelszo, email, telszam, nem, role, szul_datum]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen jelentkezés");
+        }
+
+        const result2 = await conn.execute(
+            "INSERT INTO edzo (edzo_id, statusz) VALUES (?, 'jelentkezett')",
+            [result.insertId]
+        );
+
+        await conn.commit();
+        console.log("Jelentkezés sikeresen felvéve");
+        return result.insertId ;
+    } catch (err) {
+        await conn.rollback();
+        console.error("Jelentkezés felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+// jelentkezés törléséhez tranzakció (edzo + login)
+async function deleteJelentkezes(id) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        await conn.execute(
+            "DELETE FROM edzo WHERE edzo_id = ?",
+            [id]
+        );
+
+        const [result] = await conn.execute(
+            "DELETE FROM login WHERE id = ?",
+            [id]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen jelentkezés törlés");
+        }
+
+        await conn.commit();
+        
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
 }
 
 //!Export
@@ -413,16 +809,22 @@ module.exports = {
     selectEdzoTerem,
     insertUser,
     selectAllAllergen,
-    insertEdzo,
     selectAllEdzoterem,
     selectAllTrainersByDist,
     selectKommentekByEdzoId,
     insertKomment,
     insertHetiBeosztasSingle,
     checkHetiBeosztasExists,
-    checkKulonlegesAlkalomExists,
     insertKulonlegesAlkalom,
-    getCalendarData,
+    getFoglalas,
+    selectTrainersByDist,
+    softDeleteHetiBeosztas,
+    isInHetiBeosztas,
+    getKulonlegesAlkalmak,
+    getHetiBeosztas,
+    getKAByExact,
+    updateKAStatus,
+    markInvalidKAAsDeleted,
     selectTrainersByDist,
     getUserCel,
     getUserEdzesNapok,
@@ -435,5 +837,27 @@ module.exports = {
     updateLoginData,
     updateJelszo,
     getUserPhysicalData,
-    updateCalorieGoal
+    insertAllergiasRa,
+    selectAorPById,
+    deleteAllergiasRa,
+    selectAllLoginData,
+    selectAllKommentek,
+    selectKommentekByUserIdForAdmin,
+    selectKommentekByEdzoIdForAdmin,
+    selectAllAdminLoginData,
+    selectLoginDataByKommentId,
+    deleteFelhasznalo,
+    restoreFelhasznalo,
+    kommentInaktivalas,
+    kommentAktivalas,
+    updateFelhasznaloRole,
+    selectAllIzomcsoport,
+    insertGyakorlat,
+    deleteGyakorlat,
+    insertRecept,
+    deleteRecept,
+    selectJelentkezok,
+    insertJelentkezes,
+    deleteJelentkezes,
+    updateStatuszElfogadva,
 };

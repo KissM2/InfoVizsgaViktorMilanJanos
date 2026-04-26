@@ -2,6 +2,21 @@ const express = require('express');
 const router = express.Router();
 const database = require('../sql/database.js');
 
+//!Multer
+const multer = require('multer'); //?npm install multer
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: (request, file, callback) => {
+        callback(null, path.join(__dirname, '../uploads'));
+    },
+    filename: (request, file, callback) => {
+        callback(null, file.originalname); //?file eredeti neve
+    }
+});
+
+const upload = multer({ storage });
+
 // Súlyozás célok alapján
 const pontozasSzabalyok = {
     'Izomépítés': { 'sulyzós': 15, 'saját_testsúlyos': 5, 'kardió': -10 },
@@ -21,7 +36,7 @@ router.get('/gyakorlatok', async (request, response) => {
 });
 router.get('/generalt-gyakorlatok', async (request, response) => {
     try {
-        const userId = request.query.id;
+        const userId = request.session.user.id;
         if (!userId) {
             return response.status(400).json({ message: "Hiányzó felhasználó ID." });
         }
@@ -115,7 +130,6 @@ router.post('/mentes-edzesterv', async (request, response) => {
                 weekday_sorszam: elem.nap,
                 gyakorlat_id: elem.gyakorlat_id,
                 sorrend: elem.sorrend,
-                felhasznalo_id: elem.userId
             });
         }
         response.status(200).json({ message: "Edzésterv sikeresen mentve!" });
@@ -125,7 +139,7 @@ router.post('/mentes-edzesterv', async (request, response) => {
 });
 router.get('/betoltes-edzesterv', async (request, response) => {
     try {
-        const userId = request.query.id;
+        const userId = request.session.user.id;
         if (!userId) {
             return response.status(400).json({ message: "Nincs id." });
         }
@@ -149,6 +163,64 @@ router.get('/betoltes-edzesterv', async (request, response) => {
         response.status(200).json(formazott);
     } catch (error) {
         response.status(500).json({ message: "Hiba a terv betöltésekor." });
+    }
+});
+router.get('/getIzomcsoportok', async (request, response) => {
+    try {
+        const izomcsoportok = await database.selectAllIzomcsoport();
+        response.status(200).json({ 
+            message: "Izomcsoportok sikeresen lekérve.", 
+            results: izomcsoportok 
+        });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Hiba az izomcsoportok lekérésekor." });
+    }
+});
+router.post('/postUjGyakorlat', upload.none(), async (request, response) => {
+    try {
+        const { 
+            gyakorlat_nev,
+            leiras,
+            kor,
+            ismetles,
+            tipus,
+            izomcsoport_id,
+        } = request.body;
+
+        const result = await database.insertGyakorlat(
+            gyakorlat_nev,
+            leiras,
+            kor,
+            ismetles,
+            tipus,
+            izomcsoport_id
+        );
+
+        if(result != "Sikeres gyakorlat felvétel"){
+            return response.status(400).json({ message: "Hiba az új gyakorlat tranzakciója során." });
+        }
+
+        response.status(200).json({ message: "Új gyakorlat sikeresen felvéve." });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Hiba az új gyakorlat felvételkor." });
+    }
+});
+router.delete('/deleteGyakorlat', async (request, response) => {
+    try {
+        const { id } = request.query;
+
+        const result = await database.deleteGyakorlat(id);
+
+        if (result.affectedRows < 1) {
+            return response.status(400).json({ message: "DB hiba a gyakorlat törlésekor." });
+        }
+
+        response.status(200).json({ message: "Gyakorlat sikeresen törölve." });
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Hiba a gyakorlat törlésekor." });
     }
 });
 module.exports = router;

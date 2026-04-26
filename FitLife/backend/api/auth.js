@@ -16,11 +16,60 @@ const storage = multer.diskStorage({
         callback(null, path.join(__dirname, '../uploads'));
     },
     filename: (request, file, callback) => {
-        callback(null, file.originalname); //?file eredeti neve
+        // Adunk a feltöltött file-nak egy ideiglenes egyedi nevet
+        callback(null, `${file.fieldname}-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`);
     }
 });
 
 const upload = multer({ storage });
+// Megmodnjuk hogy hány filet vár a végpont és a neveiket
+const trainerApplicationUpload = upload.fields([
+    { name: 'cv', maxCount: 1 },
+    { name: 'coverLetter', maxCount: 1 }
+]);
+
+// Vissza adja hogy mi kell legyen az új filename. Az önélatrajz: cv+user.id, a motivációs levelet: cl+user.id
+function getApplicationFileName(prefix, userId, originalName) {
+    return `${prefix}${userId}${path.extname(originalName)}`;
+}
+
+function getUploadedFile(request, fieldName) {
+    return request.files?.[fieldName]?.[0] || null;
+}
+
+// Ha az adatbázis lekérdezések vagy a validáció közben hiba keletkezik akkor letöröljük a feltöltött fileokat
+async function cleanupUploadedFiles(files) {
+    await Promise.all(
+        files
+            .filter(Boolean)
+            .map(file => fs.unlink(file.path).catch(() => {}))
+    );
+}
+async function cleanupSavedFiles(savedPaths) {
+    await Promise.all(savedPaths.map(filePath => fs.unlink(filePath).catch(() => {})));
+}
+
+// Átnevezzük a fileokat
+async function renameUploadedFile(file, prefix, userId) {
+    const targetFileName = getApplicationFileName(prefix, userId, file.originalname);
+    const targetFilePath = path.join(file.destination, targetFileName);
+
+    await fs.rename(file.path, targetFilePath);
+    return targetFilePath;
+}
+
+// Vissza adjuk a felhasználóhoz tartozó filet
+async function findApplicationPathByUserId(prefix, userId) {
+    const uploadsDirectory = path.join(__dirname, '../uploads');
+    const files = await fs.readdir(uploadsDirectory);
+    const applicationFileName = files.find(fileName => new RegExp(`^${prefix}${userId}(\\..+)?$`, 'i').test(fileName));
+
+    if (!applicationFileName) {
+        return null;
+    }
+
+    return path.join(uploadsDirectory, applicationFileName);
+}
 
 //!Endpoints:
 //?GET /api/test
@@ -48,15 +97,14 @@ router.get('/testsql', async (request, response) => {
 //?Post /api/userRegister
 router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
-        const { 
+        const {
             felh_nev,
             email,
             telszam,
             nem,
             szul_datum,
-            password,
+            password, 
         } = request.body;
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, telszam, nem, "felhasznalo", szul_datum, );
@@ -80,7 +128,11 @@ router.post('/userRegister', upload.none(), validator.validateEmailPassword ,val
 });
 
 //?Post /api/edzoRegister
-router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
+router.post('/edzoRegister', trainerApplicationUpload, validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed,  async (request, response) => {
+    // Elmentjük a fileok helyét, hogyha hiba van a jelentkezés közben akkor törölni tudjuk őket
+    const savedPaths = [];
+    let insertedUserId = null;
+
     try {
         const {
             felh_nev,
@@ -91,12 +143,26 @@ router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPasswor
             password, 
         } = request.body;
 
+        const cvFile = getUploadedFile(request, 'cv');
+        const coverLetterFile = getUploadedFile(request, 'coverLetter');
+
+        if (!cvFile || !coverLetterFile) {
+            await cleanupUploadedFiles([cvFile, coverLetterFile]);
+            return response.status(400).json({
+                message: "Az önéletrajz és a motivációs levél feltöltése kötelező."
+            });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, telszam, nem, "edzo", szul_datum, );
+        const result = await database.insertJelentkezes(felh_nev, hashedPassword, email, telszam, nem, "edzo", szul_datum, );
+        insertedUserId = result;
+        // Átnevezzük a fileokat
+        savedPaths.push(await renameUploadedFile(cvFile, 'cv', insertedUserId));
+        savedPaths.push(await renameUploadedFile(coverLetterFile, 'coverLetter', insertedUserId));
 
         request.session.user = {
-            id: insertLogin.insertId,
+            id: insertedUserId,
             email: email,
             role: "edzo"
         }
@@ -107,6 +173,18 @@ router.post('/edzoRegister', upload.single('cv'), validator.validateEmailPasswor
 
     } catch (error) {
         console.log(error.message);
+        await cleanupUploadedFiles([
+            getUploadedFile(request, 'cv'),
+            getUploadedFile(request, 'coverLetter')
+        ]);
+        await cleanupSavedFiles(savedPaths);
+
+        // Ha hiba van a fileok kezelése alatt akkor kitöröljük a jelentkezést, hogy a felhasznál újra tudjon próbálkozni
+        if (insertedUserId !== null) {
+            await database.deleteJelentkezes(insertedUserId).catch((rollbackError) => {
+                console.error('Jelentkezés rollback sikertelen:', rollbackError.message);
+            });
+        }
         response.status(500).json({
             message: 'Ez a végpont nem működik: '
         });
@@ -226,6 +304,251 @@ router.post('/updateJelszo', validator.validatePassword, async (request, respons
     } catch (error) {
         console.error(error.message);
         response.status(500).json({ message: "Szerverhiba!" });
+    }
+});
+
+router.get('/getAllAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllLoginData();
+        response.status(200).json({
+            message: "Bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.get('/getErintettekForAdmin', async (request, response) =>{
+    try {
+        const komment_id = request.query.komment_id;
+        const authData = await database.selectLoginDataByKommentId(komment_id);
+        response.status(200).json({
+            message: "Kommenthez tartozók adatai sikeresen lekérve",
+            results: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Kommenthez tartozók adatai lekérése sikertelen"
+        });
+    }
+});
+
+router.delete('/deleteUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.query.id;
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó törlése sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó törlése sikertelen."
+        });
+    }
+});
+
+router.post('/restoreUser', async (request, response) =>{
+    try {
+        const felhasznalo_id = request.body.id;
+        const result = await database.restoreFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó visszaállításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó visszaállítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó visszaállítása sikertelen."
+        });
+    }
+});
+
+router.post('/felhasznaloSzerepModositas', async (request, response) =>{
+    try {
+        if(request.body.ujRole == 'admin'){
+            return response.status(403).json({
+                message: "Nem lehetséges admin szerepre módosítani egy felhasználó szerepét."
+            });
+        }
+        const felhasznalo_id = request.body.id;
+        const ujRole = request.body.ujRole;
+        const result = await database.updateFelhasznaloRole(felhasznalo_id, ujRole);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó szerepének módosításakor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Felhasználó szerepének módosítása sikeres.",
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Felhasználó szerepének módosítása sikertelen."
+        });
+    }
+});
+
+router.get('/getAllAdminAuthData', async (request, response) =>{
+    try {
+        const authData = await database.selectAllAdminLoginData();
+        response.status(200).json({
+            message: "Admin bejelentkezési adatok sikeresen lekérve",
+            result: authData
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Admin bejelentkezési adatok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/adminRegister', upload.none(), validator.validateEmailPassword , checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
+    try {
+        const {email, password, felh_nev} = request.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const insertLogin = await database.insertLogin(felh_nev, hashedPassword, email, null, null, "admin", null);
+        
+        if(insertLogin.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt az admin rögzítésekor."
+            });
+        }
+
+        response.status(200).json({
+            message: "Sikeres admin rögzítés."
+        });
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Admin rögzítése sikertelen"
+        });
+    }
+});
+
+router.get('/getJelentkezok', requireLogin.adminCheck, async (request, response) => {
+    try {
+        const jelentkezok = await database.selectJelentkezok();
+        response.status(200).json({
+            message: "Jelentkezők sikeresen lekérve",
+            results: jelentkezok
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Jelentkezők lekérése sikertelen"
+        });
+    }
+});
+
+// Vissza adja az önéletrajzot userId alapján
+router.get('/jelentkezok/:userId/cv', requireLogin.adminCheck, async (request, response) => {
+    try {
+        const { userId } = request.params;
+
+        if (!/^\d+$/.test(userId)) {
+            return response.status(400).json({
+                message: "Érvénytelen felhasználó azonosító."
+            });
+        }
+
+        const cvPath = await findApplicationPathByUserId('cv', userId);
+
+        if (!cvPath) {
+            return response.status(404).json({
+                message: "A CV nem található."
+            });
+        }
+
+        return response.download(cvPath, path.basename(cvPath));
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "A CV letöltése sikertelen."
+        });
+    }
+});
+
+// Vissza adja a motivációs levelet userId alapján
+router.get('/jelentkezok/:userId/cover-letter', requireLogin.adminCheck, async (request, response) => {
+    try {
+        const { userId } = request.params;
+
+        if (!/^\d+$/.test(userId)) {
+            return response.status(400).json({
+                message: "Érvénytelen felhasználó azonosító."
+            });
+        }
+
+        const coverLetterPath = await findApplicationPathByUserId('coverLetter', userId);
+
+        if (!coverLetterPath) {
+            return response.status(404).json({
+                message: "A motivációs levél nem található."
+            });
+        }
+
+        return response.download(coverLetterPath, path.basename(coverLetterPath));
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "A motivációs levél letöltése sikertelen."
+        });
+    }
+});
+
+router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, response) =>{
+    try {
+        const id = request.query.id
+        const result = await database.deleteJelentkezes(id);
+        await fs.unlink('./uploads/coverLetter' + id + '.pdf');
+        await fs.unlink('./uploads/cv' + id + '.pdf');
+        response.status(200).json({
+            message: "Edző jelentkezése sikeresen elutasítva"
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "A jelentkezés elutasítása sikertelen."
+        });
+    }
+});
+
+router.post('/postJelentkezoelfogadas', requireLogin.adminCheck, async(request, response) =>{
+    try {
+        const id = request.body.id
+        const result = await database.updateStatuszElfogadva(id);
+        response.status(200).json({
+            message: "Edző jelentkezése sikeresen elfogadva"
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "A jelentkezés elfogadása sikertelen."
+        });
     }
 });
 
