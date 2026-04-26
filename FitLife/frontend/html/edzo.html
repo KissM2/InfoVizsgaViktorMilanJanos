@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../css/map.css">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="..css/naptar.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="../js/edzo.js"></script>
     <script type="module" src="../js/edzoMap.js"></script>
@@ -24,10 +25,30 @@
         <div id="map"></div>
     </div>
 
-    <div id="calendar-wrapper">
-        <div id="naptar"></div>
-        <div id="idopontok"></div>
+    <div class="naptarkeret">
+    <h1 class="text-success text-center">Saját foglalásaim</h1>
+    <div id="naptar"></div>
+    <!-- Foglalás gomb -->
+<button id="foglalasBtn">Foglalás</button>
+
+<!-- Modal -->
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+
+        <h2 class="text-success text-center">Időpont foglalás</h2>
+
+        <!-- ide generálódik a naptár -->
+        <div id="modal-naptar"></div>
+
+        <!-- gombok -->
+        <div style="margin-top: 15px;">
+            <button id="saveBtn">Mentés</button>
+            <button id="closeBtn">Bezárás</button>
+        </div>
+
     </div>
+</div>
+</div>
 
     <div class="komment-szekcio">
         <div class="komment-fejlec">

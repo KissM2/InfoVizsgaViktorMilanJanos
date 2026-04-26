@@ -176,12 +176,13 @@ CREATE TABLE IF NOT EXISTS komment (
 -- FOGLALAS
 CREATE TABLE IF NOT EXISTS foglalas (
 foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-start TIME,
-end TIME,
+datum DATE NOT NULL,
+ido TIME NOT NULL,
 statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-edzo_id INT,
-felhasznalo_id INT,
+edzo_id INT NOT NULL,
+felhasznalo_id INT NOT NULL,
+aktiv_flag TINYINT GENERATED ALWAYS AS (statusz = 'aktiv') STORED,
+UNIQUE KEY unique_foglalas_slot (edzo_id, datum, ido, aktiv_flag),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
 FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
@@ -189,23 +190,24 @@ FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
 beo_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday int,
-start TIME,
-end TIME,
+weekday int NOT NULL,
+start TIME NOT NULL,
+end TIME NOT NULL,
 statusz ENUM('aktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-mettol_ervenyes DATE,
-edzo_id INT,
+mettol_ervenyes DATE NOT NULL,
+edzo_id INT NOT NULL,
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- KULONLEGES_ALKALOM
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
 ka_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-start TIME,
-end TIME,
+datum DATE NOT NULL,
+ido TIME NOT NULL,
 statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-edzo_id INT,
+edzo_id INT NOT NULL,
+aktiv_flag TINYINT GENERATED ALWAYS AS (statusz = 'aktiv') STORED,
+UNIQUE KEY unique_ka_slot (edzo_id, datum, ido, aktiv_flag),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 

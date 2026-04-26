@@ -158,14 +158,14 @@ router.get("/getKA", loginCheck.loginCheck, async (req, res) => {
 router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
     try {
         const edzoId = req.session.user.id;
-        const { datum, start, end } = req.body;
+        const { datum, ido } = req.body;
 
         const weekday = (new Date(datum).getDay() + 6) % 7;
 
         const benneVan = await database.isInHetiBeosztas(
             edzoId,
             weekday,
-            start
+            ido
         );
 
         if (!benneVan) {
@@ -177,13 +177,11 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
         const existing = await database.getKAByExact(
             edzoId,
             datum,
-            start,
-            end
+            ido
         );
 
         if (existing) {
 
-            //torolt tiltás
             if (existing.statusz === "torolt") {
                 return res.status(400).json({
                     message: "Ez az időpont törölve lett"
@@ -200,8 +198,7 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
 
         await database.insertKulonlegesAlkalom(
             datum,
-            start,
-            end,
+            ido,
             "aktiv",
             edzoId
         );
@@ -212,10 +209,71 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
         res.status(500).json({ message: "Hiba történt" });
     }
 });
-
-
 /* =========================
-   NAPTÁR
+   FOGLALÁS
+========================= */
+router.post("/book", loginCheck.loginCheck, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const edzoId = req.query.edzo_id;
+        const data = req.body;
+
+        for (const datum in data) {
+            for (const ido of data[datum]) {
+
+                // 1. más aktív foglalás
+                const occupied = await database.isSlotTakenByOther(
+                    datum,
+                    ido,
+                    userId
+                );
+
+                if (occupied) continue;
+
+                // 2. más inaktiv → torolt
+                await database.deleteInactiveOthers(
+                    datum,
+                    ido,
+                    userId
+                );
+
+                // 3. saját foglalás
+                const existing = await database.getOwnBooking(
+                    datum,
+                    ido,
+                    userId
+                );
+
+                if (!existing) {
+                    await database.insertBooking(
+                        datum,
+                        ido,
+                        userId,
+                        edzoId
+                    );
+                } else {
+                    const newStatus =
+                        existing.statusz === "aktiv"
+                            ? "inaktiv"
+                            : "aktiv";
+
+                    await database.updateBookingStatus(
+                        existing.foglalas_id,
+                        newStatus
+                    );
+                }
+            }
+        }
+
+        res.json({ message: "Foglalás frissítve" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Hiba történt" });
+    }
+});
+/* =========================
+   GET NAPTÁR
 ========================= */
 
 router.get('/getCalendar', loginCheck.loginCheck, async (req, res) => {
@@ -242,5 +300,17 @@ router.get('/getCalendar', loginCheck.loginCheck, async (req, res) => {
         });
     }
 });
+router.get("/myBookings", loginCheck.loginCheck, async (req, res) => {
+    try {
+        const userId = req.session.user.id;
 
+        const data = await database.getMyBookings(userId);
+
+        res.json(data);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Hiba történt" });
+    }
+});
 module.exports = router;

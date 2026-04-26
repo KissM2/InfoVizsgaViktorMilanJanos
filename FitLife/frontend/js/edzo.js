@@ -1,9 +1,14 @@
-import { naptarInit } from './Naptar.js';
 import { letrehozEdzoProfil } from '../js/edzoProfil.js';
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
 import { getKeres, postApi } from '../js/kozosFetch.js';
+const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
+let currentDate = new Date();
+
+let foglalasok = [];
+let toggledSlots = [];
+let myUserId = null;
 const menuLinkek = [
     { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
     { nev: "Receptek", url: "../html/etrendek.html" },
@@ -38,7 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ]
             };
             letrehozEdzoProfil("edzo", formataltAdat);
-            naptarInit("naptar", "idopontok");
+            await generalWeek();
+            initModalEvents();
         }
         else {
             document.body.innerHTML = "<h1 class='text-center mt-5'>Edző nem található!</h1>";
@@ -138,3 +144,284 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     fetchKommentek();
 });
+/* =========================
+   MODAL EVENTEK
+========================= */
+
+function initModalEvents() {
+    if (await ensureUser()) {
+        document.getElementById("foglalasBtn").onclick = async () => {
+
+            toggledSlots = [];
+
+            document.getElementById("modal").classList.remove("hidden");
+            generateModal();
+        };
+
+        document.getElementById("closeBtn").onclick = () => {
+            document.getElementById("modal").classList.add("hidden");
+        };
+
+        document.getElementById("saveBtn").onclick = saveBooking;
+    }
+}
+
+/* =========================
+   USER
+========================= */
+
+async function loadUser() {
+    try {
+        const profil = await getKeres("/api/getLoginStatus");
+        myUserId = profil.id;
+    } catch { }
+}
+
+async function ensureUser() {
+    let vanE = true;
+    if (!myUserId) {
+        try {
+            const profil = await getKeres("/api/getLoginStatus");
+            myUserId = profil.id;
+        } catch {
+            vanE = false;
+            alert("Nem vagy bejelentkezve");
+        }
+    }
+    return vanE;
+}
+
+/* =========================
+   API
+========================= */
+
+async function loadBookings() {
+    foglalasok = await getKeres("/api/myBookings");
+}
+
+/* =========================
+   SEGÉD
+========================= */
+
+function formatDateISO(d) {
+    return d.toISOString().split("T")[0];
+}
+
+function getWeekStart(date) {
+    let d = new Date(date);
+    let day = d.getDay();
+    let diff = d.getDate() - (day === 0 ? 6 : day - 1);
+    return new Date(d.setDate(diff));
+}
+
+function formatDate(d) {
+    return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
+}
+
+/* =========================
+   FOGLALÁS CHECK
+========================= */
+
+function isBooked(dateObj, ido) {
+    const datum = formatDateISO(dateObj);
+
+    return foglalasok.some(f =>
+        f.datum === datum &&
+        f.ido === ido &&
+        f.statusz === "aktiv"
+    );
+}
+
+/* =========================
+   FŐ NAPTÁR
+========================= */
+
+async function generalWeek() {
+
+    await loadBookings();
+
+    const container = document.getElementById("naptar");
+    container.innerHTML = "";
+
+    let weekStart = getWeekStart(currentDate);
+
+    let header = document.createElement("div");
+    header.classList.add("naptarFejlec");
+
+    let prev = document.createElement("button");
+    prev.innerText = "<";
+
+    let next = document.createElement("button");
+    next.innerText = ">";
+
+    let title = document.createElement("span");
+
+    let weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    title.innerText = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+
+    header.append(prev, title, next);
+    container.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.classList.add("week-grid");
+
+    for (let i = 0; i < 7; i++) {
+        let d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+
+        let cell = document.createElement("div");
+        cell.classList.add("cell", "head");
+        cell.innerText = napok[i] + "\n" + (d.getMonth() + 1) + "." + d.getDate();
+
+        grid.appendChild(cell);
+    }
+
+    for (let perc = 0; perc < 1440; perc += 30) {
+
+        let ido = `${String(Math.floor(perc / 60)).padStart(2, "0")}:${String(perc % 60).padStart(2, "0")}`;
+
+        for (let i = 0; i < 7; i++) {
+
+            let d = new Date(weekStart);
+            d.setDate(weekStart.getDate() + i);
+
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.innerText = ido;
+
+            if (isBooked(d, ido)) {
+                cell.classList.add("foglaltSajat");
+            }
+
+            grid.appendChild(cell);
+        }
+    }
+
+    const scroll = document.createElement("div");
+    scroll.classList.add("week-scroll");
+    scroll.appendChild(grid);
+
+    container.appendChild(scroll);
+
+    prev.onclick = () => {
+        currentDate.setDate(currentDate.getDate() - 7);
+        generalWeek();
+    };
+
+    next.onclick = () => {
+        currentDate.setDate(currentDate.getDate() + 7);
+        generalWeek();
+    };
+}
+
+/* =========================
+   MODAL NAPTÁR
+========================= */
+
+function generateModal() {
+
+    const container = document.getElementById("modal-naptar");
+    container.innerHTML = "";
+
+    let weekStart = getWeekStart(new Date());
+
+    const grid = document.createElement("div");
+    grid.classList.add("week-grid");
+
+    for (let i = 0; i < 7; i++) {
+        let d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+
+        let cell = document.createElement("div");
+        cell.classList.add("cell", "head");
+        cell.innerText = napok[i];
+
+        grid.appendChild(cell);
+    }
+
+    for (let perc = 0; perc < 1440; perc += 30) {
+
+        let ido = `${String(Math.floor(perc / 60)).padStart(2, "0")}:${String(perc % 60).padStart(2, "0")}`;
+
+        for (let i = 0; i < 7; i++) {
+
+            let d = new Date(weekStart);
+            d.setDate(weekStart.getDate() + i);
+
+            let datum = formatDateISO(d);
+            let key = datum + "|" + ido;
+
+            let cell = document.createElement("div");
+            cell.classList.add("cell", "elerheto");
+            cell.innerText = ido;
+
+            if (isBooked(d, ido)) {
+                cell.classList.add("foglaltSajat");
+            }
+
+            cell.addEventListener("click", () => {
+                toggleSlot(cell, key);
+            });
+
+            grid.appendChild(cell);
+        }
+    }
+
+    container.appendChild(grid);
+}
+
+/* =========================
+   TOGGLE
+========================= */
+
+function toggleSlot(cell, key) {
+
+    if (cell.classList.contains("foglaltSajat")) {
+        cell.classList.remove("foglaltSajat");
+    } else {
+        cell.classList.add("foglaltSajat");
+    }
+
+    if (toggledSlots.includes(key)) {
+        toggledSlots = toggledSlots.filter(e => e !== key);
+    } else {
+        toggledSlots.push(key);
+    }
+}
+
+/* =========================
+   SAVE
+========================= */
+
+async function saveBooking() {
+
+    if (toggledSlots.length === 0) {
+        alert("Nincs változás");
+        
+    }
+    else{
+    const payload = {};
+
+    toggledSlots.forEach(e => {
+        const [datum, ido] = e.split("|");
+
+        if (!payload[datum]) payload[datum] = [];
+        payload[datum].push(ido);
+    });
+
+    try {
+        const res = await postApi("/api/book", payload);
+        if (res?.message) alert(res.message);
+    } catch {
+        alert("Hiba mentéskor");
+    }
+
+    toggledSlots = [];
+
+    document.getElementById("modal").classList.add("hidden");
+
+    await generalWeek();
+    }
+}

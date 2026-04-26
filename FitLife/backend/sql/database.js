@@ -334,7 +334,7 @@ async function selectAorPById(id, tipus) {
     const [rows] = await pool.execute(query, [id, tipus]);
     return rows;
 }
-
+//heti beosztas
 //insert
 async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
     const query = `
@@ -357,7 +357,6 @@ async function softDeleteHetiBeosztas(edzoId, mettol) {
 }
 
 //select
-// heti beosztás lekérése
 async function getHetiBeosztas(edzoId) {
     const query = `
         SELECT *
@@ -368,6 +367,7 @@ async function getHetiBeosztas(edzoId) {
     const [rows] = await pool.execute(query, [edzoId]);
     return rows;
 }
+
 async function checkHetiBeosztasExists(edzoId, mettol) {
     const query = `
         SELECT 1
@@ -380,6 +380,7 @@ async function checkHetiBeosztasExists(edzoId, mettol) {
     const [rows] = await pool.execute(query, [edzoId, mettol]);
     return rows.length > 0;
 }
+
 // heti beosztás van-e benne
 async function isInHetiBeosztas(edzoId, weekday, ido) {
     const query = `
@@ -400,6 +401,8 @@ async function isInHetiBeosztas(edzoId, weekday, ido) {
     ]);
     return rows.length > 0;
 }
+
+
 //kulonleges_alkalom tábla
 
 // összes KA
@@ -416,31 +419,29 @@ async function getKulonlegesAlkalmak(edzoId) {
 
 
 // pontos KA
-async function getKAByExact(edzoId, datum, start, end) {
+async function getKAByExact(edzoId, datum, ido) {
     const query = `
         SELECT *
         FROM kulonleges_alkalom
         WHERE edzo_id = ?
         AND datum = ?
-        AND start = ?
-        AND end = ?
+        AND ido = ?
         AND statusz <> 'torolt'
         LIMIT 1
     `;
-    const [rows] = await pool.execute(query, [edzoId, datum, start, end]);
+    const [rows] = await pool.execute(query, [edzoId, datum, ido]);
     return rows[0];
 }
 
 // insert
-async function insertKulonlegesAlkalom(datum, start, end, statusz, edzoId) {
+async function insertKulonlegesAlkalom(datum, ido, statusz, edzoId) {
     const query = `
-        INSERT INTO kulonleges_alkalom (datum, start, end, statusz, edzo_id)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO kulonleges_alkalom (datum, ido, statusz, edzo_id)
+        VALUES (?, ?, ?, ?)
     `;
     const [result] = await pool.execute(query, [
         datum,
-        start,
-        end,
+        ido,
         statusz,
         edzoId
     ]);
@@ -457,6 +458,7 @@ async function updateKAStatus(ka_id, statusz) {
     const [result] = await pool.execute(query, [statusz, ka_id]);
     return result.affectedRows > 0;
 }
+
 //soft delete
 async function markInvalidKAAsDeleted(edzoId, mettol) {
     const query = `
@@ -471,11 +473,75 @@ async function markInvalidKAAsDeleted(edzoId, mettol) {
             AND hb.statusz = 'aktiv'
             AND hb.weekday = WEEKDAY(ka.datum)
             AND hb.mettol_ervenyes = ?
-            AND hb.start <= ka.start
-            AND hb.end >= ka.start
+            AND hb.start <= ka.ido
+            AND hb.end >= ka.ido
         ) `;
     await pool.execute(query, [edzoId, mettol]);
 }
+
+
+//foglalas tábla
+
+//select
+async function getMyBookings(userId) {
+    const query = `
+        SELECT
+            datum,
+            ido,
+            statusz
+        FROM foglalas
+        WHERE felhasznalo_id = ?
+        AND statusz <> 'torolt'
+        ORDER BY datum ASC, ido ASC
+    `;
+
+    const [rows] = await pool.execute(query, [userId]);
+    return rows;
+}
+
+async function getFoglalas(edzoId) {
+    const query = `
+        SELECT datum, ido, statusz, felhasznalo_id
+        FROM foglalas
+        WHERE edzo_id = ?
+        AND statusz <> 'torolt'
+    `;
+    const [rows] = await pool.execute(query, [edzoId]);
+    return rows;
+}
+
+async function isSlotBooked(edzoId, datum, ido) {
+    const query = `
+        SELECT 1
+        FROM foglalas
+        WHERE edzo_id = ?
+        AND datum = ?
+        AND ido = ?
+        AND statusz = 'aktiv'
+        LIMIT 1
+    `;
+    const [rows] = await pool.execute(query, [
+        edzoId,
+        datum,
+        ido
+    ]);
+    return rows.length > 0;
+}
+
+async function insertFoglalas(datum, ido, edzoId, userId) {
+    const query = `
+        INSERT INTO foglalas
+        (datum, ido, statusz, edzo_id, felhasznalo_id)
+        VALUES (?, ?, 'aktiv', ?, ?)
+    `;
+    await pool.execute(query, [
+        datum,
+        ido,
+        edzoId,
+        userId
+    ]);
+}
+
 //cel_alak tábla
 
 //select
@@ -495,31 +561,7 @@ async function selectAllEKM() {
 }
 
 
-//select
-// async function checkKulonlegesAlkalomExists(edzoId, datum) {
-//     const query = `
-//         SELECT 1 
-//         FROM kulonleges_alkalom 
-//         WHERE edzo_id = ? AND datum = ?
-//         LIMIT 1
-//     `;
 
-//     const [rows] = await pool.execute(query, [edzoId, datum]);
-//     return rows.length > 0;
-// }
-
-//szét kéne szedni
-async function getFoglalas(edzoId) {
-    const query = `
-        SELECT *
-        FROM foglalas
-        WHERE edzo_id = ?
-        AND statusz <> 'torolt'
-    `;
-    const [rows] = await pool.execute(query, [edzoId]);
-    return rows;
-}
-//update users?
 // async function updateUserProfile(email, felh, telsz, userId) {
 //     const query = `
 //         UPDATE users
@@ -608,6 +650,8 @@ module.exports = {
     checkHetiBeosztasExists,
     insertKulonlegesAlkalom,
     getFoglalas,
+    getMyBookings,
+    isSlotBooked,
     selectTrainersByDist,
     softDeleteHetiBeosztas,
     isInHetiBeosztas,

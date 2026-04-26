@@ -1,6 +1,7 @@
 import { getKeres, postApi } from "./kozosFetch.js";
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
+
 let aktualisEv = new Date().getFullYear();
 let aktualisHonap = new Date().getMonth() + 1;
 
@@ -9,17 +10,20 @@ let mentettbeo = [[], [], [], [], [], [], []];
 let kaLista = [];
 let kapottbeo = [];
 let selectedDate = formatDate(new Date());
+
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
 const honapok = [
     "Január", "Február", "Március", "Április", "Május", "Június",
     "Július", "Augusztus", "Szeptember", "Október", "November", "December"
 ];
+
 const menuLinkek = [
     { nev: "Edző főoldal", url: "/edzofo" },
     { nev: "Névjegy szerkesztés", url: "/trainersedit" },
     { nev: "Adatok szerkesztése", url: "/traineradat" },
 ];
+
 document.addEventListener("DOMContentLoaded", async function () {
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -155,7 +159,6 @@ function naptarGeneral(ev, honap) {
 
                 const weekday = getWeekday(datum);
 
-                // beosztás jelölés
                 if (kapottbeo.some(e => {
                     const beoStart = new Date(e.mettol_ervenyes.split("T")[0]);
                     return e.weekday === weekday && new Date(datum) >= beoStart;
@@ -163,7 +166,6 @@ function naptarGeneral(ev, honap) {
                     nap.classList.add("bb");
                 }
 
-                // KA jelölés (csak aktiv)
                 if (kaLista.some(e =>
                     e.statusz === "aktiv" &&
                     sameDate(e.datum, datum)
@@ -232,8 +234,7 @@ function openDay(datum) {
         const ka = kaLista.find(e =>
             e.statusz === "aktiv" &&
             sameDate(e.datum, datum) &&
-            toMinutes(ido) >= toMinutes(e.start) &&
-            toMinutes(ido) <= toMinutes(e.end)
+            e.ido === ido
         );
 
         if (ka) {
@@ -246,8 +247,7 @@ function openDay(datum) {
 
             const res = await postApi("/api/toggleKA", {
                 datum,
-                start: ido,
-                end: ido
+                ido
             });
 
             if (res?.message) alert(res.message);
