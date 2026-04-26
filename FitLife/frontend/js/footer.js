@@ -16,10 +16,10 @@ export function footerGeneralas() {
     cim1.textContent = "Elérhetőségek";
 
     const adatok = [
-        "FITLIFE Edzőterem",
+        "FITLIFE központ",
         "1234 Budapest, Csapó utca 12.",
         "Telefon: +36 30 123 4567",
-        "Email: info@fitlife.hu"
+        "Email: fitlife123123@gmail.com"
     ];
 
     col1.appendChild(cim1);
