@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS login (
     jelszo VARCHAR(255) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     telszam VARCHAR(30),
-    nem VARCHAR(20),
+    nem ENUM('férfi','nő') NOT NULL,
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
     reset_token VARCHAR(255) NULL,
@@ -92,12 +92,6 @@ CREATE TABLE IF NOT EXISTS edzesterv (
     FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
 );
 
--- KELLEK
-CREATE TABLE IF NOT EXISTS kellek (
-    kellek_id INT AUTO_INCREMENT PRIMARY KEY,
-    nev VARCHAR(150) NOT NULL
-);
-
 -- EDZESTERV - GYAKORLAT
 CREATE TABLE IF NOT EXISTS gyakorlatok_kivalasztasa (
     edzesterv_id INT NOT NULL,
@@ -105,15 +99,6 @@ CREATE TABLE IF NOT EXISTS gyakorlatok_kivalasztasa (
     PRIMARY KEY (edzesterv_id, gyakorlat_id),
     FOREIGN KEY (edzesterv_id) REFERENCES edzesterv(edzesterv_id),
     FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
-);
-
--- GYAKORLAT - KELLEK
-CREATE TABLE IF NOT EXISTS kellekek_kivalasztasa (
-    gyakorlat_id INT NOT NULL,
-    kellek_id INT NOT NULL,
-    PRIMARY KEY (gyakorlat_id, kellek_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id) ON DELETE CASCADE,
-    FOREIGN KEY (kellek_id) REFERENCES kellek(kellek_id) ON DELETE CASCADE
 );
 
 -- ALLERGEN
@@ -391,99 +376,6 @@ INSERT INTO gyakorlat ( nev, leiras, kor, ismetles) VALUES
 ('Vádli állva egy lábon', 'Saját testsúlyos egyensúly és vádli.', 3, 20),
 ('Fordított vádli', 'A sípcsonti izom erősítése.', 3, 15);
 
--- 5. kellek tábla:
-INSERT INTO kellek( nev) VALUES 
-('súlyzó'),
-('kézi súlyzó'),
-('állítható súlyzó'),
-('kettlebell'),
-('súlytárcsa'),
-('súlyrúd'),
-('egyenes rúd'),
-('francia rúd'),
-('trap bar'),
-('húzódzkodó rúd'),
-('fekvenyomó pad'),
-('állítható pad'),
-('guggoló állvány'),
-('power rack'),
-('smith keret'),
-('csigás gép'),
-('multifunkciós edzőgép'),
-('lábtoló gép'),
-('combfeszítő gép'),
-('combhajlító gép'),
-('vállnyomó gép'),
-('mellgép'),
-('háthúzó gép'),
-('evezőgép'),
-('futópad'),
-('szobakerékpár'),
-('ellipszis tréner'),
-('lépcsőző gép'),
-('ugrókötél'),
-('fitnesz szalag'),
-('ellenállás szalag'),
-('gumiszalag'),
-('TRX heveder'),
-('súlymellény'),
-('bokasúly'),
-('csuklósúly'),
-('medicinlabda'),
-('fitball'),
-('pilates labda'),
-('egyensúlyozó labda'),
-('balance board'),
-('bosu labda'),
-('jóga matrac'),
-('fitnesz matrac'),
-('foam roller'),
-('masszázs henger'),
-('kézi erősítő'),
-('markolat erősítő'),
-('tolódzkodó keret'),
-('paralel rúd'),
-('haskerék'),
-('csúszó korong'),
-('step pad'),
-('step pad platform'),
-('box ugróplatform'),
-('agility létra'),
-('koordinációs bója'),
-('gyorsasági ernyő'),
-('szánkó húzó eszköz'),
-('kötél (battle rope)'),
-('mászókötél'),
-('súlyemelő öv'),
-('csuklószorító'),
-('térdszorító'),
-('edzőkesztyű'),
-('nyakpárna súlyemeléshez'),
-('vízzel tölthető súly'),
-('homokzsák'),
-('súlyzsák'),
-('falilabda'),
-('reflexlabda'),
-('boxzsák'),
-('álló boxzsák'),
-('boxkesztyű'),
-('speed bag'),
-('ugró doboz'),
-('stretching szalag'),
-('jóga blokk'),
-('jóga heveder'),
-('tornakarika'),
-('svédszekrény'),
-('bordásfal'),
-('tornagyűrű'),
-('mászófal panel'),
-('core tréner rúd'),
-('landmine adapter'),
-('kábeles fogantyú'),
-('tricepsz kötél'),
-('lat lehúzó rúd'),
-('V fogantyú'),
-('golyós súlyfogantyú');
 
 -- 6. allergen tábla:
 INSERT INTO allergen(nev,tipus) VALUES
@@ -697,21 +589,21 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 (7, 55.0, 160, 45, 1600, 1, 55.0, 2);
 
 -- 10. edzo tábla:
-INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, statusz) VALUES 
-(8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.', 'elfogadva'),
-(9, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.', 'elfogadva'),
-(10, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.', 'elfogadva'),
-(11, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.', 'elfogadva'),
-(12, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.', 'elfogadva'),
-(13, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.', 'elfogadva'),
-(14, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.', 'elfogadva'),
-(15, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.', 'elfogadva'),
-(16, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.', 'elfogadva'),
-(17, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.', 'elfogadva'),
-(18, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.', 'elfogadva'),
-(19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.', 'elfogadva'),
-(20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.', 'elfogadva'),
-(21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.', 'elfogadva');
+INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak, statusz) VALUES 
+(8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.', 'Tömegnövelés, extrém kalóriabevitel, motiváció', 'elfogadva'),
+(9, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.', 'Erőemelés, nehézatlétika, mentális állóképesség', 'elfogadva'),
+(10, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.', 'Erőemelés, intenzív súlyzós edzés, formajavítás', 'elfogadva'),
+(11, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.', 'Esztétikus testalkat, social media fitnesz, könnyed erősítés', 'elfogadva'),
+(12, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.', 'Extrém testépítés, pózolás, szigorú étrend tervezés', 'elfogadva'),
+(13, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.', 'Alsótest fókuszú edzés, precíz étrend, szálkásítás', 'elfogadva'),
+(14, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.', 'Olimpiai súlyemelés, CrossFit alapok, funkcionális erőfejlesztés', 'elfogadva'),
+(15, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.', 'Otthoni edzés, női fitnesz, komplex programtervezés', 'elfogadva'),
+(16, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.', 'Mobilitás, calisthenics, prevenció és rehabilitáció', 'elfogadva'),
+(17, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.', 'Természetes testépítés, szálkásítás, pózolás és esztétika', 'elfogadva'),
+(18, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.', 'Klasszikus testépítés, magas intenzitású tréning (HIT), tömegnövelés', 'elfogadva'),
+(19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.', 'Testkompozíció megváltoztatása, erőnlét, fotózásra felkészítés', 'elfogadva'),
+(20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.', 'Funkcionális női edzés, mentális jóllét, kezdők mentorálása', 'elfogadva'),
+(21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.', 'HIIT, eszköz nélküli otthoni edzés, állóképesség fejlesztés', 'elfogadva');
 
 -- 11. edzesterv tábla:
 
@@ -719,45 +611,86 @@ INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, statusz) VALUES
 INSERT INTO komment (szoveg, ertekeles, statusz, edzo_id, felhasznalo_id) VALUES
 -- Togi (8)
 ('A Kebab-diéta tényleg működik, köszi!', 5, 'aktív', 8, 1),
+('A görögdinnye mellé most már a csirke-rizs is alap, köszi a motivációt!', 5, 'aktív', 8, 3),
+('Nagyon jó a hangulat az edzéseken, csak ajánlani tudom!', 4, 'aktív', 8, 5),
 ('', 4, 'aktív', 8, 2),
+
 -- Chris Tren (9)
 ('Brutális edzések, azóta csak üvöltve nyomok fekve.', 5, 'aktív', 9, 3),
+('A pulzusom az egekben, de a fejlődés megkérdőjelezhetetlen.', 5, 'aktív', 9, 5),
+('Soha nem gondoltam volna, hogy ennyit bírok.', 5, 'aktív', 9, 7),
 ('', 5, 'aktív', 9, 4),
+
 -- Mike Tren (10)
 ('Szigorú de igazságos, kemények a súlyok.', 4, 'aktív', 10, 5),
+('Végre valaki, aki nem csak a gépeket mutogatja, hanem tényleg edzünk.', 5, 'aktív', 10, 7),
+('Minden edzés egy kihívás, de megéri a szenvedést.', 5, 'aktív', 10, 2),
 ('', 5, 'aktív', 10, 6),
+
 -- Sara Saffari (11)
 ('Nagyon kedves, és segített beállítani a fényeket is a videómhoz!', 5, 'aktív', 11, 7),
+('Nagyon jó fejek az edzések, és a tippek is hasznosak a mindennapokra.', 4, 'aktív', 11, 2),
+('Szuper energiákat hoz a terembe!', 5, 'aktív', 11, 4),
 ('', 3, 'aktív', 11, 1),
+
 -- Rich Piana (12)
 ('8 órás karezés után nem érzem a kezeim, 5% forever!', 5, 'aktív', 12, 2),
+('Whatever it takes! Brutális volumen, pontosan ezt kerestem.', 5, 'aktív', 12, 4),
+('Többet eszem, mint valaha, és jönnek az eredmények.', 5, 'aktív', 12, 6),
 ('', 5, 'aktív', 12, 3),
+
 -- Annabel Lucinda (13)
 ('Precíz étrend, látványos fejlődés pár hét alatt.', 5, 'aktív', 13, 4),
+('Szuperül felépített program, minden kérdésemre azonnal válaszol.', 5, 'aktív', 13, 6),
+('Nagyon odafigyel a gyakorlatok helyes kivitelezésére.', 5, 'aktív', 13, 1),
 ('', 4, 'aktív', 13, 5),
+
 -- Keiani (14)
 ('Szuper hangulatú funkcionális edzések!', 5, 'aktív', 14, 6),
+('Soha nem gondoltam volna, hogy ennyit számít a törzsizom erősítése.', 5, 'aktív', 14, 1),
+('Kiváló mobilitási tippeket kaptam.', 4, 'aktív', 14, 3),
 ('', 5, 'aktív', 14, 7),
+
 -- Krissy Cela (15)
 ('A közösség és a program is zseniális.', 5, 'aktív', 15, 1),
+('Imádom az appot és az edzéseket is, nagyon inspiráló személyiség.', 5, 'aktív', 15, 3),
+('Az otthoni edzéstervei mentették meg a formámat.', 5, 'aktív', 15, 5),
 ('', 4, 'aktív', 15, 2),
+
 -- LeanBeefPatty (16)
 ('A mobilitási gyakorlatok megváltoztatták az életem.', 5, 'aktív', 16, 3),
+('Végre megtanultam rendesen hidazni és guggolni fájdalom nélkül.', 5, 'aktív', 16, 5),
+('Iszonyat jó a vibe, a zene és az egész edzés!', 5, 'aktív', 16, 7),
 ('', 5, 'aktív', 16, 4),
+
 -- Alex Eubank (17)
 ('Esztétika mindenek felett, remek tanácsok.', 5, 'aktív', 17, 5),
+('A pózolási tanácsok sokat segítettek az önbizalmamon.', 4, 'aktív', 17, 7),
+('A vágásmentes edzésvideói nagyon motiválóak.', 5, 'aktív', 17, 2),
 ('', 4, 'aktív', 17, 6),
+
 -- Sam Sulek (18)
 ('Rövid, tömör, intenzív. Pont ahogy szeretem.', 5, 'aktív', 18, 7),
+('Nincs duma, csak munka. A pumpa valami eszeveszett a végére.', 5, 'aktív', 18, 2),
+('A csokis tej csodákra képes edzés után!', 5, 'aktív', 18, 4),
 ('', 5, 'aktív', 18, 1),
+
 -- David Laid (19)
 ('Nagyon következetes edzéstervet kaptam.', 5, 'aktív', 19, 2),
+('A világítási tippek és az erőemelő alapok is top kategóriásak.', 5, 'aktív', 19, 4),
+('A PR-jaim heteken belül javultak a tanácsaival.', 5, 'aktív', 19, 6),
 ('', 4, 'aktív', 19, 3),
+
 -- Whitney Simmons (20)
 ('Sugárzik belőle a pozitivitás, öröm vele az edzés.', 5, 'aktív', 20, 4),
+('Mindig jobb kedvvel jövök ki a teremből, mint ahogy bementem.', 5, 'aktív', 20, 6),
+('A legjobb edzőtárs, hihetetlenül aranyos!', 5, 'aktív', 20, 1),
 ('', 5, 'aktív', 20, 5),
+
 -- Pamela Reif (21)
 ('A HIIT edzései kinyírtak, de imádom!', 5, 'aktív', 21, 6),
+('A 10 perces videói után is napokig izomlázam van, hihetetlen hatékony.', 5, 'aktív', 21, 1),
+('Nincs pihenő, csak folyamatos pörgés. Pont ez kellett.', 5, 'aktív', 21, 3),
 ('', 4, 'aktív', 21, 7);
 
 -- 13. allergiat_okoz tábla:
@@ -852,130 +785,7 @@ INSERT INTO allergiat_okoz (recept_id, allergen_id) VALUES
 (99,10),(99,12),
 (100,4),(100,6);
 
--- 14. kellekek_kivalasztasa tábla:
-INSERT INTO kellekek_kivalasztasa (gyakorlat_id, kellek_id) VALUES
--- MELL
-(1,7),(1,11),
-(2,2),(2,11),
-(3,7),(3,12),
-(4,2),(4,12),
-(5,7),(5,12),
-(6,2),(6,11),
-(7,2),(7,12),
-(8,22),
-(9,16),
-(10,16),
-(11,49),
-(12,2),(12,11),
-(13,43),
-(14,43),
-(15,5),
-
--- HÁT
-(16,10),
-(17,10),
-(18,23),(18,89),
-(19,23),(19,90),
-(20,7),
-(21,2),
-(22,6),
-(23,24),
-(24,24),
-(25,6),
-(26,12),
-(27,16),
-(28,22),
-(29,11),
-(30,7),
-
--- VÁLL
-(31,7),
-(32,2),
-(33,2),
-(34,5),
-(35,2),
-(36,2),
-(37,16),
-(38,16),
-(39,7),
-(40,6),
-(41,2),
-(42,22),
-
--- BICEPSZ
-(43,7),
-(44,2),
-(45,2),
-(46,2),
-(47,12),
-(48,16),
-(49,8),
-(50,11),
-(51,7),
-(52,2),
-
--- TRICEPSZ
-(53,16),(53,88),
-(54,16),(54,7),
-(55,8),(55,11),
-(56,2),
-(57,2),
-(58,7),(58,11),
-(59,11),
-(60,16),(60,88),
-(61,16),
-(62,43),
-
--- ALKAR
-(63,7),
-(64,7),
-(65,7),
-(66,2),
-(67,2),
-(68,5),
-(69,2),
-(70,7),
-
--- QUADRICEPS
-(71,7),(71,13),
-(72,7),(72,13),
-(73,18),
-(74,19),
-(75,15),
-(76,43),
-(77,2),
-(78,2),
-(79,2),
-(80,52),
-
--- HAMSTRING
-(81,7),
-(82,20),
-(83,20),
-(84,7),
-(85,43),
-(86,9),
-(87,20),
-(88,43),
-
--- FARIZOM
-(89,7),(89,11),
-(90,16),
-(91,17),
-(92,52),
-(93,43),
-(94,7),
-
--- VÁDLI
-(95,17),
-(96,17),
-(97,43),
-(98,18),
-(99,43),
-(100,43);
-
 -- 15. gyakorlat_izomcsoport tábla:
--- Előbb ürítsük a táblát, hogy ne legyen duplikáció a teszteléskor
 INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES 
 -- Mell (1)
 (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), 
@@ -986,7 +796,7 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (31, 2), (32, 2), (33, 2), (34, 2), (35, 2), 
 (36, 2), (37, 2), (38, 2), (39, 2), (40, 2), (41, 2), (42, 2),
 
--- Tricepsz (3) -> Átírva 5-ről 3-ra
+-- Tricepsz (3)
 (53, 3), (54, 3), (55, 3), (56, 3), (57, 3), 
 (58, 3), (59, 3), (60, 3), (61, 3), (62, 3),
 
@@ -1004,3 +814,6 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (81, 6), (82, 6), (83, 6), (84, 6), (85, 6), (86, 6), (87, 6), (88, 6),
 (89, 6), (90, 6), (91, 6), (92, 6), (93, 6), (94, 6),
 (95, 6), (96, 6), (97, 6), (98, 6), (99, 6), (100, 6);
+-- 16 felhasznalo_edzesi_napok
+INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES
+(1,1),(1,3),(1,5),(2,2),(2,4),(2,6);
