@@ -60,3 +60,7 @@ input:focus {
 .vissza:hover {
     color: #fff;
 }
+
+.color-black {
+    color: black;
+}
