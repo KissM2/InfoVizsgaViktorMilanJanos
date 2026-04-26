@@ -5,7 +5,7 @@ const pool = mysql.createPool({
     user: 'root',
     password: '',
     database: 'fitlife',
-    dateStrings:true,
+    dateStrings: true,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -99,7 +99,7 @@ async function getUserEdzesNapok(userId) {
     const query = `SELECT nap_sorszam FROM felhasznalo_edzesi_napok WHERE felhasznalo_id = ?`;
     const [rows] = await pool.execute(query, [userId]);
     let napok = [];
-    for(let i = 0; i < rows.length; i++) {
+    for (let i = 0; i < rows.length; i++) {
         napok.push(rows[i].nap_sorszam);
     }
     return napok;
@@ -113,7 +113,7 @@ async function selectFelhDataById(id) {
 //edzo tábla
 
 //insert
-async function insertEdzo(edzo_id,edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak) {
+async function insertEdzo(edzo_id, edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak) {
     const query = "INSERT INTO edzo(edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak) VALUES (?,POINT(?,?),?,?,?,?)";
     const [rows] = await pool.execute(query, [edzo_id, edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak]);
     return rows;
@@ -155,7 +155,7 @@ async function selectAllTrainersByDist(lng, lat) {
         FROM edzo 
         INNER JOIN login ON edzo.edzo_id = login.id 
         ORDER BY tavolsag ASC`;
-    
+
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
@@ -171,7 +171,7 @@ async function selectTrainersByDist(lng, lat) {
         FROM edzo
         INNER JOIN login ON edzo.edzo_id = login.id
         where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
-    
+
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
@@ -187,7 +187,7 @@ async function saveEdzestervSor(adat) {
 
 //select
 async function getLegutobbiEdzesterv(userId) {
-    const [csoportIdRes] = await pool.execute("SELECT terv_csoport_id FROM edzesterv WHERE felhasznalo_id = ? ORDER BY terv_csoport_id DESC LIMIT 1",[userId]);
+    const [csoportIdRes] = await pool.execute("SELECT terv_csoport_id FROM edzesterv WHERE felhasznalo_id = ? ORDER BY terv_csoport_id DESC LIMIT 1", [userId]);
     const legutobbiId = csoportIdRes[0].terv_csoport_id;
     const query = `
         SELECT e.weekday_sorszam, e.sorrend, g.gyakorlat_id, g.nev, g.leiras, g.kor, g.ismetles, i.nev AS izomcsoport_nev
@@ -560,22 +560,10 @@ async function selectAllEKM() {
     return rows;
 }
 
-
-
-// async function updateUserProfile(email, felh, telsz, userId) {
-//     const query = `
-//         UPDATE users
-//         SET login.email = ?, login.felh_nev = ?, login.telszam = ?
-//         WHERE login.id= ? AND login.role = 'edzo';
-//     `;
-
-//     await pool.execute(query, [email, felh, telsz, userId]);
-// }
-
 //tranzakció(felhasznalo + allergias_ra)
 async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak) {
     const conn = await pool.getConnection();
-    try{
+    try {
         // Tranzakció indítása
         await conn.beginTransaction();
 
@@ -586,11 +574,11 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
         );
 
         if (result1.affectedRows !== 1) {
-          throw new Error("Sikertelen levonás");
+            throw new Error("Sikertelen levonás");
         }
 
         // allergiák hozzá adása
-        for (let i = 0; i < allergiak.length; i++) {   
+        for (let i = 0; i < allergiak.length; i++) {
             const [result2] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
                 [id, allergiak[i].allergen_id]
@@ -599,9 +587,9 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
                 throw new Error("Sikertelen jóváírás");
             }
         }
-        
+
         // allergiák hozzá adása
-        for (let i = 0; i < preferenciak.length; i++) {   
+        for (let i = 0; i < preferenciak.length; i++) {
             const [result3] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
                 [id, preferenciak[i].allergen_id]
@@ -626,9 +614,44 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
         conn.release();
     }
 }
+//top4 edzo
+async function selectTopFourTrainers() {
+    const query = `
+    SELECT 
+    e.edzo_id as id,
+    l.felh_nev as nev,
+    e.kep,
+    e.leiras AS kompetenciak,
+    e.idezet
+    FROM edzo e
+INNER JOIN komment k ON e.edzo_id = k.edzo_id
+INNER JOIN login l ON e.edzo_id = l.id
+INNER JOIN (
+    SELECT AVG(ertekeles) AS avg_ertekeles
+    FROM komment
+    WHERE statusz = 'aktiv'
+) global
 
+WHERE k.statusz = 'aktiv'
+
+GROUP BY e.edzo_id, e.kep
+
+HAVING COUNT(k.komment_id) >= 2
+
+ORDER BY 
+    (
+        (COUNT(k.komment_id) / (COUNT(k.komment_id) + 5)) * AVG(k.ertekeles)
+        +
+        (5 / (COUNT(k.komment_id) + 5)) * global.avg_ertekeles
+    ) DESC
+
+LIMIT 4;`;
+    const [rows] = await pool.execute(query);
+    return rows;
+}
 //!Export
 module.exports = {
+    selectTopFourTrainers,
     updateEdzo,
     selectAllTrainers,
     updateUser,
