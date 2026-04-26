@@ -2,8 +2,11 @@ import {getKeres, postKeres, deleteKeres, postApi} from '../js/kozosFetch.js';
 
 document.addEventListener("DOMContentLoaded", async function(){
 
-    felhTablaPageBetoltes();
-    document.getElementById('felhKommPage').classList.remove('d-none');
+    ujEdzoPageBetoltes();
+    document.getElementById('ujEdzoPage').classList.remove('d-none');
+    selectekFeltoltese();
+    const allergenek = await getKeres('/api/getAllAllergen');
+    let valasztottAllergenek = [];
 
     document.getElementById('felhKommPageBtn').addEventListener('click', async function(){
         felhTablaPageBetoltes();
@@ -120,6 +123,20 @@ document.addEventListener("DOMContentLoaded", async function(){
                 }
                 break;
             }
+            case 'edzoElutasitasa': {
+                const response = await deleteKeres('/api/deleteJelentkezo?id=' + event.target.value);
+                if(await response.message == 'Edző jelentkezése sikeresen elutasítva'){
+                    ujEdzoPageBetoltes();
+                }
+                break;
+            }
+            case 'edzoElfogadasa': {
+                const response = await postApi('/api/postJelentkezoelfogadas', {id: event.target.value});
+                if(await response.message == 'Edző jelentkezése sikeresen elfogadva'){
+                    ujEdzoPageBetoltes();
+                }
+                break;
+            }
         }
     });
 
@@ -185,9 +202,6 @@ document.addEventListener("DOMContentLoaded", async function(){
         adminTablaFeltoltes(adminok.result);
     });
 
-    selectekFeltoltese();
-    const allergenek = await getKeres('/api/getAllAllergen');
-    let valasztottAllergenek = [];
     document.getElementById('ujReceptModalBtn').addEventListener('click', function(){
         valasztottAllergenek.slice(0, valasztottAllergenek.length); //tömb kiürítése
     });
@@ -196,7 +210,6 @@ document.addEventListener("DOMContentLoaded", async function(){
     document.getElementById('ujReceptBtn').addEventListener('click', async function(e){
         e.preventDefault();
         const formData = new FormData(document.getElementById('newReceptForm'));
-        console.log(valasztottAllergenek);
         formData.append('allergenek', JSON.stringify(valasztottAllergenek));
         const response = await postKeres('/api/postUjRecept', formData);
         if(await response.message == 'Recept sikeresen rögzítve.'){
@@ -224,6 +237,25 @@ function userTablaFeltoltes(felhasznalok){
             }
             sor.appendChild(cella);
         }
+
+        let cvCella = document.createElement('td');
+        let cvLink = document.createElement('a');
+        cvLink.textContent = 'CV letöltése';
+
+        //lekérjük a felhasználó önéletrajzát
+        cvLink.href = "/api/jelentkezok/" + user.id + "/cv";
+        cvLink.download = true;
+        cvLink.target = '_blank';
+        cvCella.appendChild(cvLink);
+
+        let clCella = document.createElement('td');
+        let clLink = document.createElement('a');
+        clLink.textContent = 'Motivációs levél letöltése';
+        //lekérjük a felhasználó motivációs levelét
+        clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
+        clLink.download = true;
+        clLink.target = '_blank';
+        clCella.appendChild(clLink);
 
         let megerositesCella = document.createElement('td');
         let megerosites = document.createElement('button');
@@ -293,6 +325,10 @@ function userTablaFeltoltes(felhasznalok){
             }            
         });
 
+        cvCella.appendChild(cvLink);
+        sor.appendChild(cvCella);
+        clCella.appendChild(clLink);
+        sor.appendChild(clCella);
         megerositesCella.appendChild(megerosites);
         sor.appendChild(megerositesCella);
         tbody.appendChild(sor);
@@ -664,7 +700,6 @@ function valasztoGeneralasa(id, lista, valasztott) {
         div.innerText = lista[i].nev;
         befogo.appendChild(div);
         div.addEventListener('click', function(){
-            console.log(valasztott);
             if(hanyadikElem(valasztott, lista[i]) < valasztott.length){
                 valasztott.splice(hanyadikElem(valasztott, lista[i]), 1);
                 div.classList.remove('selected');
@@ -685,3 +720,116 @@ function hanyadikElem(lista, elem){
     return i;
 }
 
+async function ujEdzoPageBetoltes() {
+    const jelentkezok = await getKeres('/api/getJelentkezok');
+    ujEdzoTablaFeltoltes(jelentkezok.results);
+}
+
+async function ujEdzoTablaFeltoltes(jelentkezok) {
+    let tbody = document.getElementById('edzoJelentkezesTableBody');
+    tbody.innerHTML = '';
+
+    if( jelentkezok.length == 0){
+        let sor = document.createElement('tr');
+        let cella = document.createElement('td');
+        cella.textContent = 'Nincsenek jelenleg új edző jelentkezések.';
+        cella.setAttribute('colspan', '10');
+        sor.appendChild(cella);
+        tbody.appendChild(sor);
+        return;
+    }
+
+    jelentkezok.forEach(user => {
+        let sor = document.createElement('tr');
+        sor.dataset.id = user.id;
+        sor.classList.add('row-hover-border')
+
+        for (const key in user) {
+            let cella = document.createElement('td');
+            cella.textContent = user[key];
+            sor.appendChild(cella);
+        }
+
+        let cvCella = document.createElement('td');
+        let cvLink = document.createElement('a');
+        cvLink.textContent = 'CV letöltése';
+
+        //lekérjük a felhasználó önéletrajzát
+        cvLink.href = "/api/jelentkezok/" + user.id + "/cv";
+        cvLink.download = true;
+        cvLink.target = '_blank';
+        cvCella.appendChild(cvLink);
+
+        let clCella = document.createElement('td');
+        let clLink = document.createElement('a');
+        clLink.textContent = 'Motivációs levél letöltése';
+
+        //lekérjük a felhasználó motivációs levelét
+        clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
+        clLink.download = true;
+        clLink.target = '_blank';
+        clCella.appendChild(clLink);
+
+        let elfogadasCella = document.createElement('td');
+        let elfogadas = document.createElement('button');
+        elfogadas.setAttribute('data-bs-toggle', 'modal');
+        elfogadas.setAttribute('data-bs-target', '#megerositesModal');
+        elfogadas.classList.add('btn', 'btn-sm', 'btn-success');
+        elfogadas.textContent = 'Elfogadás';        
+        elfogadas.addEventListener('click', function () {
+            document.getElementById('megerositesModalLabel').textContent = 'Jelentkező elfogadása';
+            document.getElementById('megerositoKerdes').textContent = 'Biztosan elfogadod ezt a jelentkezőt?';
+            const modalContent = document.getElementById('megerositesModalContent');
+            modalContent.innerHTML = `
+                <ul>
+                    <li><strong>ID:</strong> ${user.id}</li>
+                    <li><strong>Név:</strong> ${user.felh_nev}</li>
+                    <li><strong>Email:</strong> ${user.email}</li>
+                    <li><strong>Telefon:</strong> ${user.telszam}</li>
+                    <li><strong>Nem:</strong> ${user.nem}</li>
+                    <li><strong>Születési dátum:</strong> ${user.szul_datum}</li>
+                </ul>
+            `;
+            let elfogadasBtn = document.getElementById('megerositesBtn');
+            elfogadasBtn.value = user.id; //gombra tesszük a törlendő user id-jét, hogy onnan tudjuk majdlekérni
+            elfogadasBtn.classList.add('btn-success');
+            elfogadasBtn.classList.remove('btn-danger');
+            elfogadasBtn.dataset.action = 'edzoElfogadasa'; //gombra teszünk egy data attribútumot, hogy tudjukmajd, hogy mi lesz a művelet
+        });
+
+        let elutasitasCella = document.createElement('td');
+        let elutasitas = document.createElement('button');
+        elutasitas.setAttribute('data-bs-toggle', 'modal');
+        elutasitas.setAttribute('data-bs-target', '#megerositesModal');
+        elutasitas.classList.add('btn', 'btn-sm', 'btn-danger');
+        elutasitas.textContent = 'Elutasítás';        
+        elutasitas.addEventListener('click', function () {
+            document.getElementById('megerositesModalLabel').textContent = 'Jelentkező elutasítása';
+            document.getElementById('megerositoKerdes').textContent = 'Biztosan elutasítod ezt a jelentkezőt?';
+            const modalContent = document.getElementById('megerositesModalContent');
+            modalContent.innerHTML = `
+                <ul>
+                    <li><strong>ID:</strong> ${user.id}</li>
+                    <li><strong>Név:</strong> ${user.felh_nev}</li>
+                    <li><strong>Email:</strong> ${user.email}</li>
+                    <li><strong>Telefon:</strong> ${user.telszam}</li>
+                    <li><strong>Nem:</strong> ${user.nem}</li>
+                    <li><strong>Születési dátum:</strong> ${user.szul_datum}</li>
+                </ul>
+            `;
+            let elutasitasBtn = document.getElementById('megerositesBtn');
+            elutasitasBtn.value = user.id; //gombra tesszük a törlendő user id-jét, hogy onnan tudjuk majdlekérni
+            elutasitasBtn.classList.add('btn-danger');
+            elutasitasBtn.classList.remove('btn-success');
+            elutasitasBtn.dataset.action = 'edzoElutasitasa'; //gombra teszünk egy data attribútumot, hogy tudjukmajd, hogy mi lesz a művelet
+        });
+
+        sor.appendChild(cvCella);
+        sor.appendChild(clCella);
+        elfogadasCella.appendChild(elfogadas);
+        sor.appendChild(elfogadasCella);
+        elutasitasCella.appendChild(elutasitas);
+        sor.appendChild(elutasitasCella);
+        tbody.appendChild(sor);
+    });
+}
