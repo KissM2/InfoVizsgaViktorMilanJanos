@@ -35,7 +35,7 @@ router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData
 
         const kep = request.file.filename;
 
-        database.insertEdzo(
+        database.updateEdzo(
             request.session.user.id,
             edzoterem_cim_lng,
             edzoterem_cim_lat,

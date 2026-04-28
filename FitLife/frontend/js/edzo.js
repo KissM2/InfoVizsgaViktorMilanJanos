@@ -31,10 +31,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 idezet: adat.idezet,
                 leiras: adat.leiras,
                 eredmenyek: [
-                    "Szakértő tréner",
-                    "Email:" + adat.email,
-                    "Telefon:" + adat.telszam,
-                    "Átlagos értékelés:" + atlag
+                    "Kompetenciák: "+adat.kompetenciak,
+                    "Email: " + adat.email,
+                    "Telefon: " + adat.telszam,
+                    "Átlagos értékelés: " + atlag
                 ]
             };
             letrehozEdzoProfil("edzo", formataltAdat);

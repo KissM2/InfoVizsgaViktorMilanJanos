@@ -61,7 +61,7 @@ async function checkUser(email) {
     return rows;
 }
 async function selectTrainerById(id) {
-    const query = "SELECT login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterem_cim, edzo.kep, edzo.idezet, edzo.leiras,(SELECT AVG(ertekeles) FROM komment WHERE edzo_id = edzo.edzo_id AND statusz = 'aktív') AS ertekeles_atlag  FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
+    const query = "SELECT edzo.kompetenciak, login.felh_nev, login.email, login.telszam,login.nem, login.szul_datum, edzo.edzoterem_cim, edzo.kep, edzo.idezet, edzo.leiras,(SELECT AVG(ertekeles) FROM komment WHERE edzo_id = edzo.edzo_id AND statusz = 'aktív') AS ertekeles_atlag  FROM login INNER JOIN edzo ON login.id = edzo.edzo_id WHERE login.id = ? AND login.role = 'edzo' LIMIT 1";
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
@@ -83,6 +83,11 @@ async function selectAllAdminLoginData() {
 async function selectLoginDataByKommentId(komment_id) {
     const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN komment a ON login.id = a.felhasznalo_id LEFT JOIN komment b ON login.id = b.edzo_id WHERE a.komment_id = ? OR b.komment_id = ?;';
     const [rows] = await pool.execute(query, [komment_id, komment_id]);
+    return rows;
+}
+async function selectJelentkezok() {
+    const query = "SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum FROM login INNER JOIN edzo on login.id = edzo.edzo_id WHERE edzo.statusz = 'jelentkezett'";
+    const [rows] = await pool.execute(query);
     return rows;
 }
 
@@ -133,16 +138,16 @@ async function selectFelhDataById(id) {
 //edzo tábla
 
 //insert
-async function insertEdzo(edzo_id,edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak) {
-    const query = "INSERT INTO edzo(edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak) VALUES (?,POINT(?,?),?,?,?,?)";
-    const [rows] = await pool.execute(query, [edzo_id, edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak]);
-    return rows;
-}
 
 //update
-async function updateEdzo(edzoterem_cim_lat, edzoterem_cim_lng, kep, idezet, leiras, id) {
-    const query = 'UPDATE edzo SET edzoterem_cim=POINT(?,?),kep=?,idezet=?,leiras=? WHERE edzo.edzo_id = ?;';
-    const [rows] = await pool.execute(query, [edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, id]);
+async function updateEdzo(edzoterem_cim_lat, edzoterem_cim_lng, kep, idezet, leiras,kompetenciak, id) {
+    const query = 'UPDATE edzo SET edzoterem_cim=POINT(?,?),kep=?,idezet=?,leiras=?,kompetenciak=? WHERE edzo.edzo_id = ?;';
+    const [rows] = await pool.execute(query, [edzoterem_cim_lng, edzoterem_cim_lat, kep, idezet, leiras, kompetenciak, id]);
+    return rows;
+}
+async function updateStatuszElfogadva(id) {
+    const query = 'UPDATE edzo SET statusz = "elfogadva" WHERE edzo.edzo_id = ?;';
+    const [rows] = await pool.execute(query, [id]);
     return rows;
 }
 
@@ -195,6 +200,7 @@ async function selectTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+
 //edzesterv tábla
 
 //insert
@@ -590,7 +596,7 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
         // Tranzakció indítása
         await conn.beginTransaction();
 
-        // felhaszbáló rögzítése
+        // felhasználó rögzítése
         const [result1] = await conn.execute(
             "INSERT INTO felhasznalo(felhasznalo_id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id) VALUES (?,?,?,?,?,?,?)",
             [id, testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id]
@@ -725,6 +731,68 @@ async function insertRecept(nev, leiras, etkezes_tipus, zsir, protein, szenhidra
     }
 }
 
+//tranzakció jelentkezéshez (login + edzo)
+async function insertJelentkezes(felh_nev, jelszo, email, telszam, nem, role, szul_datum) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        const [result] = await conn.execute(
+            "INSERT INTO login (felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [felh_nev, jelszo, email, telszam, nem, role, szul_datum]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen jelentkezés");
+        }
+
+        const result2 = await conn.execute(
+            "INSERT INTO edzo (edzo_id, statusz) VALUES (?, 'jelentkezett')",
+            [result.insertId]
+        );
+
+        await conn.commit();
+        console.log("Jelentkezés sikeresen felvéve");
+        return result.insertId ;
+    } catch (err) {
+        await conn.rollback();
+        console.error("Jelentkezés felvétel visszagörgetve:", err.message);
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+// jelentkezés törléséhez tranzakció (edzo + login)
+async function deleteJelentkezes(id) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        await conn.execute(
+            "DELETE FROM edzo WHERE edzo_id = ?",
+            [id]
+        );
+
+        const [result] = await conn.execute(
+            "DELETE FROM login WHERE id = ?",
+            [id]
+        );
+
+        if (result.affectedRows !== 1) {
+            throw new Error("Sikertelen jelentkezés törlés");
+        }
+
+        await conn.commit();
+        
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
 //!Export
 module.exports = {
     updateEdzo,
@@ -739,7 +807,6 @@ module.exports = {
     selectEdzoTerem,
     insertUser,
     selectAllAllergen,
-    insertEdzo,
     selectAllEdzoterem,
     selectAllTrainersByDist,
     selectKommentekByEdzoId,
@@ -786,4 +853,8 @@ module.exports = {
     deleteGyakorlat,
     insertRecept,
     deleteRecept,
+    selectJelentkezok,
+    insertJelentkezes,
+    deleteJelentkezes,
+    updateStatuszElfogadva,
 };

@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS edzo (
     idezet TEXT,
     leiras TEXT,
     kompetenciak TEXT,
+    statusz ENUM('jelentkezett', 'elfogadva') NOT NULL DEFAULT 'jelentkezett',
     FOREIGN KEY (edzo_id) REFERENCES login(id)
 );
 
@@ -588,21 +589,21 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 (7, 55.0, 160, 45, 1600, 1, 55.0, 2);
 
 -- 10. edzo tábla:
-INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak) VALUES 
-(8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.', 'Tömegnövelés, extrém kalóriabevitel, motiváció'),
-(9, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.', 'Erőemelés, nehézatlétika, mentális állóképesség'),
-(10, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.', 'Erőemelés, intenzív súlyzós edzés, formajavítás'),
-(11, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.', 'Esztétikus testalkat, social media fitnesz, könnyed erősítés'),
-(12, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.', 'Extrém testépítés, pózolás, szigorú étrend tervezés'),
-(13, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.', 'Alsótest fókuszú edzés, precíz étrend, szálkásítás'),
-(14, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.', 'Olimpiai súlyemelés, CrossFit alapok, funkcionális erőfejlesztés'),
-(15, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.', 'Otthoni edzés, női fitnesz, komplex programtervezés'),
-(16, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.', 'Mobilitás, calisthenics, prevenció és rehabilitáció'),
-(17, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.', 'Természetes testépítés, szálkásítás, pózolás és esztétika'),
-(18, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.', 'Klasszikus testépítés, magas intenzitású tréning (HIT), tömegnövelés'),
-(19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.', 'Testkompozíció megváltoztatása, erőnlét, fotózásra felkészítés'),
-(20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.', 'Funkcionális női edzés, mentális jóllét, kezdők mentorálása'),
-(21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.', 'HIIT, eszköz nélküli otthoni edzés, állóképesség fejlesztés');
+INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak, statusz) VALUES 
+(8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.', 'Tömegnövelés, extrém kalóriabevitel, motiváció', 'elfogadva'),
+(9, POINT(-118.49, 34.16), 'chris.jpg', '"PR vagy ER."', 'Brutális súlyok, üvöltve edzés, a Tren-ikrek egyik fele.', 'Erőemelés, nehézatlétika, mentális állóképesség', 'elfogadva'),
+(10, POINT(-118.49, 34.16), 'mike.jpg', '"Ha még tudsz beszélni, nem raktál rá elég súlyt."', 'Káosz-menedzsment a teremben, nehéz vasak.', 'Erőemelés, intenzív súlyzós edzés, formajavítás', 'elfogadva'),
+(11, POINT(-118.48, 34.00), 'sara.jpg', '"Várj, ezt le kell videóznom!"', 'Influenszer tréning, tartalomgyártás edzés közben.', 'Esztétikus testalkat, social media fitnesz, könnyed erősítés', 'elfogadva'),
+(12, POINT(-73.52, 40.80), 'rich.jpg', '"Mi lenne, ha több kaját ennél?"', 'Napi 10 étkezés, 8 órás karezés szakértő, 5% legenda.', 'Extrém testépítés, pózolás, szigorú étrend tervezés', 'elfogadva'),
+(13, POINT(144.96, -37.82), 'annabel.jpg', '"A forma nem vár, dolgozz meg érte!"', 'Esztétikus testalkat, precíz étrendtervezés, intenzív alsótest edzés.', 'Alsótest fókuszú edzés, precíz étrend, szálkásítás', 'elfogadva'),
+(14, POINT(-95.54, 29.62), 'keiani.jpg', '"Erősebb vagy, mint gondolnád."', 'Súlyemelés és funkcionális fitness Hawaii-ról.', 'Olimpiai súlyemelés, CrossFit alapok, funkcionális erőfejlesztés', 'elfogadva'),
+(15, POINT(-1.79, 52.37), 'krissy.jpg', '"Ne csak csináld, értsd is meg!"', 'Női közösségépítés, otthoni és edzőtermi komplex programok.', 'Otthoni edzés, női fitnesz, komplex programtervezés', 'elfogadva'),
+(16, POINT(-83.09, 42.41), 'patty.jpg', '"Ez csak egy kis mozgás, nyugi."', 'Zseniális mobilitás, testépítés és egy kis humor.', 'Mobilitás, calisthenics, prevenció és rehabilitáció', 'elfogadva'),
+(17, POINT(-95.54, 29.62), 'alex.jpg', '"Görög isten forma."', 'Természetes testépítés és esztétika.', 'Természetes testépítés, szálkásítás, pózolás és esztétika', 'elfogadva'),
+(18, POINT(-83.06, 40.30), 'sam.jpg', '"Érezd a bedurranást."', 'Intenzív edzés, klasszikus testépítő stílus.', 'Klasszikus testépítés, magas intenzitású tréning (HIT), tömegnövelés', 'elfogadva'),
+(19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.', 'Testkompozíció megváltoztatása, erőnlét, fotózásra felkészítés', 'elfogadva'),
+(20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.', 'Funkcionális női edzés, mentális jóllét, kezdők mentorálása', 'elfogadva'),
+(21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.', 'HIIT, eszköz nélküli otthoni edzés, állóképesség fejlesztés', 'elfogadva');
 
 -- 11. edzesterv tábla:
 
