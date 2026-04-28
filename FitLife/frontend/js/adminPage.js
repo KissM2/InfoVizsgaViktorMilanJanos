@@ -243,6 +243,7 @@ function userTablaFeltoltes(felhasznalok){
 
         let cvCella = document.createElement('td');
         let cvLink = document.createElement('a');
+        cvLink.classList.add('btn', 'btn-primary');
         cvLink.textContent = 'CV letöltése';
 
         //lekérjük a felhasználó önéletrajzát
@@ -253,7 +254,9 @@ function userTablaFeltoltes(felhasznalok){
 
         let clCella = document.createElement('td');
         let clLink = document.createElement('a');
+        clLink.classList.add('btn', 'btn-primary');
         clLink.textContent = 'Motivációs levél letöltése';
+
         //lekérjük a felhasználó motivációs levelét
         clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
         clLink.download = true;
@@ -315,7 +318,7 @@ function userTablaFeltoltes(felhasznalok){
 
         sor.addEventListener('click', async function(event){
             //megakadályozzuk, hogy a selectre vagy a gombra kattintva is lefusson ez az event
-            if (event.target.closest('select, button')) {
+            if (event.target.closest('select, button, a')) {
                 return;
             }
 
@@ -755,6 +758,7 @@ async function ujEdzoTablaFeltoltes(jelentkezok) {
 
         let cvCella = document.createElement('td');
         let cvLink = document.createElement('a');
+        cvLink.classList.add('btn', 'btn-primary');
         cvLink.textContent = 'CV letöltése';
 
         //lekérjük a felhasználó önéletrajzát
@@ -765,6 +769,7 @@ async function ujEdzoTablaFeltoltes(jelentkezok) {
 
         let clCella = document.createElement('td');
         let clLink = document.createElement('a');
+        clLink.classList.add('btn', 'btn-primary');
         clLink.textContent = 'Motivációs levél letöltése';
 
         //lekérjük a felhasználó motivációs levelét

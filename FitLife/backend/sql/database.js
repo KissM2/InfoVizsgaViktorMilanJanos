@@ -71,7 +71,7 @@ async function selectLoginDataById(id) {
     return rows;
 }
 async function selectAllLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN edzo ON edzo.edzo_id = login.id AND edzo.statusz NOT LIKE "jelentkezett" where login.role NOT LIKE "admin";';
     const [rows] = await pool.execute(query);
     return rows;
 }
