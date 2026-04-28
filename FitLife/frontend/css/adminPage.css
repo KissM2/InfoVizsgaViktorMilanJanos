@@ -19,3 +19,54 @@ td{
 .max-width-1800px{
     max-width: 1800px;
 }
+
+.gray-bg{
+    background-color: #161616;
+}
+
+.color-green{
+    color: #28a745;
+}
+
+.navbtn{
+    font-weight: bold;
+    height: 50px;
+    border-radius: 0px;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.b-0{
+    border: none;
+}
+
+.survey-item{
+    padding: 5px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    min-width: 40px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    max-width: 200px;
+    width: 100%;
+}
+.survey-item:hover{
+    border: #00cc00 1px solid !important;
+}
+
+.selected{
+    background-color: rgb(51, 51, 51);
+    color: white;
+    transform: scale(0.9);
+}
+
+.selected::after{
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -5px;
+    color: #00cc00;
+    font-size: 18px;
+    font-weight: bold;
+}

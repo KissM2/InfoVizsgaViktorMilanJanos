@@ -43,7 +43,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="nem">Nem</label>
-                    <input type="text" id="nem" name="nem" required>
+                        <select class="form-select" name="nem" id="nem">
+                                <option value="férfi">férfi</option>
+                                <option value="nő">nő</option>
+                        </select>
+                </div>
                 </div>
                 <div class="mb-3">
                     <label for="birthdate">Születési dátum</label>
@@ -55,7 +59,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="cv">Önéletrajz</label>
-                    <input type="file" id="cv" name="cv" required>
+                    <input type="file" id="cv" name="cv" class="color-black" required>
+                </div>
+                <div class="mb-3">
+                    <label for="coverLetter">Motivációs levél</label>
+                    <input type="file" id="coverLetter" name="coverLetter" class="color-black" required>
                 </div>
                 <button type="submit" class="btn-fitlife">Regisztrálok</button>
             </form>
