@@ -127,6 +127,11 @@ async function getUserCel(userId) {
     const [rows] = await pool.execute(query, [userId]);
     return rows[0];
 }
+async function getUserSurveyDone(id) {
+    const query = `SELECT count(*) AS "counter" FROM felhasznalo WHERE felhasznalo.felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 //felhasznalo_edzesi_napok
 
 //insert
@@ -212,6 +217,11 @@ async function selectTrainersByDist(lng, lat) {
         where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
     
     const [rows] = await pool.execute(query, [lng, lat]);
+    return rows;
+}
+async function getEdzoSurveyDone(id) {
+    const query = `SELECT COUNT(*) AS "counter" FROM edzo WHERE edzo.edzo_id = ? AND edzo.statusz LIKE "elfogadva" AND edzo.edzoterem_cim IS NOT NULL`;
+    const [rows] = await pool.execute(query, [id]);
     return rows;
 }
 
@@ -863,4 +873,6 @@ module.exports = {
     insertJelentkezes,
     deleteJelentkezes,
     updateStatuszElfogadva,
+    getEdzoSurveyDone,
+    getUserSurveyDone,
 };
