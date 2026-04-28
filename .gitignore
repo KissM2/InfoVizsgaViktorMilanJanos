@@ -1,2 +1,7 @@
 # node_modules mappák ignorálása mindenhol
+node_modules/
 **/node_modules/
+
+# környezeti változókat tartalmazó fájlok elrejtése
+.env
+**/.env
