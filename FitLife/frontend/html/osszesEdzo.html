@@ -17,7 +17,15 @@
 <body>
 <div class="container-fluid main-tartalom">
         <h1 class="oldal-cim">Csapatunk</h1>
-
+        <div class="row d-flex justify-content-center mb-3">
+            <div class="col-xxl-2 col-xl-3 col-lg-4 col-md-6 col-sm-10">
+                <label for="edzoNevInput" class="me-2">Keressen rá edzőre név alapján: </label> 
+                <div class="d-flex flex-nowrap">
+                    <input type="text" id="edzoNevInput" class="form-control bg-dark text-light" placeholder="László..."> 
+                    <button type="button" id="edzoKereso" class="btn btn-sm btn-primary text-light">Keres</button>
+                </div>
+            </div>
+        </div>
         <div class="vezerlo-sor">
             <button id="rendezes-abc-btn" class="sajat-btn">
                 <span>Rendezés</span>

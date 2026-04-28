@@ -200,6 +200,14 @@ async function selectTrainersByDist(lng, lat) {
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
+async function selectAllTrainersByName(name) {
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet 
+                    FROM edzo 
+                        INNER JOIN login ON edzo.edzo_id = login.id 
+                    WHERE edzo.statusz LIKE "elfogadva" AND login.felh_nev LIKE ?`;
+    const [rows] = await pool.execute(query, [`%${name}%`]);
+    return rows;
+}
 
 //edzesterv tábla
 
@@ -846,4 +854,5 @@ module.exports = {
     insertJelentkezes,
     deleteJelentkezes,
     updateStatuszElfogadva,
+    selectAllTrainersByName,
 };
