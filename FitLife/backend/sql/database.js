@@ -119,6 +119,21 @@ async function getUserCel(userId) {
 
 //update
 
+async function insertEdzesiNap(id, nap) {
+    const query = "INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES(?,?)";
+    const [rows] = await pool.execute(query, [id, nap]);
+    return rows;
+}
+//update
+
+
+//delete
+async function deleteEdzesiNap(id, nap) {
+    const query = "DELETE FROM felhasznalo_edzesi_napok WHERE felhasznalo_edzesi_napok.felhasznalo_id = ? AND felhasznalo_edzesi_napok.nap_sorszam = ?";
+    const [rows] = await pool.execute(query, [id, nap]);
+    return rows;
+}
+
 //select
 async function getUserEdzesNapok(userId) {
     const query = `SELECT nap_sorszam FROM felhasznalo_edzesi_napok WHERE felhasznalo_id = ?`;

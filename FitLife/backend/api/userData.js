@@ -199,4 +199,58 @@ router.get('/getAllergiasRa', loginCheck.loginCheck, async (request, response) =
     }
 });
 
+router.get('/getEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const userId = request.session.user.id;
+        const edzesiNapok = await database.getUserEdzesNapok(userId);
+
+        response.status(200).json({
+            message: "Edzési napok lekérése sikeres",
+            edzesiNapok: edzesiNapok,
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Edzési napok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/postEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const userId = request.session.user.id;
+        const {edzesiNapok} = request.body;
+
+        const edzesiNapokMost = await database.getUserEdzesNapok(userId);
+
+        edzesiNapok.forEach(edzesiNap => {
+            let i = 0;
+            while(i < edzesiNapokMost.length && edzesiNap.id != edzesiNapokMost[i]){
+                i++
+            }
+            if(i == edzesiNapokMost.length){
+                database.insertEdzesiNap(request.session.user.id, edzesiNap.id);
+            }else{
+                if(i < edzesiNapokMost.length){
+                    edzesiNapokMost.splice(i,1);
+                }
+            } 
+        });
+
+        edzesiNapokMost.forEach(edzesiNap =>{  
+            database.deleteEdzesiNap(request.session.user.id, edzesiNap);
+        });            
+
+        response.status(200).json({
+            message: "Edzési napok lekérése sikeres",
+            edzesiNapok: edzesiNapok,
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Edzési napok eltárolása sikertelen"
+        });
+    }
+});
+
 module.exports = router;
