@@ -25,13 +25,20 @@ document.addEventListener('DOMContentLoaded', async function(){
     const alergiasRa = await getKeres('/api/getAllergiasRa')
     let etelAllergiakValasztott = alergiasRa.allergiak;
     let etelPrefferenciakValasztott = alergiasRa.preferenciak;
+    let edzesiNapokValasztott = (await getKeres('/api/getEdzesiNapok')).edzesiNapok;
+    for (let i = 0; i < edzesiNapokValasztott.length; i++) {
+        edzesiNapokValasztott[i] = {id: edzesiNapokValasztott[i]};
+    }
 
     const allergenek = (await getKeres('/api/getAllAllergen')).result;
     let allergiak = allergenek.filter((allergen) => allergen.tipus == "a")
     let preferenciak = allergenek.filter((preferencia) => preferencia.tipus == "p")
-
+    let edzesiNapok = [{id: 1, nap: "hétfő"}, {id: 2, nap: "kedd"}, {id: 3, nap: "szerda"}, {id: 4, nap: "csütörtök"}, {id: 5, nap: "péntek"}, {id: 6, nap: "szombat"}, {id: 7, nap: 
+    "vasárnap"},];
+    
     valasztoGeneralasa('etelAllergiak', allergiak, etelAllergiakValasztott);
     valasztoGeneralasa('etelPrefferenciak', preferenciak, etelPrefferenciakValasztott);
+    napValasztoGeneralasa('edzesiNapok', edzesiNapok, edzesiNapokValasztott);
 
     document.getElementById('mentes_allergiak').addEventListener('click', async function(){
         postApi('/api/postAllergiak', {etelAllergiak: etelAllergiakValasztott});
@@ -39,6 +46,10 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     document.getElementById('mentes_preferenciak').addEventListener('click', async function(){
         postApi('/api/postPreferenciak', {etelPreferenciak: etelPrefferenciakValasztott});
+    });
+
+    document.getElementById('mentes_edzesiNapok').addEventListener('click', async function () {
+        postApi('/api/postEdzesiNapok', {edzesiNapok: edzesiNapokValasztott});        
     });
 });
 
@@ -106,10 +117,41 @@ function valasztoGeneralasa(id, lista, valasztott) {
     }
 }
 
+function napValasztoGeneralasa(id, lista, valasztott) {
+    let befogo = document.getElementById(id);
+    for (let i = 0; i < lista.length; i++) {
+        let div = document.createElement('div');
+        div.classList.add('survey-item', 'survey-item-sm', 'form-control', 'dark-input');
+        if(valasztott.length > 0 && hanyadikNapElem(valasztott, lista[i]) < valasztott.length){
+            div.classList.add('selected');
+        }
+        div.innerText = lista[i].nap;
+        befogo.appendChild(div);
+        div.addEventListener('click', function(){
+            if(valasztott.length > 0 && hanyadikNapElem(valasztott, lista[i]) < valasztott.length){
+                valasztott.splice(hanyadikNapElem(valasztott, lista[i]), 1);
+                div.classList.remove('selected');
+            }else{
+                valasztott.push({id: lista[i].id});
+                div.classList.add('selected');
+            }
+        });
+    }
+}
+
 function hanyadikElem(lista, elem){
     let i = 0;    
     
     while(i < lista.length && lista[i].allergen_id != elem.allergen_id){
+        i++
+    }
+    return i;
+}
+
+function hanyadikNapElem(lista, elem){
+    let i = 0;    
+    
+    while(i < lista.length && lista[i].id != elem.id){
         i++
     }
     return i;
