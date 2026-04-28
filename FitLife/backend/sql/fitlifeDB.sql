@@ -470,11 +470,6 @@ INSERT INTO allergen(nev) VALUES
 ('édesgyökér'),
 ('lakritz');
 
---  allergias_ra
-INSERT INTO allergias_ra (felhasznalo_id, allergen_id) VALUES
-(1, 5), (1, 12), (1, 28), (1, 45), (1, 62),
-(3, 2), (3, 19), (3, 33), (3, 50), (3, 68),
-(4, 7), (4, 15), (4, 22), (4, 39), (4, 55);
 
 -- 7. recept tábla:
 INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES
@@ -598,6 +593,13 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 (5, 68.0, 170, 30, 2000, 2, 62.0, 2),
 (6, 110.0, 190, 60, 3500, 4, 95.0, 4),
 (7, 55.0, 160, 45, 1600, 1, 55.0, 2);
+
+--  allergias_ra
+INSERT INTO allergias_ra (felhasznalo_id, allergen_id) VALUES
+(1, 5), (1, 12), (1, 28), (1, 45), (1, 62),
+(3, 2), (3, 19), (3, 33), (3, 50), (3, 68),
+(4, 7), (4, 15), (4, 22), (4, 39), (4, 55);
+
 
 -- 10. edzo tábla:
 INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak, statusz) VALUES 
