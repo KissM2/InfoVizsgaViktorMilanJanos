@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../sql/database.js');
+const requireLogin = require('../middleware/requireLogin.js');
 //!Multer
 const multer = require('multer'); //?npm install multer
 const path = require('path');
@@ -45,7 +46,7 @@ router.get('/szamitott-kaloria', requireLogin.loginCheck, async (request, respon
         }
 
         //edzesen kivuli mozgas szorzoi
-        const szorzok = { 1: 1.2, 2: 1.375, 3: 1.55, 4: 1.725 }; //1 Ülőmunka 2 Séta 3 Aktiv f 4 rendszeres sport
+        const szorzok = { 1: 1, 2: 1.2, 3: 1.4, 4: 1.5 }; //1 Ülőmunka 2 Séta 3 Aktiv f 4 rendszeres sport
         const faktor = szorzok[adatok.EKM_id] || 1.2; //alapbol 1.2 legyen
         let napiSzukseglet = bmr * faktor;
 
@@ -61,11 +62,13 @@ router.get('/szamitott-kaloria', requireLogin.loginCheck, async (request, respon
         await database.updateCalorieGoal(userId, veglegesKcal);
 
         response.status(200).json({
+            message: "Kalória cél kiszámolva és elmentve.",
             szamitottKaloria: veglegesKcal,
-            message: "Kalória cél kiszámolva és elmentve."
+            celAlak: adatok.cel_alak_nev,
         });
 
     } catch (error) {
+        console.error(error);
         response.status(500).json({ message: "Szerverhiba a számítás során." });
     }
 });
@@ -115,4 +118,5 @@ router.delete('/deleteRecept', async (request, response) => {
         response.status(500).json({ message: "Nem sikerült törölni a receptet." });
     }
 });
+
 module.exports = router;
