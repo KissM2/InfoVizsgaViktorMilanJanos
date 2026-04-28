@@ -6,6 +6,17 @@ const bcrypt = require('bcrypt'); //?npm install bcrypt
 const validator = require('../middleware/Validalas.js');
 const checkIfEmailUsed = require('../middleware/checkIfEmailUsed.js');
 const requireLogin = require('../middleware/requireLogin.js')
+const crypto = require('crypto');// Beépített Hosszú, kitalálhatatlan azonosító (Token) gyártásá
+const nodemailer = require('nodemailer');
+
+// Email küldő beállítása
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'pelda@gmail.com',
+        pass: 'pelda'
+    }
+});
 
 //!Multer
 const multer = require('multer'); //?npm install multer
@@ -306,7 +317,64 @@ router.post('/updateJelszo', validator.validatePassword, async (request, respons
         response.status(500).json({ message: "Szerverhiba!" });
     }
 });
+router.post('/forgot-password', async (request, response) => {
+    try {
+        const { email } = request.body;
+        const user = await database.login(email);
 
+        if (!user || user.length === 0) {
+            return response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+        }
+
+        //Token generalas
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 3600000); // Jelenlegi idő + 1 óra
+        await database.saveResetToken(email, token, expires);
+
+        // Email küldése
+        const resetLink = `http://127.0.0.1:3000/html/jelszo_modositas.html?token=${token}`;
+        
+        await transporter.sendMail({
+            from: '"FitLife" <noreply@fitlife.hu>',
+            to: email,
+            subject: 'FitLife - Jelszó visszaállítása',
+            html: `<h3>Szia!</h3>
+                   <p>Kattints az alábbi linkre a jelszavad visszaállításához. Ez a link 1 órán belül lejár.</p>
+                   <a href="${resetLink}">${resetLink}</a>`
+        });
+
+        response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Szerverhiba történt." });
+    }
+});
+router.post('/reset-password', upload.none(), async (request, response) => {
+    try {
+        const { token, jelszo } = request.body;
+
+        if (!token || !jelszo) {
+            return response.status(400).json({ message: "Hiányzó adatok!" });
+        }
+        const user = await database.getUserByToken(token);
+
+        if (!user) {
+            return response.status(400).json({ message: "Érvénytelen vagy lejárt link!" });
+        }
+        const hash = await bcrypt.hash(jelszo, 10);
+        await database.updateJelszo(hash, user.id);
+
+        //linket ne lehessen ujra hasznalni
+        await database.clearResetToken(user.id);
+
+        response.status(200).json({ message: "Sikeres jelszócsere! Most már bejelentkezhetsz." });
+
+    } catch (error) {
+        console.error("Hiba a jelszó visszaállításakor:", error);
+        response.status(500).json({ message: "Szerverhiba történt." });
+    }
+});
 router.get('/getAllAuthData', async (request, response) =>{
     try {
         const authData = await database.selectAllLoginData();
@@ -523,9 +591,21 @@ router.get('/jelentkezok/:userId/cover-letter', requireLogin.adminCheck, async (
 router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.query.id
+        const indok = request.query.indok || 'Nem felelt meg az elvárásoknak.';;
+        const userData= await database.selectLoginDataById(id);
         const result = await database.deleteJelentkezes(id);
-        await fs.unlink('./uploads/coverLetter' + id + '.pdf');
-        await fs.unlink('./uploads/cv' + id + '.pdf');
+
+        await fs.unlink('./uploads/coverLetter' + id + '.pdf').catch(e => console.log('Fájl nem található'));
+        await fs.unlink('./uploads/cv' + id + '.pdf').catch(e => console.log('Fájl nem található'));
+
+        if(userData.length > 0) {
+            await transporter.sendMail({
+                from: '"FitLife Admin" <te.fitlife.email@gmail.com>',
+                to: userData[0].email,
+                subject: 'FitLife - Edzői jelentkezés elutasítva',
+                html: `<h2>Kedves ${userData[0].felh_nev}!</h2><p>Sajnálattal értesítünk, hogy jelentkezésedet elutasítottuk.</p><p><b>Indoklás:</b> ${indok}</p>`
+            });
+        }
         response.status(200).json({
             message: "Edző jelentkezése sikeresen elutasítva"
         })
@@ -540,7 +620,18 @@ router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, respo
 router.post('/postJelentkezoelfogadas', requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.body.id
+        const userData = await database.selectLoginDataById(id);
         const result = await database.updateStatuszElfogadva(id);
+
+        if(userData.length > 0) {
+            await transporter.sendMail({
+                from: '"FitLife Admin" <te.fitlife.email@gmail.com>',
+                to: userData[0].email,
+                subject: '🎉 Gratulálunk! Elfogadtuk az edzői jelentkezésed!',
+                html: `<h2>Kedves ${userData[0].felh_nev}!</h2><p>Örömmel értesítünk, hogy jelentkezésedet elfogadtuk! Mostantól beléphetsz edzőként a rendszerbe.</p>`
+            });
+        }
+
         response.status(200).json({
             message: "Edző jelentkezése sikeresen elfogadva"
         })
