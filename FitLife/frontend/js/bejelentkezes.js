@@ -20,10 +20,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         switch(result.role){
             case "admin": window.location.href = "/../html/adminPage.html"; break;
             case "edzo": 
-                if(!result.surveyDone){
-                    window.location.href = "/../html/edzoSurvey.html";
+                if(result.elfogadva){
+                    if(result.surveyDone){
+                        window.location.href = "/../html/edzofo.html";
+                    }else{
+                        window.location.href = "/../html/edzoSurvey.html";
+                    }
                 }else{
-                    window.location.href = "/../html/edzofo.html";
+                    window.location.href = "/../html/jelentkezett.html";
                 } break;
             case "felhasznalo": 
                 if(!result.surveyDone){

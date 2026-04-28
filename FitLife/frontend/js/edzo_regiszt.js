@@ -22,7 +22,7 @@ document.getElementById('trainerForm').addEventListener('submit', async (e) => {
         const formData = new FormData(e.target);
         let result = await postKeres('/api/edzoRegister', formData);
         if(result.message = "Sikeres edző rögzítés."){
-            window.location.href = "../edzoSurvey"
+            window.location.href = "/../html/jelentkezett.html";
         };
     }
 

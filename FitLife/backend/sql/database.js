@@ -224,6 +224,11 @@ async function getEdzoSurveyDone(id) {
     const [rows] = await pool.execute(query, [id]);
     return rows;
 }
+async function selectJelentkezoEById(id) {
+    const query = `SELECT edzo.statusz FROM edzo WHERE edzo.edzo_id = ?`;
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
 
 //edzesterv tábla
 
@@ -875,4 +880,5 @@ module.exports = {
     updateStatuszElfogadva,
     getEdzoSurveyDone,
     getUserSurveyDone,
+    selectJelentkezoEById,
 };

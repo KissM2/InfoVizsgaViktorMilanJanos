@@ -219,12 +219,18 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
             email: email,
             role : login[0].role
         }
-
+        
+        let elfogadva = true;
         let surveyDone = true;
         let result = null;
-
+        
         if(login[0].role == "edzo"){
-            result = await database.getEdzoSurveyDone(login[0].id);
+            const accepted = await database.selectJelentkezoEById(login[0].id);
+            if(accepted.statusz == "elfogadva" ){
+                result = await database.getEdzoSurveyDone(login[0].id);
+            }else{
+                elfogadva = false;
+            }
         }else if(login[0].role == "felhasznalo"){
             result = await database.getUserSurveyDone(login[0].id);
         }
@@ -233,9 +239,11 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
             surveyDone = result[0].counter > 0;
         }
 
+
         return response.status(200).json({
             message: 'Sikeres bejelentkezés.',
             role: login[0].role,
+            elfogadva: elfogadva,
             surveyDone: surveyDone,
         });
 
