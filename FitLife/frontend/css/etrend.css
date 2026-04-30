@@ -1,0 +1,76 @@
+.kaja-kartya {
+    position: relative;
+    background-color: var(--bg-main);
+    border-left: 4px solid var(--green);
+    border-radius: 4px;
+    padding: 0;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kaja-kartya:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+}
+
+.kaja-kartya-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.kaja-kartya-body {
+    padding: 0 12px 12px;
+    cursor: pointer;
+}
+
+.recept-delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.16);
+    color: white;
+    font-size: 1rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+}
+
+.recept-delete-btn:hover {
+    background: rgba(255,255,255,0.28);
+}
+
+.recept-valaszto {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid green;
+    padding: 6px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.saved-ettrend-card {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+.saved-ettrend-card .btn {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.tabla-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-soft);
+    border-radius: 0 0 8px 8px;
+}

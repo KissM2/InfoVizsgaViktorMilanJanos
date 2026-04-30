@@ -357,6 +357,133 @@ async function selectAllReceptek() {
     return rows;
 }
 
+async function saveHetiEtrend(userId, hetiEtrend, csoportId = null) {
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        if (csoportId == null) {
+            const [rows] = await conn.execute(
+                "SELECT COALESCE(MAX(csoport_id), 0) + 1 AS nextId FROM etrend WHERE felhasznalo_id = ?",
+                [userId]
+            );
+            csoportId = rows[0].nextId || 1;
+        }
+
+        await conn.execute("DELETE FROM etrend WHERE felhasznalo_id = ? AND csoport_id = ?", [userId, csoportId]);
+
+        const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
+        const etkezesSorszama = {
+            reggeli: 1,
+            ebed: 2,
+            vacsora: 3,
+            csemege: 4
+        };
+
+        for (const napiEtrend of hetiEtrend) {
+            if (typeof napiEtrend.nap_index !== 'number' || napiEtrend.nap_index < 0 || napiEtrend.nap_index > 6) {
+                continue;
+            }
+
+            const weekday = napok[napiEtrend.nap_index] || `Nap ${napiEtrend.nap_index}`;
+            if (!Array.isArray(napiEtrend.etkezesek)) {
+                continue;
+            }
+
+            for (const etkezes of napiEtrend.etkezesek) {
+                if (!etkezes || !etkezes.recept || typeof etkezes.recept.recept_id !== 'number') {
+                    continue;
+                }
+
+                const sorszama = etkezesSorszama[etkezes.etkezes_tipus] || 0;
+                await conn.execute(
+                    "INSERT INTO etrend (csoport_id, weekday, etkezes_sorszama, felhasznalo_id, recept_id) VALUES (?, ?, ?, ?, ?)",
+                    [csoportId, weekday, sorszama, userId, etkezes.recept.recept_id]
+                );
+            }
+        }
+
+        await conn.commit();
+        return csoportId;
+    } catch (err) {
+        await conn.rollback();
+        throw err;
+    } finally {
+        conn.release();
+    }
+}
+
+async function deleteHetiEtrendByUser(userId, csoportId = null) {
+    if (csoportId == null) {
+        const query = "DELETE FROM etrend WHERE felhasznalo_id = ?";
+        const [rows] = await pool.execute(query, [userId]);
+        return rows;
+    }
+
+    const query = "DELETE FROM etrend WHERE felhasznalo_id = ? AND csoport_id = ?";
+    const [rows] = await pool.execute(query, [userId, csoportId]);
+    return rows;
+}
+
+async function getAllHetiEtrendekByUser(userId) {
+    const query = `
+        SELECT
+            e.csoport_id,
+            e.weekday,
+            e.etkezes_sorszama,
+            r.recept_id,
+            r.nev,
+            r.leiras,
+            r.etkezes_tipus,
+            r.zsir,
+            r.protein,
+            r.szenhidrat
+        FROM etrend e
+        JOIN recept r ON e.recept_id = r.recept_id
+        WHERE e.felhasznalo_id = ?
+        ORDER BY e.csoport_id ASC, e.weekday ASC, e.etkezes_sorszama ASC`;
+
+    const [rows] = await pool.execute(query, [userId]);
+
+    const weekdayIndex = {
+        "Hétfő": 0,
+        "Kedd": 1,
+        "Szerda": 2,
+        "Csütörtök": 3,
+        "Péntek": 4,
+        "Szombat": 5,
+        "Vasárnap": 6
+    };
+
+    const plans = {};
+
+    for (const row of rows) {
+        const csoportId = row.csoport_id;
+        if (!plans[csoportId]) {
+            plans[csoportId] = {
+                csoport_id: csoportId,
+                hetiEtrend: Array.from({ length: 7 }, (_, napIndex) => ({ nap_index: napIndex, etkezesek: [] }))
+            };
+        }
+
+        const napIdx = typeof weekdayIndex[row.weekday] === 'number' ? weekdayIndex[row.weekday] : 0;
+        plans[csoportId].hetiEtrend[napIdx].etkezesek.push({
+            etkezes_tipus: row.etkezes_tipus,
+            recept: {
+                recept_id: row.recept_id,
+                nev: row.nev,
+                leiras: row.leiras,
+                etkezes_tipus: row.etkezes_tipus,
+                zsir: row.zsir,
+                protein: row.protein,
+                szenhidrat: row.szenhidrat
+            }
+        });
+    }
+
+    return Object.values(plans).sort((a, b) => a.csoport_id - b.csoport_id);
+}
+
 //allergen tábla
 
 //insert
@@ -373,8 +500,6 @@ async function selectAllAllergen() {
 }
 
 //allergias_ra tábla
-
-//heti_beosztas tábla
 
 //insert
 async function insertAllergiasRa(id, allergia) {
@@ -399,6 +524,21 @@ async function selectAorPById(id, tipus) {
     const [rows] = await pool.execute(query, [id, tipus]);
     return rows;
 }
+
+//allergiat_okoz tábla
+
+//insert
+
+//update
+
+//select
+async function selectReceptAllergenekById(recept_id) {
+    const query = "SELECT allergiat_okoz.allergen_id FROM allergiat_okoz WHERE allergiat_okoz.recept_id = ?";
+    const [rows] = await pool.execute(query, [recept_id]);
+    return rows;
+}
+
+//heti_beosztas tábla
 
 //insert
 async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
@@ -826,7 +966,6 @@ module.exports = {
     getKAByExact,
     updateKAStatus,
     markInvalidKAAsDeleted,
-    selectTrainersByDist,
     getUserCel,
     getUserEdzesNapok,
     saveEdzestervSor,
@@ -857,9 +996,13 @@ module.exports = {
     deleteGyakorlat,
     insertRecept,
     deleteRecept,
+    saveHetiEtrend,
+    deleteHetiEtrendByUser,
+    getAllHetiEtrendekByUser,
     selectJelentkezok,
     insertJelentkezes,
     deleteJelentkezes,
     updateStatuszElfogadva,
     updateCalorieGoal,
+    selectReceptAllergenekById,
 };
