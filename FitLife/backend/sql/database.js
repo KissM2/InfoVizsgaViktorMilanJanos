@@ -335,14 +335,6 @@ async function selectAorPById(id, tipus) {
     return rows;
 }
 /* =========================
-   SEGÉD
-========================= */
-
-function normalizeTime(t) {
-    return t.slice(0, 5); // "01:00:00" → "01:00"
-}
-
-/* =========================
    HETI BEOSZTÁS
 ========================= */
 
@@ -353,8 +345,8 @@ async function insertHetiBeosztasSingle(weekday, start, end, mettol, edzoId) {
         VALUES (?, ?, ?, ?, ?, 'aktiv')
     `, [
         weekday,
-        normalizeTime(start),
-        normalizeTime(end),
+        start,
+        end,
         mettol,
         edzoId
     ]);
@@ -397,10 +389,7 @@ async function checkHetiBeosztasExists(edzoId, mettol) {
     return rows.length > 0;
 }
 
-/* 🔥 AKTUÁLIS HB CHECK */
 async function isInHB(edzoId, datum, weekday, ido) {
-
-    ido = normalizeTime(ido);
 
     const [rows] = await pool.execute(`
         SELECT 1
@@ -424,7 +413,7 @@ async function isInHB(edzoId, datum, weekday, ido) {
 }
 
 /* =========================
-   KÜLÖNLEGES ALKALOM (KA)
+   KA
 ========================= */
 
 async function getKulonlegesAlkalmak(edzoId) {
@@ -445,8 +434,6 @@ async function getKulonlegesAlkalmak(edzoId) {
 
 async function isBlockedByKA(edzoId, datum, ido) {
 
-    ido = normalizeTime(ido);
-
     const [rows] = await pool.execute(`
         SELECT 1 FROM kulonleges_alkalom
         WHERE edzo_id = ?
@@ -460,8 +447,6 @@ async function isBlockedByKA(edzoId, datum, ido) {
 }
 
 async function getKAByExact(edzoId, datum, ido) {
-
-    ido = normalizeTime(ido);
 
     const [rows] = await pool.execute(`
         SELECT 
@@ -484,7 +469,7 @@ async function insertKulonlegesAlkalom(datum, ido, statusz, edzoId) {
     await pool.execute(`
         INSERT INTO kulonleges_alkalom (datum, ido, statusz, edzo_id)
         VALUES (?, ?, ?, ?)
-    `, [datum, normalizeTime(ido), statusz, edzoId]);
+    `, [datum, ido, statusz, edzoId]);
 }
 
 async function updateKAStatus(id, statusz) {
@@ -495,7 +480,6 @@ async function updateKAStatus(id, statusz) {
     `, [statusz, id]);
 }
 
-/* 🔥 HB változás → KA törlés */
 async function markInvalidKAAsDeleted(edzoId, mettol) {
     await pool.execute(`
         UPDATE kulonleges_alkalom
@@ -511,8 +495,6 @@ async function markInvalidKAAsDeleted(edzoId, mettol) {
 ========================= */
 
 async function getOwnBooking(datum, ido, userId, edzoId) {
-
-    ido = normalizeTime(ido);
 
     const [rows] = await pool.execute(`
         SELECT *
@@ -532,7 +514,7 @@ async function insertBooking(datum, ido, userId, edzoId) {
         INSERT INTO foglalas
         (datum, ido, statusz, felhasznalo_id, edzo_id)
         VALUES (?, ?, 'aktiv', ?, ?)
-    `, [datum, normalizeTime(ido), userId, edzoId]);
+    `, [datum, ido, userId, edzoId]);
 }
 
 async function updateBookingStatus(id, statusz) {
@@ -545,8 +527,6 @@ async function updateBookingStatus(id, statusz) {
 
 async function isSlotTakenByOther(datum, ido, userId, edzoId) {
 
-    ido = normalizeTime(ido);
-
     const [rows] = await pool.execute(`
         SELECT 1 FROM foglalas
         WHERE datum = ?
@@ -560,42 +540,17 @@ async function isSlotTakenByOther(datum, ido, userId, edzoId) {
     return rows.length > 0;
 }
 
-async function deleteInactiveOthers(datum, ido, userId, edzoId) {
-
-    ido = normalizeTime(ido);
+async function deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido) {
 
     await pool.execute(`
         UPDATE foglalas
         SET statusz = 'torolt'
-        WHERE datum = ?
+        WHERE felhasznalo_id = ?
+        AND edzo_id <> ?
+        AND datum = ?
         AND TIME_FORMAT(ido, '%H:%i') = ?
-        AND edzo_id = ?
         AND statusz = 'inaktiv'
-        AND felhasznalo_id <> ?
-    `, [datum, ido, edzoId, userId]);
-}
-
-/* 🔥 GLOBAL */
-async function hasActiveBookingElsewhere(userId, edzoId) {
-    const [rows] = await pool.execute(`
-        SELECT 1 FROM foglalas
-        WHERE felhasznalo_id = ?
-        AND edzo_id <> ?
-        AND statusz = 'aktiv'
-        LIMIT 1
-    `, [userId, edzoId]);
-
-    return rows.length > 0;
-}
-
-async function deleteInactiveElsewhere(userId, edzoId) {
-    await pool.execute(`
-        UPDATE foglalas
-        SET statusz = 'torolt'
-        WHERE felhasznalo_id = ?
-        AND edzo_id <> ?
-        AND statusz = 'inaktiv'
-    `, [userId, edzoId]);
+    `, [userId, edzoId, datum, ido]);
 }
 
 /* =========================
@@ -809,14 +764,12 @@ module.exports = {
     selectAllAdminLoginData,
     isBlockedByKA,
     isSlotTakenByOther,
-    deleteInactiveOthers,
     isInHB,
-    hasActiveBookingElsewhere,
-    deleteInactiveElsewhere,
     getFoglalas,
     getFoglalasNoNames,
     getMyBookings,
     getOwnBooking,
-    updateBookingStatus
-    
+    updateBookingStatus,
+    insertBooking,
+    deleteInactiveElsewhereAtSameTime,
 };

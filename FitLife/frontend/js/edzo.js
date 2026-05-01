@@ -8,7 +8,7 @@ let currentDate = new Date();
 let myUserId = null;
 let toActivate = [];   // új foglalások
 let toDeactivate = []; // lemondások
-let edzoID="";
+let edzoId="";
 let calendarData = {
     heti: [],
     kulonleges: [],
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 /* ========================= API ========================= */
 async function loadCalendar() {
-    const res = await getKeres(`/api/getCalendar?id=+${edzoID}`);
+    const res = await getKeres(`/api/getCalendar?id=+${edzoId}`);
     calendarData = res?.result || res;
 
     console.log("📦 calendar:", calendarData);
@@ -417,6 +417,7 @@ function generateModal() {
     const grid = document.createElement("div");
     grid.classList.add("week-grid");
 
+    /* ===== FEJLÉC ===== */
     for (let i = 0; i < 7; i++) {
         let cell = document.createElement("div");
         cell.classList.add("cell", "head");
@@ -424,6 +425,7 @@ function generateModal() {
         grid.appendChild(cell);
     }
 
+    /* ===== SLOTOK ===== */
     for (let perc = 0; perc < 1440; perc += 30) {
 
         let ido = `${String(Math.floor(perc / 60)).padStart(2, "0")}:${String(perc % 60).padStart(2, "0")}`;
@@ -432,11 +434,13 @@ function generateModal() {
 
             let d = new Date(weekStart);
             d.setDate(weekStart.getDate() + i);
-            let datum = formatDateISO(d);
-            const inRange = isWithinBookingRange(d);
 
+            let datum = formatDateISO(d);
             let key = datum + "|" + ido;
 
+            const inRange = isWithinBookingRange(d);
+
+            /* ===== HB ===== */
             const activeHeti = getActiveHetiForDate(datum);
 
             const heti = activeHeti.find(h =>
@@ -444,19 +448,32 @@ function generateModal() {
                 isInRange(ido, h.start, h.end)
             );
 
+            /* ===== KA ===== */
             const ka = calendarData.kulonleges.find(k =>
                 k.statusz === "aktiv" &&
                 k.datum.startsWith(datum) &&
                 norm(k.ido) === ido
             );
 
-            const sajat = calendarData.foglalas.find(f =>
+            /* ===== SAJÁT FOGLALÁSOK (MY BOOKINGS) ===== */
+
+            // saját ugyanennél az edzőnél
+            const sajat = myBookings.find(f =>
                 f.statusz === "aktiv" &&
                 f.datum.startsWith(datum) &&
                 norm(f.ido) === ido &&
-                f.felhasznalo_id === myUserId
+                f.edzo_id == edzoId
             );
 
+            // saját MÁS edzőnél
+            const sajatMashol = myBookings.find(f =>
+                f.statusz === "aktiv" &&
+                f.datum.startsWith(datum) &&
+                norm(f.ido) === ido &&
+                f.edzo_id != edzoId
+            );
+
+            /* ===== MÁSOK FOGLALÁSA ===== */
             const foglaltMas = calendarData.foglalas.find(f =>
                 f.statusz === "aktiv" &&
                 f.datum.startsWith(datum) &&
@@ -468,26 +485,38 @@ function generateModal() {
             cell.classList.add("cell");
             cell.innerText = ido;
 
-            // PRIORITÁS
+            /* =========================
+               PRIORITÁS
+            ========================= */
+
             if (!inRange) {
                 cell.classList.add("elerhetetlen");
             }
             else if (!heti || ka) {
                 cell.classList.add("elerhetetlen");
             }
+            else if (sajatMashol) {
+                // 🔴 MÁS EDZŐNÉL FOGLALT
+                cell.classList.add("kulonleges");
+            }
             else if (foglaltMas) {
                 cell.classList.add("elerhetetlen");
             }
             else if (sajat) {
+                // 🟢 SAJÁT ITT
                 cell.classList.add("foglaltSajat");
-                cell.onclick = () => toggleSlot(cell, key, true);  // ha saját
+                cell.onclick = () => toggleSlot(cell, key, true);
             }
             else {
+                // 🔵 SZABAD
                 cell.classList.add("elerheto");
-                cell.onclick = () => toggleSlot(cell, key, false); // ha új
+                cell.onclick = () => toggleSlot(cell, key, false);
             }
 
             grid.appendChild(cell);
+
+            /* ===== DEBUG ===== */
+            // console.log({ datum, ido, heti, ka, sajat, sajatMashol, foglaltMas });
         }
     }
 
@@ -544,7 +573,7 @@ async function saveBooking() {
     const payload = {
         activate: {},
         deactivate: {},
-        id: edzoId
+        edzo_id: edzoId
     };
 
     toActivate.forEach(e => {
