@@ -153,7 +153,7 @@ async function updateStatuszElfogadva(id) {
 
 //select
 async function selectAllTrainers() {
-    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE statusz LIKE "elfogadva";`;
     const [rows] = await pool.execute(query);
     return rows;
 }
