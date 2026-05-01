@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitLife-Edző</title>
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../css/edzo.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/naptar.css">
+    <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/naptarteszt.js"></script>
+</head>
+
+<body class="bg-dark text-light">
+    <div>id=101 togi</div>
+    <div class="naptarkeret">
+        <h1 class="text-success text-center">Saját foglalásaim</h1>
+        <div id="naptar"></div>
+        <!-- Foglalás gomb -->
+        <button id="foglalasBtn">Foglalás</button>
+
+        <!-- Modal -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2>Időpont foglalás</h2>
+                    <button id="closeBtn">✕</button>
+                </div>
+
+                <div id="modal-naptar"></div>
+
+                <button id="saveBtn">Mentés</button>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

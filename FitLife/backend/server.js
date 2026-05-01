@@ -60,6 +60,9 @@ router.get('/esznt', (request, response) => {
 router.get('/userProfil', (request, response) => {
     response.sendFile(path.join(__dirname, '../frontend/html/user_profil.html'));
 });
+router.get('/tesztn', (request, response) => {
+    response.sendFile(path.join(__dirname, '../frontend/html/naptarteszt.html'));
+});
 //!API endpoints
 app.use('/', router);
 const authEndpoints = require('./api/auth.js');

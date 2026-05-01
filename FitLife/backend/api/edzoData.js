@@ -91,31 +91,6 @@ router.post('/edzoDataUpdate', upload.single('kep'), checkEdzoData.checkEdzoData
         });
     }
 });
-router.post('/profileEdzoUpdate', loginCheck.loginCheck, async (request, response) => {
-    try {
-        const {
-            email,
-            felh,
-            telsz
-        } = request.body;
 
-        await database.updateUserProfile(
-            email,
-            felh,
-            telsz,
-            request.session.id
-        );
-
-        response.status(200).json({
-            message: "Profil sikeresen frissítve"
-        });
-
-    } catch (error) {
-        console.error(error.message);
-        response.status(500).json({
-            message: "Hiba történt"
-        });
-    }
-});
 
 module.exports = router;
