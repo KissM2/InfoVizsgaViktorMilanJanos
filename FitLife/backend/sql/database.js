@@ -49,9 +49,18 @@ async function updateFelhasznaloRole(id, ujRole) {
     return rows;
 }
 
+async function saveResetToken(email, token, expires) {
+    const query = "UPDATE login SET reset_token = ?, reset_expires = ? WHERE email = ?";
+    await pool.execute(query, [token, expires, email]);
+}
+async function clearResetToken(userId) {
+    const query = "UPDATE login SET reset_token = NULL, reset_expires = NULL WHERE id = ?";
+    await pool.execute(query, [userId]);
+}
+
 //select
 async function login(email) {
-    const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ?;';
+    const query = 'SELECT login.jelszo, login.id, login.role FROM login WHERE email = ? AND deleted_at IS NULL;';
     const [rows] = await pool.execute(query, [email]);
     return rows;
 }
@@ -69,6 +78,11 @@ async function selectLoginDataById(id) {
     const query = 'SELECT login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum FROM login WHERE login.id = ?;';
     const [rows] = await pool.execute(query, [id]);
     return rows;
+}
+async function getUserByToken(token) {
+    const query = "SELECT id FROM login WHERE reset_token = ? AND reset_expires > NOW()";
+    const [rows] = await pool.execute(query, [token]);
+    return rows[0];
 }
 async function selectAllLoginData() {
     const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
@@ -112,6 +126,11 @@ async function getUserCel(userId) {
         WHERE felhasznalo.felhasznalo_id = ?`;
     const [rows] = await pool.execute(query, [userId]);
     return rows[0];
+}
+async function getUserSurveyDone(id) {
+    const query = `SELECT count(*) AS "counter" FROM felhasznalo WHERE felhasznalo.felhasznalo_id = ?`;
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
 }
 //felhasznalo_edzesi_napok
 
@@ -198,6 +217,16 @@ async function selectTrainersByDist(lng, lat) {
         where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
     
     const [rows] = await pool.execute(query, [lng, lat]);
+    return rows;
+}
+async function getEdzoSurveyDone(id) {
+    const query = `SELECT COUNT(*) AS "counter" FROM edzo WHERE edzo.edzo_id = ? AND edzo.statusz LIKE "elfogadva" AND edzo.edzoterem_cim IS NOT NULL`;
+    const [rows] = await pool.execute(query, [id]);
+    return rows;
+}
+async function selectJelentkezoEById(id) {
+    const query = `SELECT edzo.statusz FROM edzo WHERE edzo.edzo_id = ?`;
+    const [rows] = await pool.execute(query, [id]);
     return rows;
 }
 
@@ -826,6 +855,9 @@ module.exports = {
     insertAllergiasRa,
     selectAorPById,
     deleteAllergiasRa,
+    saveResetToken,
+    clearResetToken,
+    getUserByToken,
     selectAllLoginData,
     selectAllKommentek,
     selectKommentekByUserIdForAdmin,
@@ -846,4 +878,7 @@ module.exports = {
     insertJelentkezes,
     deleteJelentkezes,
     updateStatuszElfogadva,
+    getEdzoSurveyDone,
+    getUserSurveyDone,
+    selectJelentkezoEById,
 };

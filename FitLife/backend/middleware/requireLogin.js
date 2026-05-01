@@ -15,13 +15,41 @@ async function loginCheck(request, response, next) {
 
 async function adminCheck(request, response, next) {
     try {
-        if (!request.session.user || !request.session.user.id) {
-            return response.status(401).json({
-                message: "Nincs bejelentkezve."
+        if (request.session.user.role !== 'admin') {
+            return response.status(403).json({
+                message: "Nincs jogosultsága ehhez a művelethez."
             });
         }
 
-        if (request.session.user.role !== 'admin') {
+        next();
+    } catch (error) {
+        return response.status(500).json({
+            message: "Hiba történt a jogosultság ellenőrzése során."
+        });
+    }
+}
+
+async function edzoCheck(request, response, next) {
+    try {
+
+        if (request.session.user.role !== 'edzo') {
+            return response.status(403).json({
+                message: "Nincs jogosultsága ehhez a művelethez."
+            });
+        }
+
+        next();
+    } catch (error) {
+        return response.status(500).json({
+            message: "Hiba történt a jogosultság ellenőrzése során."
+        });
+    }
+}
+
+async function userCheck(request, response, next) {
+    try {
+
+        if (request.session.user.role !== 'felhasznalo') {
             return response.status(403).json({
                 message: "Nincs jogosultsága ehhez a művelethez."
             });
