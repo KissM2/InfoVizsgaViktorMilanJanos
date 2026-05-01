@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS login (
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
     reset_token VARCHAR(255) NULL,
-    reset_expires DATETIME NULL,
+    reset_expires DATETIME NULL
 );
 
 -- CEL_ALAK

@@ -1,6 +1,7 @@
 import { getKeres } from "./kozosFetch.js";
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
+
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
 let currentDate = new Date();
@@ -10,11 +11,13 @@ let calendarData = {
     kulonleges: [],
     foglalas: []
 };
+
 const menuLinkek = [
     { nev: "Naptár szerkesztése", url: "/esznt" },
     { nev: "Névjegy szerkesztése", url: "/trainersedit" },
     { nev: "Adatok szerkesztésee", url: "/traineradat" },
 ];
+
 document.addEventListener("DOMContentLoaded", async function () {
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -24,8 +27,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const tobbBtn = document.getElementById("tobb-komment-btn");
     let aktualisKommentek = [];
 
-    const profilAdat = await getKeres("/api/getLoginStatus"); 
-    const edzoId = profilAdat.id; 
+    const profilAdat = await getKeres("/api/getLoginStatus");
+    const edzoId = profilAdat.id;
     if (edzoId) {
         fetchSajatKommentek(edzoId);
     }
@@ -41,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     function renderSajatKommentek() {
         listaKontener.innerHTML = "";
         const lathatoKommentek = [];
-        
+
         for (let i = 0; i < aktualisKommentek.length; i++) {
             const komment = aktualisKommentek[i];
             if (komment.szoveg && komment.szoveg.trim() !== "") {
@@ -109,10 +112,28 @@ async function loadCalendar() {
         ...h,
         weekday: Number(h.weekday)
     }));
+    console.log(calendarData)
 
     generalWeek();
 }
+function getActiveHetiForDate(dateObj) {
+    const datum = formatDateISO(dateObj);
 
+    // csak azok amik már érvényesek
+    const valid = calendarData.heti.filter(h =>
+        h.mettol_ervenyes <= datum
+    );
+
+    if (valid.length === 0) return [];
+
+    // legfrissebb mettol kiválasztása
+    const maxMettol = valid.reduce((max, h) =>
+        h.mettol_ervenyes > max ? h.mettol_ervenyes : max
+        , valid[0].mettol_ervenyes);
+
+    // csak az adott verzió
+    return valid.filter(h => h.mettol_ervenyes === maxMettol);
+}
 /* =========================
    SEGÉDFÜGGVÉNYEK
 ========================= */
@@ -128,7 +149,10 @@ function isInRange(time, start, end) {
 }
 
 function formatDateISO(d) {
-    return d.toISOString().split("T")[0];
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
 }
 
 function formatDate(d) {
@@ -142,10 +166,18 @@ function getWeekStart(date) {
     return new Date(d.setDate(diff));
 }
 
+function parseDateSafe(d) {
+    const [y, m, day] = d.split("-");
+    return new Date(y, m - 1, day);
+}
+
 function isValidFrom(dateObj, mettol) {
     if (!mettol) return true;
-    const from = new Date(mettol);
-    return dateObj >= from;
+
+    const from = parseDateSafe(mettol);
+    const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+
+    return d >= from;
 }
 
 /* =========================
@@ -171,10 +203,11 @@ function getCellStatus(dateObj, ido, weekdayIndex) {
     );
 
     // 3. heti
-    const heti = calendarData.heti.find(h =>
+    const activeHeti = getActiveHetiForDate(dateObj);
+
+    const heti = activeHeti.find(h =>
         h.weekday === weekdayIndex &&
-        isInRange(ido, h.start, h.end) &&
-        isValidFrom(dateObj, h.mettol_ervenyes)
+        isInRange(ido, h.start, h.end)
     );
 
     if (foglalt) aktStatusz = "foglalt";
@@ -182,6 +215,30 @@ function getCellStatus(dateObj, ido, weekdayIndex) {
     else if (heti) aktStatusz = "elerheto";
 
     return aktStatusz;
+}
+
+/* =========================
+   TOOLTIP
+========================= */
+
+function showTooltip(text, x, y) {
+    let tip = document.getElementById("slot-tooltip");
+
+    if (!tip) {
+        tip = document.createElement("div");
+        tip.id = "slot-tooltip";
+        document.body.appendChild(tip);
+    }
+
+    tip.textContent = text;
+    tip.classList.add("visible");
+    tip.style.left = `${x + 12}px`;
+    tip.style.top = `${y + 12}px`;
+}
+
+function hideTooltip() {
+    const tip = document.getElementById("slot-tooltip");
+    if (tip) tip.classList.remove("visible");
 }
 
 /* =========================
@@ -231,32 +288,59 @@ function generalWeek() {
     }
 
     for (let perc = 0; perc < 24 * 60; perc += 30) {
-
         let ora = Math.floor(perc / 60);
         let p = perc % 60;
         let ido = `${String(ora).padStart(2, "0")}:${String(p).padStart(2, "0")}`;
 
         for (let i = 0; i < 7; i++) {
-
             let d = new Date(weekStart);
             d.setDate(weekStart.getDate() + i);
+
+            const datum = formatDateISO(d);
 
             let status = getCellStatus(d, ido, i);
 
             let cell = document.createElement("div");
             cell.classList.add("cell");
-
-            if (status === "foglalt") cell.classList.add("foglalt");
-            else if (status === "kulonleges") cell.classList.add("kulonleges");
-            else if (status === "elerheto") cell.classList.add("elerheto");
-
             cell.innerText = ido;
+
+            const foglalas = calendarData.foglalas.find(f =>
+                f.statusz === "aktiv" &&
+                f.datum === datum &&
+                f.ido === ido
+            );
+
+            if (status === "foglalt") {
+                cell.classList.add("foglalt");
+
+                if (foglalas) {
+                    cell.dataset.nev = foglalas.felhasznalo_nev || "Ismeretlen";
+
+                    cell.addEventListener("mouseenter", (e) => {
+                        showTooltip(cell.dataset.nev, e.pageX, e.pageY);
+                    });
+
+                    cell.addEventListener("mousemove", (e) => {
+                        showTooltip(cell.dataset.nev, e.pageX, e.pageY);
+                    });
+
+                    cell.addEventListener("mouseleave", hideTooltip);
+                }
+
+            } else if (status === "kulonleges") {
+                cell.classList.add("kulonleges");
+            } else if (status === "elerheto") {
+                cell.classList.add("elerheto");
+            }
 
             grid.appendChild(cell);
         }
     }
 
-    container.appendChild(grid);
+    const scroll = document.createElement("div");
+    scroll.classList.add("week-scroll");
+    scroll.appendChild(grid);
+    container.appendChild(scroll);
 
     prev.onclick = () => {
         currentDate.setDate(currentDate.getDate() - 7);
