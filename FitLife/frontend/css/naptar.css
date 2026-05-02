@@ -1,0 +1,350 @@
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+/* =========================
+   MODAL BOX
+========================= */
+
+.modal-content {
+    width: 80%;
+    max-width: 1000px;
+
+    height: 80%;
+    max-height: 700px;
+
+    background: #111;
+    border-radius: 12px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+/* =========================
+   MODAL HEADER
+========================= */
+
+.modal-header {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 12px;
+    border-bottom: 1px solid #333;
+}
+
+/* cím */
+.modal-header h2 {
+    margin: 0;
+    color: #28a745;
+    text-align: center;
+}
+
+/* X gomb */
+#closeBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 6px;
+
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+#closeBtn:hover {
+    background: #333;
+    color: white;
+    border-color: #28a745;
+}
+
+/* =========================
+   MODAL NAPTÁR SCROLL
+========================= */
+
+#modal-naptar {
+    flex: 1;
+    overflow: auto;
+}
+
+/* SCROLLBAR */
+#modal-naptar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+#modal-naptar::-webkit-scrollbar-track {
+    background: #111;
+}
+
+#modal-naptar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #28a745, #1f7d38);
+    border-radius: 10px;
+}
+
+/* Firefox */
+#modal-naptar {
+    scrollbar-width: thin;
+    scrollbar-color: #28a745 #111;
+}
+
+/* =========================
+   KERET (ALAP NAPTÁR)
+========================= */
+
+.naptarkeret {
+    background-color: #161616;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 40px auto;
+    width: 95%;
+    max-width: 1200px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* =========================
+   HEADER ( < > )
+========================= */
+
+.naptarFejlec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff !important;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.naptarFejlec button {
+    width: 40px;
+}
+
+/* =========================
+   SCROLL (FŐ OLDAL)
+========================= */
+
+.week-scroll {
+    max-height: 500px;
+    overflow: auto;
+    width: 100%;
+}
+
+/* SCROLLBAR */
+.week-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.week-scroll::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.week-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #28a745, #1f7d38);
+    border-radius: 10px;
+}
+
+/* Firefox */
+.week-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #28a745 #111;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(140px, 1fr));
+    min-width: 1000px;
+}
+
+/* =========================
+   CELLÁK
+========================= */
+
+.cell {
+    height: 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #333;
+    background: #222;
+    color: #ddd;
+
+    font-size: 13px;
+    transition: 0.2s;
+
+    min-width: 0;
+}
+
+.cell:hover {
+    background-color: #2e2e2e;
+}
+
+/* =========================
+   FEJLÉC CELLÁK
+========================= */
+
+.head {
+    position: sticky;
+    top: 0;
+    background: #111;
+    z-index: 10;
+
+    color: #28a745;
+    font-weight: bold;
+    height: 60px;
+
+    border-bottom: 2px solid #28a745;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+/* =========================
+   TOOLTIPS
+========================= */
+#slot-tooltip {
+    position: absolute;
+    z-index: 2000;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #111;
+    color: #fff;
+    border: 1px solid #28a745;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
+}
+
+#slot-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* =========================
+   ÁLLAPOTOK
+========================= */
+
+.elerheto {
+    background: linear-gradient(135deg, #007bff, #00bfff);
+    color: white;
+}
+
+.kulonleges {
+    background-color: #cc0000;
+    color: white;
+}
+
+.foglaltSajat {
+    background-color: rgb(7, 235, 45);
+    color: black;
+}
+
+.elerhetetlen {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* =========================
+   HIDDEN
+========================= */
+
+.hidden {
+    display: none;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    #modal-naptar {
+        overflow-x: auto;
+    }
+
+    .week-grid {
+        min-width: 700px;
+    }
+
+    .cell {
+        font-size: 11px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .cell {
+        font-size: 10px;
+        height: 24px;
+    }
+
+    .head {
+        height: 45px;
+        font-size: 11px;
+    }
+}

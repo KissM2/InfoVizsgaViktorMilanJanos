@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../css/map.css">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/naptar.css">
     <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="../js/edzo.js"></script>
     <script type="module" src="../js/edzoMap.js"></script>
@@ -24,9 +25,27 @@
         <div id="map"></div>
     </div>
 
-    <div id="calendar-wrapper">
+    <div class="naptarkeret">
+        <h1 class="text-success text-center">Saját foglalásaim</h1>
         <div id="naptar"></div>
-        <div id="idopontok"></div>
+        <!-- Foglalás gomb -->
+        <button id="foglalasBtn">Foglalás</button>
+
+        <!-- Modal -->
+        <div id="modal" class="modal hidden">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2>Időpont foglalás</h2>
+                    <button id="closeBtn">✕</button>
+                </div>
+
+                <div id="modal-naptar"></div>
+
+                <button id="saveBtn">Mentés</button>
+
+            </div>
+        </div>
     </div>
 
     <div class="komment-szekcio">
@@ -38,7 +57,8 @@
         <div id="komment-urlap-tarolo" class="komment-urlap-tarolo rejtett">
             <h4>Új értékelés</h4>
             <div class="urlap-sor">
-                <textarea id="uj-komment-szoveg" rows="4" placeholder="Oszd meg a tapasztalataidat az edzővel kapcsolatban..."></textarea>
+                <textarea id="uj-komment-szoveg" rows="4"
+                    placeholder="Oszd meg a tapasztalataidat az edzővel kapcsolatban..."></textarea>
             </div>
             <div class="urlap-sor ertekeles-sor">
                 <label for="uj-komment-ertekeles">Értékelés (1-5):</label>
