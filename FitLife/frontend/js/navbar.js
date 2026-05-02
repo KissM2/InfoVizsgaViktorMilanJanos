@@ -166,14 +166,14 @@ export async function navbarGeneralas(linkek) {
         kijelentkezesTeloElem.classList.replace("d-none", "d-sm-none");
 
         if(bejelentkezve.role == "felhasznalo"){    
-            profilTeloLink.href = "/userProfil?id=" + bejelentkezve.id;
-            profilLink.href = "/userProfil?id=" + bejelentkezve.id;
+            profilTeloLink.href = "/userProfil";
+            profilLink.href = "/userProfil";
         }else{
             if(bejelentkezve.role == "edzo"){
                 //még nincs profil oldala a felhasználónak és az edzőnek
 
-                //profilTeloLink.href = "/edzo_profil?id=" + bejelentkezve.id;
-                //profilLink.href = "/edzo_profil?id=" + bejelentkezve.id;
+                profilTeloLink.href = "/traineradat";
+                profilLink.href = "/traineradat";
             }
         }
     }
