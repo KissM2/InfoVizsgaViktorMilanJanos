@@ -197,7 +197,8 @@ async function selectAllTrainersByDist(lng, lat) {
             edzo.idezet, 
             ROUND(ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?))) AS tavolsag 
         FROM edzo 
-        INNER JOIN login ON edzo.edzo_id = login.id 
+        INNER JOIN login ON edzo.edzo_id = login.id
+        WHERE  edzo.statusz LIKE "elfogadva"
         ORDER BY tavolsag ASC`;
 
     const [rows] = await pool.execute(query, [lng, lat]);
