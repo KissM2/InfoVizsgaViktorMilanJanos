@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    
+
 
 
     <h1 class="text-center text-success mt-120px">Profil Szerkeztése</h1>
@@ -51,8 +51,9 @@
                         <label class="label-color">Nem</label>
                         <input type="text" id="nem" name="nem" class="form-control dark-input">
                     </div>
-                    <div class="col-sm-12 col-md-6 d-flex align-items-end margin-auto justify-content-center">
-                        <a href="../html/jelszo_modositas.html" class="btn btn-success mt-3">Jelszó megváltoztatása</a>
+                    <div class="col-sm-12 col-md-6 d-flex flex-wrap align-items-end justify-content-center gap-3 mt-3">
+                        <a href="../html/jelszo_modositas.html" class="btn btn-success">Jelszó megváltoztatása</a>
+                        <button type="button" id="fiok_torlese_btn" class="btn btn-danger">Fiók törlése</button>
                     </div>
                 </form>
                 <button id="mentes_profil_adat" class="btn btn-success mt-4">Mentés</button>
@@ -65,27 +66,32 @@
                 <form id="szemelyi_adat_form" class="row g-3">
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Testsúly(kg)</label>
-                        <input type="number" id="testsuly" name="testsuly" class="form-control dark-input" min="40" max="200">
+                        <input type="number" id="testsuly" name="testsuly" class="form-control dark-input" min="40"
+                            max="200">
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Cél testsúly(kg)</label>
-                        <input type="number" id="cel_testsuly" name="cel_testsuly" class="form-control dark-input" min="50" max="120">
+                        <input type="number" id="cel_testsuly" name="cel_testsuly" class="form-control dark-input"
+                            min="50" max="120">
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Magasság(cm)</label>
-                        <input type="number" id="magassag" name="magassag" class="form-control dark-input" min="100" max="230">
+                        <input type="number" id="magassag" name="magassag" class="form-control dark-input" min="100"
+                            max="230">
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Edzésre fordított idő naponta(min)</label>
-                        <input type="number" id="edzesre_forditott_ido" name="edzesre_forditott_ido" class="form-control dark-input" min="10" max="480">
-                    </div>                
+                        <input type="number" id="edzesre_forditott_ido" name="edzesre_forditott_ido"
+                            class="form-control dark-input" min="10" max="480">
+                    </div>
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Cél alak</label>
                         <select id="cel_alak" name="cel_alak" class="form-control dark-input"></select>
                     </div>
                     <div class="col-sm-12 col-md-6">
                         <label class="label-color">Edzésen kívüli mozgás</label>
-                        <select id="edzesen_kivuli_mozgas" name="edzesen_kivuli_mozgas" class="form-control dark-input"></select>
+                        <select id="edzesen_kivuli_mozgas" name="edzesen_kivuli_mozgas"
+                            class="form-control dark-input"></select>
                     </div>
                 </form>
                 <button id="mentes_szemelyi_adat" class="btn btn-success mt-3">Mentés</button>
@@ -99,7 +105,7 @@
                 <button id="mentes_allergiak" class="btn btn-success mt-3">Mentés</button>
             </div>
         </div>
-        
+
         <div class="card dark-card mb-4">
             <h3 class="secondary-title card-header">Nem preferált ételek</h3>
             <div class="mb-3 d-flex flex-wrap card-body">
@@ -108,7 +114,7 @@
             </div>
         </div>
     </div>
-    
+
 
 </body>
 

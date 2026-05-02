@@ -16,8 +16,26 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     const formData = new FormData(e.target);
     let result = await postKeres('/api/login', formData);
-    if(result.message = "Sikeres bejelentkezés."){
-        window.location.href = ".."
+    if(result && result.message == "Sikeres bejelentkezés."){
+        switch(result.role){
+            case "admin": window.location.href = "/../html/adminPage.html"; break;
+            case "edzo": 
+                if(result.elfogadva){
+                    if(result.surveyDone){
+                        window.location.href = "/../html/edzofo.html";
+                    }else{
+                        window.location.href = "/../html/edzoSurvey.html";
+                    }
+                }else{
+                    window.location.href = "/../html/jelentkezett.html";
+                } break;
+            case "felhasznalo": 
+                if(!result.surveyDone){
+                    window.location.href = "/../html/userSurvey.html";
+                }else{
+                 window.location.href = "/..";
+                } break;
+            default: console.error("Nem megfelelő szerep");
+        }
     };
-    
 });
