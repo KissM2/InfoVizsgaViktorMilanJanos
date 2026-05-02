@@ -836,4 +836,10 @@ INSERT INTO gyakorlat_izomcsoport (gyakorlat_id, izom_id) VALUES
 (95, 6), (96, 6), (97, 6), (98, 6), (99, 6), (100, 6);
 -- 16 felhasznalo_edzesi_napok
 INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES
-(1,1),(1,3),(1,5),(2,2),(2,4),(2,6);
+(1,1),(1,3),(1,5),
+(2,2),(2,4),(2,6),
+(3,1),(3,4),
+(4,2),
+(5,2),(5,4),(5,6),
+(6,2),(6,4),(6,6),
+(7,2),(7,4),(7,6);

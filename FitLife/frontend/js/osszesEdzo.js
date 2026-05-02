@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const rendezesBtn = document.getElementById("rendezes-abc-btn");
     const nezetValtoBtn = document.getElementById("nezet-valto-btn");
     const rendezesTavolsagBtn = document.getElementById("rendezes-tavolsag-btn");
+    const keresoBtn = document.getElementById('edzoKereso');
 
     const adatok = await getKeres('/api/osszesEdzo');
     if (adatok && adatok.results) {
@@ -27,6 +28,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     footerGeneralas();
     navbarGeneralas(menuLinkek);
+
+    keresoBtn.addEventListener('click', async function(){
+        let input = document.getElementById('edzoNevInput')
+        const adatok = await getKeres('/api/osszesEdzoByName?nev=' + input.value);
+        input.value = "";
+        if (adatok && adatok.results && adatok.results.length == 0) {
+            alert("Nincs edző a megadott névvel!")
+        }else if(adatok && adatok.results){
+            eredetiEdzoLista = adatok.results;
+            renderGrid(gridContainer, eredetiEdzoLista);
+        }
+        
+    })
+
     rendezesBtn.addEventListener("click", () => {
         if (novekvo) {
             novekvo = false
