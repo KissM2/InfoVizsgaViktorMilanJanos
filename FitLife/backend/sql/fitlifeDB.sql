@@ -140,6 +140,7 @@ CREATE TABLE IF NOT EXISTS allergiat_okoz (
 -- ETREND
 CREATE TABLE IF NOT EXISTS etrend (
     etrend_id INT AUTO_INCREMENT PRIMARY KEY,
+    csoport_id INT NOT NULL,
     weekday VARCHAR(20) NOT NULL,
     etkezes_sorszama INT NOT NULL,
     felhasznalo_id INT NOT NULL,
