@@ -1220,4 +1220,6 @@ module.exports = {
     deleteInactiveElsewhereAtSameTime,
     updateCalorieGoal,
     selectReceptAllergenekById,
+    insertEdzesiNap,
+    deleteEdzesiNap,
 };
