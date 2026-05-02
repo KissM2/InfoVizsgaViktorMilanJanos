@@ -311,7 +311,7 @@ function generalWeek() {
             );
 
             if (status === "foglalt") {
-                cell.classList.add("foglalt");
+                cell.classList.add("foglaltSajat");
 
                 if (foglalas) {
                     cell.dataset.nev = foglalas.felhasznalo_nev || "Ismeretlen";
