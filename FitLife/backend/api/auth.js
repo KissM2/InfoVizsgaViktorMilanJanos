@@ -211,7 +211,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
 
         if (login.length === 0) {    
             return response.status(401).json({
-                message: 'Hibás email cím.'
+                message: 'Hibás belépési adatok, vagy a fiók megszűnt.'
             });
         }
 
@@ -228,9 +228,32 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
             email: email,
             role : login[0].role
         }
+        
+        let elfogadva = true;
+        let surveyDone = true;
+        let result = null;
+        
+        if(login[0].role == "edzo"){
+            const accepted = await database.selectJelentkezoEById(login[0].id);
+            if(accepted.statusz == "elfogadva" ){
+                result = await database.getEdzoSurveyDone(login[0].id);
+            }else{
+                elfogadva = false;
+            }
+        }else if(login[0].role == "felhasznalo"){
+            result = await database.getUserSurveyDone(login[0].id);
+        }
+
+        if(result){
+            surveyDone = result[0].counter > 0;
+        }
+
 
         return response.status(200).json({
-            message: 'Sikeres bejelentkezés.'
+            message: 'Sikeres bejelentkezés.',
+            role: login[0].role,
+            elfogadva: elfogadva,
+            surveyDone: surveyDone,
         });
 
     } catch (error) {
@@ -303,7 +326,7 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
         });
     }
 });
-router.post('/updateJelszo', validator.validatePassword, async (request, response) => {
+router.post('/updateJelszo', requireLogin.loginCheck, validator.validatePassword, async (request, response) => {
     try {
         const userId = request.session.user.id; 
         const { jelszo } = request.body;
@@ -388,6 +411,42 @@ router.get('/getAllAuthData', async (request, response) =>{
             message: "Bejelentkezési adatok lekérése sikertelen"
         });
     }
+});
+
+router.delete('/deleteUser', requireLogin.loginCheck, async (request, response) => {
+    try {
+        const felhasznalo_id = request.session.user.id; 
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+        request.session.destroy((err) => {
+            if (err) {
+                console.error("Hiba a session törlésekor:", err);
+            }
+            response.clearCookie('connect.sid');
+            response.status(200).json({
+                message: "Felhasználó törlése és kijelentkeztetése sikeres."
+            });
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: "Szerverhiba a felhasználó törlése során."
+        });
+    }
+});
+
+router.post('/kijelentkezes', (request, response) => {
+    request.session.destroy((err) => {
+        if (err) {
+            return response.status(500).json({ message: "Hiba a kijelentkezés során." });
+        }
+        response.clearCookie('connect.sid');
+        response.status(200).json({ message: "Sikeres kijelentkezés." });
+    });
 });
 
 router.get('/getErintettekForAdmin', async (request, response) =>{
