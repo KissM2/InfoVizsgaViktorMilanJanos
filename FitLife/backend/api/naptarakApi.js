@@ -22,8 +22,8 @@ function getMondayInFourWeeks() {
 function isKAAllowed(datum) {
     const d = new Date(datum);
     const limit = new Date(getMondayInFourWeeks());
-    d.setHours(0,0,0,0);
-    limit.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
+    limit.setHours(0, 0, 0, 0);
     return d >= limit;
 }
 
@@ -32,7 +32,7 @@ function isWithinAllowedRange(datum) {
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0,0,0,0);
+    tomorrow.setHours(0, 0, 0, 0);
 
     const limit = new Date(getMondayInFourWeeks());
 
@@ -203,21 +203,15 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
    BOOKING
 ========================= */
 
-router.post("/book", async (req, res) => {
+router.post("/book", loginCheck.loginCheck, async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const edzoId = req.body.id;
+        const edzoId = req.body.edzo_id; // 🔥 frontendből jön
 
         const { activate = {}, deactivate = {} } = req.body;
 
-        // 🔥 ne lehessen máshol aktív foglalás
-        if (await db.hasActiveBookingElsewhere(userId, edzoId)) {
-            return res.status(400).json({
-                message: "Van aktív foglalásod másik edzőnél"
-            });
-        }
-
-        await db.deleteInactiveElsewhere(userId, edzoId);
+        // 🔥 saját foglalások egyszer lekérve (performance)
+        const myBookings = await db.getMyBookings(userId);
 
         /* =========================
            ➕ AKTIVÁLÁS
@@ -228,17 +222,33 @@ router.post("/book", async (req, res) => {
 
             const weekday = getWeekday(datum);
 
-            for (const ido of activate[datum]) {
+            for (const idoRaw of activate[datum]) {
 
+                const ido = normalizeTime(idoRaw);
+                // 1️⃣ HB check
                 const inHB = await db.isInHB(edzoId, datum, weekday, ido);
                 if (!inHB) continue;
 
+                // 2️⃣ KA check
                 if (await db.isBlockedByKA(edzoId, datum, ido)) continue;
 
+                // 3️⃣ 🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
+                const conflict = myBookings.some(f =>
+                    f.statusz === "aktiv" &&
+                    f.datum === datum &&
+                    f.ido === ido &&
+                    f.edzo_id !== edzoId
+                );
+
+                if (conflict) continue;
+
+                // 4️⃣ más user foglalta
                 if (await db.isSlotTakenByOther(datum, ido, userId, edzoId)) continue;
 
-                await db.deleteInactiveOthers(datum, ido, userId, edzoId);
+                // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
+                await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
 
+                // 6️⃣ insert / update
                 const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 
                 if (!existing) {
@@ -256,7 +266,9 @@ router.post("/book", async (req, res) => {
 
             if (!isWithinAllowedRange(datum)) continue;
 
-            for (const ido of deactivate[datum]) {
+            for (const idoRaw of deactivate[datum]) {
+
+                const ido = normalizeTime(idoRaw);
 
                 const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 

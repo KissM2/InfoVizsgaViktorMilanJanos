@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt'); //?npm install bcrypt
 const validator = require('../middleware/Validalas.js');
 const checkIfEmailUsed = require('../middleware/checkIfEmailUsed.js');
 const requireLogin = require('../middleware/requireLogin.js')
+const crypto = require('crypto');// Beépített Hosszú, kitalálhatatlan azonosító (Token) gyártásá
+const nodemailer = require('nodemailer');
 
 //!Multer
 const multer = require('multer'); //?npm install multer
@@ -200,7 +202,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
 
         if (login.length === 0) {    
             return response.status(401).json({
-                message: 'Hibás email cím.'
+                message: 'Hibás belépési adatok, vagy a fiók megszűnt.'
             });
         }
 
@@ -217,9 +219,32 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
             email: email,
             role : login[0].role
         }
+        
+        let elfogadva = true;
+        let surveyDone = true;
+        let result = null;
+        
+        if(login[0].role == "edzo"){
+            const accepted = await database.selectJelentkezoEById(login[0].id);
+            if(accepted.statusz == "elfogadva" ){
+                result = await database.getEdzoSurveyDone(login[0].id);
+            }else{
+                elfogadva = false;
+            }
+        }else if(login[0].role == "felhasznalo"){
+            result = await database.getUserSurveyDone(login[0].id);
+        }
+
+        if(result){
+            surveyDone = result[0].counter > 0;
+        }
+
 
         return response.status(200).json({
-            message: 'Sikeres bejelentkezés.'
+            message: 'Sikeres bejelentkezés.',
+            role: login[0].role,
+            elfogadva: elfogadva,
+            surveyDone: surveyDone,
         });
 
     } catch (error) {
@@ -292,7 +317,7 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
         });
     }
 });
-router.post('/updateJelszo', validator.validatePassword, async (request, response) => {
+router.post('/updateJelszo', requireLogin.loginCheck, validator.validatePassword, async (request, response) => {
     try {
         const userId = request.session.user.id; 
         const { jelszo } = request.body;
@@ -307,6 +332,73 @@ router.post('/updateJelszo', validator.validatePassword, async (request, respons
     }
 });
 
+// Email küldő beállítása
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'pelda@gmail.com',
+        pass: 'pelda'
+    }
+});
+
+router.post('/forgot-password', async (request, response) => {
+    try {
+        const { email } = request.body;
+        const user = await database.login(email);
+
+        if (!user || user.length === 0) {
+            return response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+        }
+
+        //Token generalas
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = new Date(Date.now() + 3600000); // Jelenlegi idő + 1 óra
+        await database.saveResetToken(email, token, expires);
+
+        // Email küldése
+        const resetLink = `http://127.0.0.1:3000/html/jelszo_modositas.html?token=${token}`;
+        
+        await transporter.sendMail({
+            from: '"FitLife" <noreply@fitlife.hu>',
+            to: email,
+            subject: 'FitLife - Jelszó visszaállítása',
+            html: `<h3>Szia!</h3>
+                   <p>Kattints az alábbi linkre a jelszavad visszaállításához. Ez a link 1 órán belül lejár.</p>
+                   <a href="${resetLink}">${resetLink}</a>`
+        });
+
+        response.status(200).json({ message: "Ha létezik a fiók, elküldtük az emailt." });
+
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Szerverhiba történt." });
+    }
+});
+router.post('/reset-password', upload.none(), async (request, response) => {
+    try {
+        const { token, jelszo } = request.body;
+
+        if (!token || !jelszo) {
+            return response.status(400).json({ message: "Hiányzó adatok!" });
+        }
+        const user = await database.getUserByToken(token);
+
+        if (!user) {
+            return response.status(400).json({ message: "Érvénytelen vagy lejárt link!" });
+        }
+        const hash = await bcrypt.hash(jelszo, 10);
+        await database.updateJelszo(hash, user.id);
+
+        //linket ne lehessen ujra hasznalni
+        await database.clearResetToken(user.id);
+
+        response.status(200).json({ message: "Sikeres jelszócsere! Most már bejelentkezhetsz." });
+
+    } catch (error) {
+        console.error("Hiba a jelszó visszaállításakor:", error);
+        response.status(500).json({ message: "Szerverhiba történt." });
+    }
+});
 router.get('/getAllAuthData', async (request, response) =>{
     try {
         const authData = await database.selectAllLoginData();
@@ -320,6 +412,42 @@ router.get('/getAllAuthData', async (request, response) =>{
             message: "Bejelentkezési adatok lekérése sikertelen"
         });
     }
+});
+
+router.delete('/deleteUser', requireLogin.loginCheck, async (request, response) => {
+    try {
+        const felhasznalo_id = request.session.user.id; 
+        const result = await database.deleteFelhasznalo(felhasznalo_id);
+
+        if(result.affectedRows === 0){
+            return response.status(404).json({
+                message: "Hiba történt a felhasználó törlésekor."
+            });
+        }
+        request.session.destroy((err) => {
+            if (err) {
+                console.error("Hiba a session törlésekor:", err);
+            }
+            response.clearCookie('connect.sid');
+            response.status(200).json({
+                message: "Felhasználó törlése és kijelentkeztetése sikeres."
+            });
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: "Szerverhiba a felhasználó törlése során."
+        });
+    }
+});
+
+router.post('/kijelentkezes', (request, response) => {
+    request.session.destroy((err) => {
+        if (err) {
+            return response.status(500).json({ message: "Hiba a kijelentkezés során." });
+        }
+        response.clearCookie('connect.sid');
+        response.status(200).json({ message: "Sikeres kijelentkezés." });
+    });
 });
 
 router.get('/getErintettekForAdmin', async (request, response) =>{

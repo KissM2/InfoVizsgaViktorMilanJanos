@@ -1,4 +1,5 @@
 //!Module-ok importálása
+require('dotenv').config();
 const express = require('express'); //?npm install express
 const session = require('express-session'); //?npm install express-session
 const path = require('path');
@@ -7,8 +8,8 @@ const path = require('path');
 const app = express();
 const router = express.Router();
 
-const ip = '127.0.0.1';
-const port = 3000;
+const ip = process.env.HOST || '127.0.0.1';
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 app.use(express.json()); //?Middleware JSON
 app.set('trust proxy', 1); //?Middleware Proxy
@@ -16,7 +17,7 @@ app.set('trust proxy', 1); //?Middleware Proxy
 //!Session beállítása:
 app.use(
     session({
-        secret: 'vR9$kP7!xL3#qT8^mZ2@fH5&bD1*eW4!tQ6^sN8#rJ5$yL2@pX7&dK9*mV0!gB3^uS1#jF8$qW6&pL4@hM2*zY9', //?Ezt generálni kell a későbbiekben
+        secret: process.env.SESSION_SECRET || 'fallback_session_secret',
         resave: false,
         saveUninitialized: true
     })
