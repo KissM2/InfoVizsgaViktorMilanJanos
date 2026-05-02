@@ -882,7 +882,7 @@ async function selectAllIzomcsoport() {
     return rows;
 }
 //tranzakció(felhasznalo + allergias_ra)
-async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak) {
+async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak, edzesiNapok) {
     const conn = await pool.getConnection();
     try {
         // Tranzakció indítása
@@ -914,6 +914,17 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
             const [result3] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
                 [id, preferenciak[i].allergen_id]
+            );
+            if (result3.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+
+        //edzesi napok hozzá adása
+        for (let i = 0; i < edzesiNapok.length; i++) {   
+            const [result3] = await conn.execute(
+                "INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES (?,?)",
+                [id, edzesiNapok[i]]
             );
             if (result3.affectedRows !== 1) {
                 throw new Error("Sikertelen jóváírás");

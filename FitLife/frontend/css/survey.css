@@ -12,6 +12,9 @@
 .survey-item:hover{
     border: #00cc00 1px solid !important;
 }
+.survey-item-sm{
+    max-width: 150px;
+}
 
 .secondary-title{
     margin-bottom: 25px;
