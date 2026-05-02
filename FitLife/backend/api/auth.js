@@ -9,6 +9,15 @@ const requireLogin = require('../middleware/requireLogin.js')
 const crypto = require('crypto');// Beépített Hosszú, kitalálhatatlan azonosító (Token) gyártásá
 const nodemailer = require('nodemailer');
 
+// Email küldő beállítása
+const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+        user: 'pelda@gmail.com',
+        pass: 'pelda'
+    }
+});
+
 //!Multer
 const multer = require('multer'); //?npm install multer
 const path = require('path');
@@ -331,16 +340,6 @@ router.post('/updateJelszo', requireLogin.loginCheck, validator.validatePassword
         response.status(500).json({ message: "Szerverhiba!" });
     }
 });
-
-// Email küldő beállítása
-const transporter = nodemailer.createTransport({
-    service: 'gmail', 
-    auth: {
-        user: 'pelda@gmail.com',
-        pass: 'pelda'
-    }
-});
-
 router.post('/forgot-password', async (request, response) => {
     try {
         const { email } = request.body;
@@ -651,9 +650,21 @@ router.get('/jelentkezok/:userId/cover-letter', requireLogin.adminCheck, async (
 router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.query.id
+        const indok = request.query.indok || 'Nem felelt meg az elvárásoknak.';;
+        const userData= await database.selectLoginDataById(id);
         const result = await database.deleteJelentkezes(id);
-        await fs.unlink('./uploads/coverLetter' + id + '.pdf');
-        await fs.unlink('./uploads/cv' + id + '.pdf');
+
+        await fs.unlink('./uploads/coverLetter' + id + '.pdf').catch(e => console.log('Fájl nem található'));
+        await fs.unlink('./uploads/cv' + id + '.pdf').catch(e => console.log('Fájl nem található'));
+
+        if(userData.length > 0) {
+            await transporter.sendMail({
+                from: '"FitLife Admin" <te.fitlife.email@gmail.com>',
+                to: userData[0].email,
+                subject: 'FitLife - Edzői jelentkezés elutasítva',
+                html: `<h2>Kedves ${userData[0].felh_nev}!</h2><p>Sajnálattal értesítünk, hogy jelentkezésedet elutasítottuk.</p><p><b>Indoklás:</b> ${indok}</p>`
+            });
+        }
         response.status(200).json({
             message: "Edző jelentkezése sikeresen elutasítva"
         })
@@ -668,7 +679,18 @@ router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, respo
 router.post('/postJelentkezoelfogadas', requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.body.id
+        const userData = await database.selectLoginDataById(id);
         const result = await database.updateStatuszElfogadva(id);
+
+        if(userData.length > 0) {
+            await transporter.sendMail({
+                from: '"FitLife Admin" <te.fitlife.email@gmail.com>',
+                to: userData[0].email,
+                subject: '🎉 Gratulálunk! Elfogadtuk az edzői jelentkezésed!',
+                html: `<h2>Kedves ${userData[0].felh_nev}!</h2><p>Örömmel értesítünk, hogy jelentkezésedet elfogadtuk! Mostantól beléphetsz edzőként a rendszerbe.</p>`
+            });
+        }
+
         response.status(200).json({
             message: "Edző jelentkezése sikeresen elfogadva"
         })

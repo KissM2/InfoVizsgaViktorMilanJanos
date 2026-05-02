@@ -96,7 +96,7 @@ async function getUserPhysicalData(userId) {
 }
 
 async function selectAllLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login where login.role NOT LIKE "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN edzo ON edzo.edzo_id = login.id WHERE login.role NOT LIKE "admin" AND login.id NOT IN(SELECT edzo_id FROM edzo WHERE statusz = "jelentkezett");';
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -235,8 +235,8 @@ async function selectTrainersByDist(lng, lat) {
             edzo.idezet
         FROM edzo
         INNER JOIN login ON edzo.edzo_id = login.id
-        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
-
+        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 26`;
+    
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }
@@ -882,7 +882,7 @@ async function selectAllIzomcsoport() {
     return rows;
 }
 //tranzakció(felhasznalo + allergias_ra)
-async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak) {
+async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id, cel_testsuly, EKM_id, id, allergiak, preferenciak, edzesiNapok) {
     const conn = await pool.getConnection();
     try {
         // Tranzakció indítása
@@ -914,6 +914,17 @@ async function insertUser(testsuly, magassag, edzesre_forditott_ido, cel_alak_id
             const [result3] = await conn.execute(
                 "INSERT INTO allergias_ra(felhasznalo_id, allergen_id) VALUES (?,?)",
                 [id, preferenciak[i].allergen_id]
+            );
+            if (result3.affectedRows !== 1) {
+                throw new Error("Sikertelen jóváírás");
+            }
+        }
+
+        //edzesi napok hozzá adása
+        for (let i = 0; i < edzesiNapok.length; i++) {   
+            const [result3] = await conn.execute(
+                "INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES (?,?)",
+                [id, edzesiNapok[i]]
             );
             if (result3.affectedRows !== 1) {
                 throw new Error("Sikertelen jóváírás");

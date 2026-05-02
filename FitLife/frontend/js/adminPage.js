@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         switch (event.target.dataset.action) {
             case 'deleteUser': {
                 const response = await deleteKeres('/api/deleteUser?id=' + event.target.value);
-                if(await response.message == 'Felhasználó törlése sikeres.'){
+                if(response.message == 'Felhasználó törlése sikeres.'){
                     const felhasznalok = await getKeres('/api/getAllAuthData');
                     userTablaFeltoltes(felhasznalok.result);
                 }
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async function(){
             }
             case 'userVisszaAllitas': {
                 const response = await postApi('/api/restoreUser', {id: event.target.value});
-                if(await response.message == 'Felhasználó visszaállítása sikeres.'){
+                if(response.message == 'Felhasználó visszaállítása sikeres.'){
                     const felhasznalok = await getKeres('/api/getAllAuthData');
                     userTablaFeltoltes(felhasznalok.result);
                 }
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function(){
             }
             case 'deleteAdmin': {
                 const response = await deleteKeres('/api/deleteUser?id=' + event.target.value);
-                if(await response.message == 'Felhasználó törlése sikeres.'){
+                if(response.message == 'Felhasználó törlése sikeres.'){
                     const adminok = await getKeres('/api/getAllAdminAuthData');
                     adminTablaFeltoltes(adminok.result);
                 }
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async function(){
             }
             case 'adminVisszaAllitas': {
                 const response = await postApi('/api/restoreUser', {id: event.target.value});
-                if(await response.message == 'Felhasználó visszaállítása sikeres.'){
+                if(response.message == 'Felhasználó visszaállítása sikeres.'){
                     const adminok = await getKeres('/api/getAllAdminAuthData');
                     adminTablaFeltoltes(adminok.result);
                 }
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async function(){
             }
             case 'deleteGyakorlat': {
                 const response = await deleteKeres('/api/deleteGyakorlat?id=' + event.target.value);
-                if(await response.message == 'Gyakorlat sikeresen törölve.'){
+                if(response.message == 'Gyakorlat sikeresen törölve.'){
                     const gyakorlatok = await getKeres('/api/gyakorlatok');
                     gyakorlatTablaFeltoltes(gyakorlatok);
                 }
@@ -117,22 +117,25 @@ document.addEventListener("DOMContentLoaded", async function(){
             }
             case 'deleteRecept': {
                 const response = await deleteKeres('/api/deleteRecept?id=' + event.target.value);
-                if(await response.message == 'Recept sikeresen törölve.'){
+                if(response.message == 'Recept sikeresen törölve.'){
                     const receptek = await getKeres('/api/receptek');
                     receptTablaFeltoltes(receptek);
                 }
                 break;
             }
             case 'edzoElutasitasa': {
-                const response = await deleteKeres('/api/deleteJelentkezo?id=' + event.target.value);
-                if(await response.message == 'Edző jelentkezése sikeresen elutasítva'){
+                const indokInput = document.getElementById('elutasitasIndok');
+                const indok = indokInput?.value.trim() || 'Nem felelt meg az elvárásoknak.';
+
+                const response = await deleteKeres(`/api/deleteJelentkezo?id=${event.target.value}&indok=${indok}`);
+                if(response.message == 'Edző jelentkezése sikeresen elutasítva'){
                     ujEdzoPageBetoltes();
                 }
                 break;
             }
             case 'edzoElfogadasa': {
                 const response = await postApi('/api/postJelentkezoelfogadas', {id: event.target.value});
-                if(await response.message == 'Edző jelentkezése sikeresen elfogadva'){
+                if(response.message == 'Edző jelentkezése sikeresen elfogadva'){
                     ujEdzoPageBetoltes();
                 }
                 break;
@@ -154,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         e.preventDefault();
         const formData = new FormData(document.getElementById('newGyakorlatForm'));
         const response = await postKeres('/api/postUjGyakorlat', formData);
-        if(await response.message == 'Sikeres új gyakorlat rögzítés.'){
+        if(response.message == 'Sikeres új gyakorlat rögzítés.'){
             const gyakorlatok = await getKeres('/api/gyakorlatok');
             gyakorlatTablaFeltoltes(gyakorlatok);
         }
@@ -170,7 +173,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         else{
             response = await postKeres('/api/edzoRegister', formData);
         }
-        if(await response.message == 'Sikeres felhasználó rögzítés.' || await response.message == 'Sikeres edző rögzítés.'){
+        if(response.message == 'Sikeres felhasználó rögzítés.' || response.message == 'Sikeres edző rögzítés.'){
             const felhasznalok = await getKeres('/api/getAllAuthData')
             userTablaFeltoltes(felhasznalok.result);
         }
@@ -191,7 +194,7 @@ document.addEventListener("DOMContentLoaded", async function(){
 
         const formdata = new FormData(document.getElementById('newAdminForm'));
         const response = await postKeres('/api/adminRegister', formdata);
-        if(await response.message == 'Sikeres admin rögzítés.'){
+        if(response.message == 'Sikeres admin rögzítés.'){
             const adminok = await getKeres('/api/getAllAdminAuthData');
             adminTablaFeltoltes(adminok.result);
         }
@@ -212,7 +215,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         const formData = new FormData(document.getElementById('newReceptForm'));
         formData.append('allergenek', JSON.stringify(valasztottAllergenek));
         const response = await postKeres('/api/postUjRecept', formData);
-        if(await response.message == 'Recept sikeresen rögzítve.'){
+        if(response.message == 'Recept sikeresen rögzítve.'){
             const receptek = await getKeres('/api/receptek');
             receptTablaFeltoltes(receptek);
         }
@@ -240,6 +243,7 @@ function userTablaFeltoltes(felhasznalok){
 
         let cvCella = document.createElement('td');
         let cvLink = document.createElement('a');
+        cvLink.classList.add('btn', 'btn-primary');
         cvLink.textContent = 'CV letöltése';
 
         //lekérjük a felhasználó önéletrajzát
@@ -250,7 +254,9 @@ function userTablaFeltoltes(felhasznalok){
 
         let clCella = document.createElement('td');
         let clLink = document.createElement('a');
+        clLink.classList.add('btn', 'btn-primary');
         clLink.textContent = 'Motivációs levél letöltése';
+
         //lekérjük a felhasználó motivációs levelét
         clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
         clLink.download = true;
@@ -312,7 +318,7 @@ function userTablaFeltoltes(felhasznalok){
 
         sor.addEventListener('click', async function(event){
             //megakadályozzuk, hogy a selectre vagy a gombra kattintva is lefusson ez az event
-            if (event.target.closest('select, button')) {
+            if (event.target.closest('select, button, a')) {
                 return;
             }
 
@@ -752,6 +758,7 @@ async function ujEdzoTablaFeltoltes(jelentkezok) {
 
         let cvCella = document.createElement('td');
         let cvLink = document.createElement('a');
+        cvLink.classList.add('btn', 'btn-primary');
         cvLink.textContent = 'CV letöltése';
 
         //lekérjük a felhasználó önéletrajzát
@@ -762,6 +769,7 @@ async function ujEdzoTablaFeltoltes(jelentkezok) {
 
         let clCella = document.createElement('td');
         let clLink = document.createElement('a');
+        clLink.classList.add('btn', 'btn-primary');
         clLink.textContent = 'Motivációs levél letöltése';
 
         //lekérjük a felhasználó motivációs levelét
@@ -815,6 +823,8 @@ async function ujEdzoTablaFeltoltes(jelentkezok) {
                     <li><strong>Telefon:</strong> ${user.telszam}</li>
                     <li><strong>Nem:</strong> ${user.nem}</li>
                     <li><strong>Születési dátum:</strong> ${user.szul_datum}</li>
+                    <label for="">Indok: </label>
+                    <input type="text" id="elutasitasIndok" class="form-control">
                 </ul>
             `;
             let elutasitasBtn = document.getElementById('megerositesBtn');

@@ -44,7 +44,7 @@ async function initMap() {
         marker.position = e.latLng;
         try {
             //megnézzük hogy van e bármi google mapsen jelölt hely a kattintás környezetében. Ha van, akkor megkérdezzük az edzőt, hogy arra a helyre gondolt e, és ha igen, akkor a marker arra a helyre kerül
-            let helyadatok = await helyAdatokLekerese(e.latLng.lat(), e.latLng.lng(), 50, ["displayName", "location"]);
+            let helyadatok = await helyAdatokLekerese(e.latLng.lat(), e.latLng.lng(), 25, ["displayName", "location"]);
             if (helyadatok) {
                 popupWindowGeneralas(helyadatok, marker);
             }
@@ -53,7 +53,7 @@ async function initMap() {
         }
     });
 
-   await autocompleteElhelyezes(map, "autocomplete", marker);
+   await autocompleteElhelyezes(map, "autocomplete");
 };
 
 function popupWindowGeneralas(helyadatok, marker) {
