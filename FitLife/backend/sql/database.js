@@ -235,8 +235,8 @@ async function selectTrainersByDist(lng, lat) {
             edzo.idezet
         FROM edzo
         INNER JOIN login ON edzo.edzo_id = login.id
-        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
-
+        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 26`;
+    
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
 }

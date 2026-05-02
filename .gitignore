@@ -5,3 +5,4 @@ node_modules/
 # környezeti változókat tartalmazó fájlok elrejtése
 .env
 **/.env
+FitLife/backend/.env
