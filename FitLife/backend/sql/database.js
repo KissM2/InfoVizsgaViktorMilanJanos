@@ -172,7 +172,7 @@ async function updateStatuszElfogadva(id) {
 
 //select
 async function selectAllTrainers() {
-    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id`;
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE statusz LIKE "elfogadva";`;
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -197,7 +197,8 @@ async function selectAllTrainersByDist(lng, lat) {
             edzo.idezet, 
             ROUND(ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?))) AS tavolsag 
         FROM edzo 
-        INNER JOIN login ON edzo.edzo_id = login.id 
+        INNER JOIN login ON edzo.edzo_id = login.id
+        WHERE  edzo.statusz LIKE "elfogadva"
         ORDER BY tavolsag ASC`;
 
     const [rows] = await pool.execute(query, [lng, lat]);
@@ -217,6 +218,14 @@ async function selectTrainersByDist(lng, lat) {
         where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 51`;
 
     const [rows] = await pool.execute(query, [lng, lat]);
+    return rows;
+}
+async function selectAllTrainersByName(name) {
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet 
+                    FROM edzo 
+                        INNER JOIN login ON edzo.edzo_id = login.id 
+                    WHERE edzo.statusz LIKE "elfogadva" AND login.felh_nev LIKE ?`;
+    const [rows] = await pool.execute(query, [`%${name}%`]);
     return rows;
 }
 async function getEdzoSurveyDone(id) {
@@ -1006,6 +1015,7 @@ module.exports = {
     insertJelentkezes,
     deleteJelentkezes,
     updateStatuszElfogadva,
+    selectAllTrainersByName,
     getEdzoSurveyDone,
     getUserSurveyDone,
     selectJelentkezoEById,
