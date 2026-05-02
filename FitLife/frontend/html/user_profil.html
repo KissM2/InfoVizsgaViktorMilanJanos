@@ -28,7 +28,7 @@
     <div class="container pt-5">
 
         <div class="card dark-card mb-4">
-            <div class="card-header">Profil adatok</div>
+            <div class="card-header"><h3>Profil adatok</h3></div>
             <div class="card-body">
                 <form id="profil_adat_form" class="row g-3">
                     <div class="col-sm-12 col-md-6">
@@ -61,7 +61,7 @@
         </div>
 
         <div class="card dark-card mb-4">
-            <div class="card-header">Személyes adatok Szerkeztése</div>
+            <div class="card-header"><h3>Személyes adatok Szerkeztése</h3></div>
             <div class="card-body">
                 <form id="szemelyi_adat_form" class="row g-3">
                     <div class="col-sm-12 col-md-6">
@@ -80,7 +80,7 @@
                             max="230">
                     </div>
                     <div class="col-sm-12 col-md-6">
-                        <label class="label-color">Edzésre fordított idő naponta(min)</label>
+                        <label class="label-color">Edzésre fordított idő naponta(perc)</label>
                         <input type="number" id="edzesre_forditott_ido" name="edzesre_forditott_ido"
                             class="form-control dark-input" min="10" max="480">
                     </div>
@@ -99,7 +99,18 @@
         </div>
 
         <div class="card dark-card mb-4">
-            <h3 class="secondary-title card-header">Alergiák</h3>
+            <h3 class="secondary-title card-header">Edzési napok</h3>
+            <div class="d-flex flex-wrap card-body">
+                <div id="edzesiNapok" class="d-flex flex-wrap card-body justify-content-center"></div>
+            </div>
+            <div class="card-footer">
+                <button id="mentes_edzesiNapok" class="btn btn-success mt-3">Mentés</button>
+            </div>
+
+        </div>
+
+        <div class="card dark-card mb-4">
+            <h3 class="secondary-title card-header">Allergiák</h3>
             <div class="mb-3 d-flex flex-wrap card-body">
                 <div id="etelAllergiak" class="row"></div>
                 <button id="mentes_allergiak" class="btn btn-success mt-3">Mentés</button>
