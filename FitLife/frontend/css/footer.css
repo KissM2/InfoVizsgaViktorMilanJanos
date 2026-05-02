@@ -1,8 +1,21 @@
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 .lab {
     background-color: #111;
     color: #ddd;
     border-top: 1px solid #333;
     font-family: sans-serif;
+    width: 100%;
+    margin-top: auto !important;
+    flex-shrink: 0;
 }
 
 .footer-cim {

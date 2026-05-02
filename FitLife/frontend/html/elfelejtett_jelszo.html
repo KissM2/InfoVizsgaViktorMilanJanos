@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../css/bejelentkez.css">
+  <script type="module" src="../js/elfelejtett_jelszo.js"></script>
+  <title>FitLife | Elfelejtett jelszó</title>
+</head>
+<body>
+  <div class="container">
+    <div class="login-container">
+      <h1>Elfelejtett jelszó</h1>
+      <p class="text-center mb-4">Add meg az email címed, és küldünk egy linket a jelszavad visszaállításához.</p>
+      <form id="forgotForm">
+        <div class="mb-3">
+          <label for="email">Email cím</label>
+          <input type="email" id="email" name="email" placeholder="pelda@fitlife.hu" required>
+        </div>
+        <button type="submit" class="btn-fitlife">Link küldése</button>
+      </form>
+      <p id="uzenet" class="text-center mt-3" style="color: #28a745; font-weight: bold;"></p>
+      <a href="../html/bejelentkez.html" class="vissza">← Vissza a bejelentkezéshez</a>
+    </div>
+  </div>
+
+</body>
+</html>

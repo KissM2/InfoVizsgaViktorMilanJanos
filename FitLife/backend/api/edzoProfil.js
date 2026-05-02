@@ -90,4 +90,20 @@ router.get('/osszesEdzoKorzetben', async (request, response) => {
     }
 });
 
+//?GET /api/osszesEdzoByName
+router.get('/osszesEdzoByName', async (request, response) => {
+    try {
+        const name = request.query.nev;
+        const edzok = await database.selectAllTrainersByName(name);
+        response.status(200).json({
+            message: 'Sikeres lekérdezés.',
+            results: edzok,
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Hiba történt a szerver oldalon.'
+        });
+    }
+});
+
 module.exports = router;

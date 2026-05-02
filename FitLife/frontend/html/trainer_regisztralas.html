@@ -24,6 +24,7 @@
     <div class="container">
         <div class="register-container">
             <h1>Regisztráció</h1>
+            <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
             <form id="trainerForm">
                 <div class="mb-3">
                     <label for="fullname">Teljes név</label>
@@ -57,12 +58,12 @@
                     <input type="tel" id="phone" name="telszam" placeholder="+36..." required>
                 </div>
                 <div class="mb-3">
-                    <label for="cv">Önéletrajz</label>
-                    <input type="file" id="cv" name="cv" class="color-black" required>
+                    <label for="cv">Önéletrajz (PDF, DOC, DOCX)</label>
+                    <input type="file" id="cv" name="cv" class="color-black" accept=".pdf,.doc,.docx" required>
                 </div>
                 <div class="mb-3">
-                    <label for="coverLetter">Motivációs levél</label>
-                    <input type="file" id="coverLetter" name="coverLetter" class="color-black" required>
+                    <label for="coverLetter">Motivációs levél (PDF, DOC, DOCX)</label>
+                    <input type="file" id="coverLetter" name="coverLetter" class="color-black" accept=".pdf,.doc,.docx" required>
                 </div>
                 <button type="submit" class="btn-fitlife">Regisztrálok</button>
             </form>

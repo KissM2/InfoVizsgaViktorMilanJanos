@@ -1,4 +1,4 @@
-import {getKeres} from '../js/kozosFetch.js';
+import {getKeres,postApi} from '../js/kozosFetch.js';
 
 export async function navbarGeneralas(linkek) {
     const navbarBefogo = document.createElement('div');
@@ -30,6 +30,7 @@ export async function navbarGeneralas(linkek) {
     const auth = document.createElement('div');
     auth.classList.add("d-flex", "align-items-center");
 
+    // Bejelentkezés gomb
     const bejelentkezes = document.createElement('a');
     bejelentkezes.href = "/bejelentkezes";
     bejelentkezes.classList.add("d-none", "d-sm-inline");
@@ -39,6 +40,7 @@ export async function navbarGeneralas(linkek) {
     bejelentkezesBtn.innerText = "Bejelentkezés";
     bejelentkezes.appendChild(bejelentkezesBtn);
 
+    // Regisztrálás gomb
     const regisztralas = document.createElement('a');
     regisztralas.href = "/user_regisztral";
     regisztralas.classList.add("d-none", "d-sm-inline", "ms-2");
@@ -48,16 +50,21 @@ export async function navbarGeneralas(linkek) {
     regisztralasBtn.innerText = "Regisztrálás";
     regisztralas.appendChild(regisztralasBtn);
 
+    // Profil gomb
     const profilLink = document.createElement('a');
-    profilLink.classList.add("d-none", "d-sm-inline", "ms-2");
+    profilLink.classList.add("d-none", "ms-2");
     profilLink.style.textDecoration = "none";
-    profilLink.style.display = "none";
 
     const profilBtn = document.createElement('button');
     profilBtn.classList.add("gomb", "btn", "btn-secondary", "me-2");
     profilBtn.innerText = "Profil";
-    profilBtn.style.display = "none";
     profilLink.appendChild(profilBtn);
+
+    // kijelentkezes gomb
+    const kijelentkezesBtn = document.createElement('button');
+    kijelentkezesBtn.classList.add("btn", "gomb", "gomb-piros", "ms-2", "d-none");
+    kijelentkezesBtn.innerText = "Kijelentkezés";
+
 
     const menuBtn = document.createElement('button');
     menuBtn.type = "button";
@@ -72,6 +79,7 @@ export async function navbarGeneralas(linkek) {
     auth.appendChild(bejelentkezes);
     auth.appendChild(regisztralas);
     auth.appendChild(profilLink)
+    auth.appendChild(kijelentkezesBtn);
     auth.appendChild(menuBtn);
 
     navbar.appendChild(auth);
@@ -121,41 +129,65 @@ export async function navbarGeneralas(linkek) {
     regisztralasTeloElem.appendChild(regisztralasTeloLink);
     
     const profilTeloElem = document.createElement('li');
-    profilTeloElem.classList.add("d-sm-none");
-    profilTeloElem.style.display = "none";
+    profilTeloElem.classList.add("d-none");
 
     const profilTeloLink = document.createElement('a');
     profilTeloLink.classList.add("nav-link", "text-white", "py-2", "font-size-medium")
     profilTeloLink.innerText = "Profil";
     profilTeloElem.appendChild(profilTeloLink);
 
+    const kijelentkezesTeloElem = document.createElement('li');
+    kijelentkezesTeloElem.classList.add("d-none");
+    
+    const kijelentkezesTeloLink = document.createElement('a');
+    kijelentkezesTeloLink.href = "#";
+    kijelentkezesTeloLink.classList.add("nav-link", "text-danger", "py-2", "font-size-medium");
+    kijelentkezesTeloLink.innerText = "Kijelentkezés";
+    kijelentkezesTeloElem.appendChild(kijelentkezesTeloLink);
+
     menuLista.appendChild(vonalElem);
     menuLista.appendChild(bejelentkezesTeloElem);
     menuLista.appendChild(regisztralasTeloElem);
     menuLista.appendChild(profilTeloElem);
+    menuLista.appendChild(kijelentkezesTeloElem);
 
     const bejelentkezve = await getKeres('/api/getLoginStatus');
-    console.log(bejelentkezve);
     if(bejelentkezve && bejelentkezve.role && bejelentkezve.id){
-        bejelentkezesBtn.style.display = "none";
-        regisztralasBtn.style.display = "none";
-        bejelentkezesTeloElem.style.display = "none";
-        regisztralasTeloElem.style.display = "none";
-        profilBtn.style.display = "block";
-        profilLink.style.display = "block";
-        profilTeloElem.style.display = "block";
+
+        bejelentkezes.classList.replace("d-sm-inline", "d-none");
+        regisztralas.classList.replace("d-sm-inline", "d-none");
+        bejelentkezesTeloElem.classList.replace("d-sm-none", "d-none");
+        regisztralasTeloElem.classList.replace("d-sm-none", "d-none");
+        
+        profilLink.classList.add("d-sm-inline"); 
+        profilTeloElem.classList.replace("d-none", "d-sm-none");
+         
+        kijelentkezesBtn.classList.add("d-sm-inline");
+        kijelentkezesTeloElem.classList.replace("d-none", "d-sm-none");
+
         if(bejelentkezve.role == "felhasznalo"){    
-            profilTeloLink.href = "/userProfil?id=" + bejelentkezve.id;
-            profilLink.href = "/userProfil?id=" + bejelentkezve.id;
+            profilTeloLink.href = "/userProfil";
+            profilLink.href = "/userProfil";
         }else{
             if(bejelentkezve.role == "edzo"){
                 //még nincs profil oldala a felhasználónak és az edzőnek
 
-                //profilTeloLink.href = "/edzo_profil?id=" + bejelentkezve.id;
-                //profilLink.href = "/edzo_profil?id=" + bejelentkezve.id;
+                profilTeloLink.href = "/traineradat";
+                profilLink.href = "/traineradat";
             }
         }
     }
+    async function logoutFunction(e) {
+        e.preventDefault();
+        try {
+            await postApi('/api/kijelentkezes', {});
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Hiba a kijelentkezéskor", error);
+        }
+    }
+    kijelentkezesBtn.addEventListener('click', logoutFunction);
+    kijelentkezesTeloLink.addEventListener('click', logoutFunction);
 
     menuPontok.appendChild(menuLista);
 

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function(){
         formData.append('edzoterem_cim_lng',marker.position.lng);
         const result = await postKeres('/api/edzoDataInsert', formData);
         if(result.message == "adatok sikeresen mentve"){
-            window.location.href = '..';
+            window.location.href = '/../html/edzofo.html';
         }
     });
 });
