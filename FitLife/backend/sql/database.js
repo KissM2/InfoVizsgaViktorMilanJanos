@@ -85,7 +85,7 @@ async function getUserByToken(token) {
     return rows[0];
 }
 async function selectAllLoginData() {
-    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN edzo ON edzo.edzo_id = login.id AND edzo.statusz NOT LIKE "jelentkezett" where login.role NOT LIKE "admin";';
+    const query = 'SELECT login.id, login.email, login.felh_nev, login.telszam, login.nem, login.szul_datum, login.role, login.deleted_at FROM login LEFT JOIN edzo ON edzo.edzo_id = login.id WHERE login.role NOT LIKE "admin" AND login.id NOT IN(SELECT edzo_id FROM edzo WHERE statusz = "jelentkezett");';
     const [rows] = await pool.execute(query);
     return rows;
 }
