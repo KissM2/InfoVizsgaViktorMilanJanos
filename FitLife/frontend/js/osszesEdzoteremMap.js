@@ -53,7 +53,7 @@ async function edzoteremMarkerekElhelyezese(map) {
 async function infoAblakLetrehozas(map, marker, location) {
     
     marker.addListener("gmp-click", async () => {
-        const helyadatok = await helyAdatokLekerese(location.lat, location.lng, 50, ["displayName","regularOpeningHours","photos","rating",]);
+        const helyadatok = await helyAdatokLekerese(location.lat, location.lng, 25, ["displayName","regularOpeningHours","photos","rating",]);
 
         let infowindowDiv = document.createElement('div');
         infowindowDiv.style.backgroundColor = "gray";

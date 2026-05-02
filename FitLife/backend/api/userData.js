@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //?Post /api/userData
-router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, async (request, response) =>{
+router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, checkUser.checkEdzesiNapok, async (request, response) =>{
     try {
 
         const { 
@@ -34,6 +34,7 @@ router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, che
             edzesen_kivuli_mozgas,
             etelAllergiak,
             etelPreferenciak,
+            edzesiNapok,
         } = request.body;
         
         database.insertUser(
@@ -46,6 +47,7 @@ router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, che
             request.session.user.id,
             JSON.parse(etelAllergiak),
             JSON.parse(etelPreferenciak),
+            JSON.parse(edzesiNapok),
         );
 
         response.status(200).json({

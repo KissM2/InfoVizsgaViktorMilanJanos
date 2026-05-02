@@ -118,9 +118,8 @@ export async function helyAdatokLekerese(lat, lng, radius, fields) {
 /**
  * @param {google.maps.Map} map - A térkép példány
  * @param {string} autocompleteDivId - Az input mező ID-ja
- * @param {google.maps.marker.AdvancedMarkerElement} [marker] - Opcionális marker, amit frissítünk
  */
-export async function autocompleteElhelyezes(map, autocompleteDivId, marker) {
+export async function autocompleteElhelyezes(map, autocompleteDivId) {
     // Betöltjük a places könyvtárat az autocomplete használatához
     const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
 
@@ -159,21 +158,6 @@ export async function autocompleteElhelyezes(map, autocompleteDivId, marker) {
         } else {
             map.setCenter(place.location);
             map.setZoom(17);
-        }
-
-        if (marker) {
-            const helyadatok = await helyAdatokLekerese(place.location.lat(), place.location.lng(), 50, ["location"]);
-            if (helyadatok) {
-                marker.map = null;
-                marker.position = helyadatok.location;
-                marker.title = helyadatok.displayName || "Kiválasztott hely";
-                marker.map = map;
-            }else{
-                marker.map = null;
-                marker.position = place.location;
-                marker.title = place.displayName || "Kiválasztott hely";
-                marker.map = map;
-            }
         }
     });
 }
