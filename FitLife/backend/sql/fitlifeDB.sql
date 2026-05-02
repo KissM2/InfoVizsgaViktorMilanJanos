@@ -163,12 +163,13 @@ CREATE TABLE IF NOT EXISTS komment (
 -- FOGLALAS
 CREATE TABLE IF NOT EXISTS foglalas (
 foglalas_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-start TIME,
-end TIME,
+datum DATE NOT NULL,
+ido TIME NOT NULL,
 statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-edzo_id INT,
-felhasznalo_id INT,
+edzo_id INT NOT NULL,
+felhasznalo_id INT NOT NULL,
+aktiv_flag TINYINT GENERATED ALWAYS AS (statusz = 'aktiv') STORED,
+UNIQUE KEY unique_foglalas_slot (edzo_id, datum, ido, aktiv_flag),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id),
 FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 );
@@ -176,23 +177,24 @@ FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id)
 -- HETI_BEOSZTAS
 CREATE TABLE IF NOT EXISTS heti_beosztas (
 beo_id INT AUTO_INCREMENT PRIMARY KEY,
-weekday int,
-start TIME,
-end TIME,
+weekday int NOT NULL,
+start TIME NOT NULL,
+end TIME NOT NULL,
 statusz ENUM('aktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-mettol_ervenyes DATE,
-edzo_id INT,
+mettol_ervenyes DATE NOT NULL,
+edzo_id INT NOT NULL,
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
 -- KULONLEGES_ALKALOM
 CREATE TABLE IF NOT EXISTS kulonleges_alkalom (
 ka_id INT AUTO_INCREMENT PRIMARY KEY,
-datum DATE,
-start TIME,
-end TIME,
+datum DATE NOT NULL,
+ido TIME NOT NULL,
 statusz ENUM('aktiv', 'inaktiv','torolt') NOT NULL DEFAULT 'aktiv', 
-edzo_id INT,
+edzo_id INT NOT NULL,
+aktiv_flag TINYINT GENERATED ALWAYS AS (statusz = 'aktiv') STORED,
+UNIQUE KEY unique_ka_slot (edzo_id, datum, ido, aktiv_flag),
 FOREIGN KEY (edzo_id) REFERENCES edzo(edzo_id)
 );
 
@@ -251,6 +253,11 @@ INSERT INTO login (felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALU
 ('Whitney Simmons', '$2b$10$XpnQTUH6j2A0WekJjlCt3uwwc3rAdBeXpJTOI9UaKlqZuo/Km4M96', 'whitney@fitlife.hu', '+36300004455', 'Nő', 'edzo', '1993-02-27'), -- jelszo20
 ('Pamela Reif', '$2b$10$9MyhOgI2tacQQlQOv/UH7.je1fouxwIwZs37n115fnVvbnESfP8ce', 'pamela@fitlife.hu', '+36300005566', 'Nő', 'edzo', '1996-07-09'); -- jelszo21
 
+-- jelentkezett edzok:
+INSERT INTO login (id, felh_nev, jelszo, email, telszam, nem, role, szul_datum) VALUES
+(200, 'KovacsT', 'titkosjelszo', 'kovacs.tamas@fitlife.hu', '+36301234567', 'férfi', 'edzo', '1990-05-15'),
+(201, 'NagyA', 'titkosjelszo', 'nagy.anna@fitlife.hu', '+36209876543', 'nő', 'edzo', '1993-08-22'),
+(202, 'SzaboP', 'titkosjelszo', 'szabo.peter@fitlife.hu', '+36701112233', 'férfi', 'edzo', '1988-11-05');
 -- 3. login tábla(adminok):
 INSERT INTO login(felh_nev, jelszo, email, role) VALUES 
 ('Admin János', '$2b$10$0HCK1iiFSfA1viP8LT4G.eF6Wlf0wWtCsQJJhbpxQP88Awsa43zCi', 'admin.janos@fitlife.hu','admin'), -- jelszo22
@@ -465,6 +472,7 @@ INSERT INTO allergen(nev) VALUES
 ('édesgyökér'),
 ('lakritz');
 
+
 -- 7. recept tábla:
 INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES
 ('Csirkés rizstál','Hozzávalók: csirkemell, rizs, brokkoli, só, bors. Elkészítés: a rizst főzd meg, a csirkemellet kockázva süsd meg serpenyőben, párold a brokkolit majd keverd össze.','ebed',5,38,55), -- brokkoli
@@ -588,6 +596,13 @@ INSERT INTO felhasznalo (felhasznalo_id, testsuly, magassag, edzesre_forditott_i
 (6, 110.0, 190, 60, 3500, 4, 95.0, 4),
 (7, 55.0, 160, 45, 1600, 1, 55.0, 2);
 
+--  allergias_ra
+INSERT INTO allergias_ra (felhasznalo_id, allergen_id) VALUES
+(1, 5), (1, 12), (1, 28), (1, 45), (1, 62),
+(3, 2), (3, 19), (3, 33), (3, 50), (3, 68),
+(4, 7), (4, 15), (4, 22), (4, 39), (4, 55);
+
+
 -- 10. edzo tábla:
 INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak, statusz) VALUES 
 (8, POINT(-118.49, 34.16), 'togi.jpg', '"Minden nap tökéletes, ha szteroidozól."', 'Extra kalóriabevitel, agresszív fejlődés, Kebab-diéta szakértő.', 'Tömegnövelés, extrém kalóriabevitel, motiváció', 'elfogadva'),
@@ -604,6 +619,11 @@ INSERT INTO edzo (edzo_id, edzoterem_cim, kep, idezet, leiras, kompetenciak, sta
 (19, POINT(-74.26, 40.72), 'david.jpg', '"Maradj következetes."', 'Transzformáció és erőnléti edzés.', 'Testkompozíció megváltoztatása, erőnlét, fotózásra felkészítés', 'elfogadva'),
 (20, POINT(-111.89, 40.76), 'whitney.jpg', '"Csodás nap élni!"', 'Pozitivitás és funkcionális női tréning.', 'Funkcionális női edzés, mentális jóllét, kezdők mentorálása', 'elfogadva'),
 (21, POINT(8.40, 49.00), 'pamela.jpg', '"Érezd az égetést!"', 'Eszköz nélküli otthoni edzések és HIIT.', 'HIIT, eszköz nélküli otthoni edzés, állóképesség fejlesztés', 'elfogadva');
+-- 3 jelentkezett edzo
+INSERT INTO edzo (edzo_id, statusz) VALUES
+(200, 'jelentkezett'),
+(201, 'jelentkezett'),
+(202, 'jelentkezett');
 
 -- 11. edzesterv tábla:
 

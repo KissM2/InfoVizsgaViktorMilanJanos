@@ -10,8 +10,10 @@
     <script src="../bootstrap/js/popper.min.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <!--!CSS-->
+    <link rel="stylesheet" href="../css/osszesEdzo.css">
     <link rel="stylesheet" href="../css/index.css" />
     <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/footer.css">
     <!--!JavaScript-->
     <script type="module" src="../js/index.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -52,51 +54,9 @@
         </div>
     </section>
     <section>
-        <div class="row edz">
+        <div class=" row edz ">
             <h1 class="text-center text-success mb-5" id="edzok">Leghíresebb Edzőink</h1>
-
-            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
-                <a href="../html/edzo.html?id=101" target="_blank" title="Pitypang Bálint">
-                    <h1>Togi</h1>
-
-                    <div class="edzokKartya">
-                        <div class="img-containe"><img src="../images/togi.jpg" alt=""></div>
-                        <p>Togi: <br> Szakértő tréner <br> Erőnlét és állóképesség</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
-                <a href="../html/edzo.html?id=102" target="_blank" title="Dzsákó Dzsános">
-                    <h1>Chris</h1>
-
-                    <div class="edzokKartya">
-                        <div class="img-container">
-                            <div class="img-containe"><img src="../images/chris.jpg" alt=""></div>
-                        </div>
-                        <p>Chris Tren <br> fele a tren testvéreknek <br> Mini pekka</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
-                <a href="../html/edzo.html?id=105" target="_blank" title="Berta Bottas">
-                    <h1>Piana</h1>
-
-                    <div class="edzokKartya">
-                        <div class="img-containe"><img src="../images/rich.jpg" alt=""></div>
-                        <p>Rich Piana<br> Csak legyél nagyobb <br> bulkoló mester </p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-sm-12 col-md-6 col-lg-3 mb-4 kartyak">
-                <a href="../html/edzo.html?id=104" target="_blank" title="Norbi Varga">
-                    <h1>Sara</h1>
-
-                    <div class="edzokKartya">
-                        <div class="img-containe"><img src="../images/sara.jpg" alt=""></div>
-                        <p>Sara Safarri <br> gym influenszer <br> brutális láb edzés </p>
-                    </div>
-                </a>
-            </div>
+            <div id="top4edzo" class="edzo-grid-layout d-flex justify-content-evenly"></div>
         </div>
 
     </section>
@@ -104,39 +64,7 @@
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <footer class="lab pt-5 pb-3 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 col-sm-12 mb-4 mb-md-0">
-                    <h5 class="cim">Elérhetőségek</h5>
-                    <p class="mb-3">FITLIFE Edzőterem</p>
-                    <p class="mb-3">1234 Budapest, Csapó utca 12.</p>
-                    <p class="mb-3">Telefon: +36 30 123 4567</p>
-                    <p class="mb-0">Email: info@fitlife.hu</p>
-                </div>
-                <div class="col-md-4 col-sm-12 mb-4 mb-md-0 text-center">
-                    <h5 class="cim">Kövess Minket</h5>
-                    <div class="links d-flex justify-content-center mt-3">
-                        <a href="https://facebook.com" target="_blank" class="social">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://instagram.com" target="_blank" class="social ms-4">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-12 text-md-end text-sm-start">
-                    <h5 class="cim">Gyorsmenü</h5>
-                    <ul class="menu list-unstyled">
-                        <li><a href="../html/edzesterv.html">Edzéstervek</a></li>
-                        <li><a href="../html/osszesEdzo.html">Személyi Edzők</a></li>
-                        <li><a href="../html/etrendek.html">Receptek</a></li>
-                    </ul>
-                    <p class="copyright mt-4">© 2025 FITLIFE. Minden jog fenntartva.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    
 
 </body>
 
