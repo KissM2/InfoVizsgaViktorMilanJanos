@@ -62,8 +62,27 @@ async function checkPreferenciak(request, response, next) {
     }
 }
 
+async function checkEdzesiNapok(request, response, next) {
+    try {
+        const { edzesiNapok } = request.body;
+
+        if(!edzesiNapok){
+            return response.status(400).json({
+                message: "nem megfelelő edzesi nap adatok"
+            })
+        }
+
+        next();
+    } catch (error) {
+        return response.status(500).json({
+            message: "hiba az edzesi napok adatok hitelesítése közben"
+        });
+    }
+}
+
 module.exports = {
     checkUserData,
     checkAllergiak,
     checkPreferenciak,      
+    checkEdzesiNapok,
 }

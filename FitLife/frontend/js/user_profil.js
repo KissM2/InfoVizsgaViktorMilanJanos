@@ -1,5 +1,5 @@
 import { navbarGeneralas } from './navbar.js';
-import { postKeres, getKeres, postApi } from './kozosFetch.js';
+import { postKeres, getKeres, postApi, deleteKeres } from './kozosFetch.js';
 
 const menuLinkek = [
     { nev: "Személyi edzők", url: "../html/osszesEdzo.html" },
@@ -50,6 +50,27 @@ document.addEventListener('DOMContentLoaded', async function(){
 
     document.getElementById('mentes_edzesiNapok').addEventListener('click', async function () {
         postApi('/api/postEdzesiNapok', {edzesiNapok: edzesiNapokValasztott});        
+    });
+    
+    document.getElementById('fiok_torlese_btn').addEventListener('click', async function() {
+        const megerosites = confirm("Biztosan törölni szeretnéd a fiókodat? Ezzel azonnal kijelentkezel, és elveszíted a hozzáférésedet a rendszerhez.");
+        
+        if (megerosites) {
+            try {
+                const response = await deleteKeres('/api/deleteUser');
+                
+                if (response) {
+                    alert("A fiókodat sikeresen felfüggesztettük.\n\nAmennyiben szeretnéd visszaállítani a fiókodat, kérjük, írj nekünk a fitlife123123@gmail.com e-mail címre!");
+                    window.location.href = "/";
+                } else {
+                    const hiba = await response.json();
+                    alert(hiba.message || "Hiba történt a törlés során.");
+                }
+            } catch (error) {
+                console.error("Hiba a törlésnél:", error);
+                alert("Szerver hiba történt.");
+            }
+        }
     });
 });
 
