@@ -23,6 +23,7 @@
   <div class="container">
     <div class="register-container">
       <h1>Regisztráció</h1>
+      <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
       <form id="regForm">
         <div class="mb-3">
           <label for="fullname">Teljes név</label>
@@ -42,7 +43,12 @@
         </div>
         <div class="mb-3">
           <label for="nem">Nem</label>
-          <input type="text" id="nem" name="nem" required>
+          <div>
+            <select class="form-select" name="nem" id="nem">
+              <option value="férfi">férfi</option>
+              <option value="nő">nő</option>
+            </select>
+          </div>
         </div>
         <div class="mb-3">
           <label for="birthdate">Születési dátum</label>

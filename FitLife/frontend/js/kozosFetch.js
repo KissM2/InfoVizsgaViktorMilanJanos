@@ -43,3 +43,18 @@ export async function postApi(apiUrl, obj) {
         console.error('POST hiba:', error);
     }
 }
+export async function deleteKeres(url) {
+    try {
+        const response = await fetch(url, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Szerver hiba: " + response.status);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Törlési hiba:", error);
+    }
+}
