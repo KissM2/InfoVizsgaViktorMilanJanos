@@ -78,7 +78,7 @@ async function infoAblakLetrehozas(map, marker, location) {
 
 async function helyAdatok(location) {
     try {
-        const details = await helyAdatokLekerese(location.lat, location.lng, 50, ["displayName","regularOpeningHours","photos","rating",]);
+        const details = await helyAdatokLekerese(location.lat, location.lng, 25, ["displayName","regularOpeningHours","photos","rating",]);
         return details;
     } catch (err) {
         console.error("Error:", err);

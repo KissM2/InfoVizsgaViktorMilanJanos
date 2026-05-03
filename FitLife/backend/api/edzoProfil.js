@@ -98,8 +98,7 @@ router.get('/topNegyEdzo', async (request, response) => {
 router.get('/osszesEdzoKorzetben', async (request, response) => {
     try {
         const { lng, lat } = request.query;
-        const edzok = await database.selectAllTrainersByDist(lng, lat);
-        console.log(edzok);
+        const edzok = await database.selectTrainersByDist(lng, lat);
         response.status(200).json({
             message: 'Edzők sikeresen lekérve.',
             results: edzok
@@ -107,6 +106,22 @@ router.get('/osszesEdzoKorzetben', async (request, response) => {
     } catch (error) {
         response.status(500).json({
             message: 'Hiba történt a szerver oldalon az edzők lekérdezésekor.'
+        });
+    }
+});
+
+//?GET /api/osszesEdzoByName
+router.get('/osszesEdzoByName', async (request, response) => {
+    try {
+        const name = request.query.nev;
+        const edzok = await database.selectAllTrainersByName(name);
+        response.status(200).json({
+            message: 'Sikeres lekérdezés.',
+            results: edzok,
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Hiba történt a szerver oldalon.'
         });
     }
 });

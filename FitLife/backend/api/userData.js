@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //?Post /api/userData
-router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, async (request, response) =>{
+router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, checkUser.checkEdzesiNapok, async (request, response) =>{
     try {
 
         const { 
@@ -34,6 +34,7 @@ router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, che
             edzesen_kivuli_mozgas,
             etelAllergiak,
             etelPreferenciak,
+            edzesiNapok,
         } = request.body;
         
         database.insertUser(
@@ -46,6 +47,7 @@ router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, che
             request.session.user.id,
             JSON.parse(etelAllergiak),
             JSON.parse(etelPreferenciak),
+            JSON.parse(edzesiNapok),
         );
 
         response.status(200).json({
@@ -195,6 +197,60 @@ router.get('/getAllergiasRa', loginCheck.loginCheck, async (request, response) =
         console.error(error.message);
         response.status(500).json({
             message: "Allergiák és preferenciák lekérése sikertelen"
+        });
+    }
+});
+
+router.get('/getEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const userId = request.session.user.id;
+        const edzesiNapok = await database.getUserEdzesNapok(userId);
+
+        response.status(200).json({
+            message: "Edzési napok lekérése sikeres",
+            edzesiNapok: edzesiNapok,
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Edzési napok lekérése sikertelen"
+        });
+    }
+});
+
+router.post('/postEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+    try {
+        const userId = request.session.user.id;
+        const {edzesiNapok} = request.body;
+
+        const edzesiNapokMost = await database.getUserEdzesNapok(userId);
+
+        edzesiNapok.forEach(edzesiNap => {
+            let i = 0;
+            while(i < edzesiNapokMost.length && edzesiNap.id != edzesiNapokMost[i]){
+                i++
+            }
+            if(i == edzesiNapokMost.length){
+                database.insertEdzesiNap(request.session.user.id, edzesiNap.id);
+            }else{
+                if(i < edzesiNapokMost.length){
+                    edzesiNapokMost.splice(i,1);
+                }
+            } 
+        });
+
+        edzesiNapokMost.forEach(edzesiNap =>{  
+            database.deleteEdzesiNap(request.session.user.id, edzesiNap);
+        });            
+
+        response.status(200).json({
+            message: "Edzési napok lekérése sikeres",
+            edzesiNapok: edzesiNapok,
+        })
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).json({
+            message: "Edzési napok eltárolása sikertelen"
         });
     }
 });

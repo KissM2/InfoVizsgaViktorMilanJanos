@@ -121,12 +121,16 @@ router.post('/mentes-edzesterv', async (request, response) => {
         if (!adatok || adatok.length === 0) {
             return response.status(400).json({ message: "Nincs adat." });
         }
-
+        const userId = request.session.user.id;
+        if (!userId) {
+            return response.status(401).json({ message: "Be kell jelentkezni" });
+        }
         const tervCsoportId = Date.now().toString();
 
         for (const elem of adatok) {
             await database.saveEdzestervSor({
                 terv_csoport_id: tervCsoportId,
+                felhasznalo_id: userId,
                 weekday_sorszam: elem.nap,
                 gyakorlat_id: elem.gyakorlat_id,
                 sorrend: elem.sorrend,
