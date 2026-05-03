@@ -940,6 +940,15 @@ LIMIT 4;`;
     const [rows] = await pool.execute(query);
     return rows;
 }
+async function getEdzoImage(edzoId) {
+    let kepr=null;
+    const query = "SELECT kep FROM edzo WHERE edzo_id = ?";
+    const [rows] = await pool.execute(query, [edzoId]);
+    if (rows.length > 0) {
+        kepr= rows[0].kep;
+    }
+    return kepr;
+}
 //!Export
 module.exports = {
     selectTopFourTrainers,
@@ -1019,4 +1028,5 @@ module.exports = {
     updateBookingStatus,
     insertBooking,
     deleteInactiveElsewhereAtSameTime,
+    getEdzoImage,
 };
