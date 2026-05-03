@@ -33,4 +33,19 @@ router.get('/getAllEdzoterem', async (request, response) => {
     }
 });
 
+//?GET /api/getEdzoTeremFromSession
+router.get('/getEdzoTeremFromSession', async (request, response) => {
+    try {
+        if(!request.session || !request.session.user || !request.session.user.id){
+            return response.status(200).json({ message: "Nincs edzo." });    
+        }
+        const edzoTerem = await database.selectEdzoTerem(request.session.user.id);
+        response.status(200).json({
+            edzoTerem: edzoTerem[0].edzoterem_cim
+        });
+    } catch (error) {
+        response.status(500).json({ message: "Nem sikerült lekérni az edzőtermet." });
+    }
+});
+
 module.exports = router;
