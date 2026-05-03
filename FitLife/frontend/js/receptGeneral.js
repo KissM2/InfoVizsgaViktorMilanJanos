@@ -46,7 +46,7 @@ function savedEtrendekGeneralas() {
     savedSection.classList.add("saved-ettrendek");
 
     const title = document.createElement("h3");
-    title.textContent = "Mentett étrendek";
+    title.textContent = "Étrendek";
     savedSection.appendChild(title);
 
     const list = document.createElement("div");
@@ -81,7 +81,6 @@ async function loadSavedEtrendek() {
         const hetiEtrendek = await getKeres("/api/getHetiEtrendek");
 
         if (!Array.isArray(hetiEtrendek) || hetiEtrendek.length === 0) {
-            list.textContent = "Nincsenek mentett étrendek.";
             return;
         }
 
