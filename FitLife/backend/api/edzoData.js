@@ -10,20 +10,47 @@ const multer = require('multer'); //?npm install multer
 const path = require('path');
 const { request } = require('http');
 
+const imagesDir = path.join(__dirname, '../../frontend/images');
+
 const storage = multer.diskStorage({
-    destination: (request, file, callback) => {
-        callback(null, path.join(__dirname, '../../frontend/images'));
+    destination: (request, file, cb) => {
+        cb(null, imagesDir);
     },
-    filename: (request, file, callback) => {
-        callback(null, request.session.user.id + file.originalname); //? session id + file eredeti neve, hogy biztosan egyedi legyen
+    filename: (request, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        const uniqueName = `${request.session.user.id}_${Date.now()}${ext}`;
+        cb(null, uniqueName);
     }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+    storage,
+    fileFilter: (request, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Csak kép tölthető fel!'), false);
+        }
+    }
+});
+
+async function deleteOldImage(filename) {
+    if (!filename) return;
+
+    const oldPath = path.join(__dirname, '../../frontend/images', filename);
+
+    try {
+        await fs.unlink(oldPath);
+    } catch (error) {
+        if (error.code !== 'ENOENT') {
+            throw error;
+        }
+    }
+}
 
 //!Edző adatainak mentése
 //? POST /api/edzoDataInsert
-router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) => {
     try {
         const {
             edzoterem_cim_lat,
@@ -58,39 +85,47 @@ router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData
 });
 
 //? POST /api/edzoDataUpdate
-router.post('/edzoDataUpdate', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/edzoDataUpdate', loginCheck.loginCheck, upload.single('kep'), checkEdzoData.checkEdzoData, async (request, response) => {
     try {
         const {
             edzoterem_cim_lat,
             edzoterem_cim_lng,
-            idezet, 
+            idezet,
             leiras,
             kompetenciak
         } = request.body;
 
-        const kep = request.file.filename;
+        const userId = request.session.user.id;
+        const newImage = request.file ? request.file.filename : undefined;
 
-        database.updateEdzo(
+        const oldImage = await database.getEdzoImage(userId);
+        if (oldImage && newImage && oldImage !== newImage) {
+            await deleteOldImage(oldImage);
+        }
+        // ha nincs új kép → marad a régi
+        const finalImage = newImage ?? oldImage;
+
+        await database.updateEdzo(
             edzoterem_cim_lat,
             edzoterem_cim_lng,
-            kep,
+            finalImage,
             idezet,
             leiras,
             kompetenciak,
-            request.session.user.id
+            userId
         );
 
         response.status(200).json({
-            message: "adatok sikeresen frissítve",
-        })
-
+            message: 'adatok sikeresen frissítve',
+        });
     } catch (error) {
         console.error(error.message);
         response.status(500).json({
-            message: "Hiba a végponton."
+            message: 'Hiba a végponton.'
         });
     }
-});
+}
+);
 
 
 module.exports = router;
