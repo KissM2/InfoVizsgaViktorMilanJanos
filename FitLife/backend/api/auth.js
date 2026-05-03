@@ -235,7 +235,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
         
         if(login[0].role == "edzo"){
             const accepted = await database.selectJelentkezoEById(login[0].id);
-            if(accepted.statusz == "elfogadva" ){
+            if(accepted[0].statusz == "elfogadva" ){
                 result = await database.getEdzoSurveyDone(login[0].id);
             }else{
                 elfogadva = false;
@@ -247,7 +247,6 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
         if(result){
             surveyDone = result[0].counter > 0;
         }
-
 
         return response.status(200).json({
             message: 'Sikeres bejelentkezés.',
