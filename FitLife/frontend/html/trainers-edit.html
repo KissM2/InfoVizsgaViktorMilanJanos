@@ -4,43 +4,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--!Bootstrap-->
-  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
-  <!--?Popper: dropdowns, popovers, tooltips-->
-  <script src="../bootstrap/js/popper.min.js"></script>
-  <script src="../bootstrap/js/bootstrap.min.js"></script>
-  <!--!CSS-->
-  <link rel="stylesheet" href="../css/trainers-edit.css" />
-  <!--!JavaScript-->
-  <script src="../js/trainer-edit.js"></script>
 
-  <title>Pitypang Bálint</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+  <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Saját CSS -->
+  <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="../css/navbar.css">
+  <link rel="stylesheet" href="../css/map.css">
+  <link rel="stylesheet" href="../css/trainers-edit.css" />
+  <script type="module" src="../js/trainer-edit.js"></script>
+  <script type="module" src="../js/edzoteremValasztoMap.js"></script>
+
+  <title>FitLife-Névjegy</title>
 </head>
 
-<body class="bg-dark text-light">
+<body>
 
-  <div class="container my-5">
+  <div class="container my-5 mt-120px">
     <div class="row align-items-center">
-      <div class="col-lg-6 col-md-6 col-sm-12 text-center mb-4 mb-lg-0">
-        <img src="../images/Pitypang.jpg" alt="Pitypang" class="img-fluid rounded shadow border border-3 border-light">
-        <div class="col-sm-12">
-          <label class="label-color">Profilkép</label>
-          <input type="file" class="form-control dark-input">
+
+      <!-- BAL OLDAL -->
+      <div class="col-lg-6 d-flex flex-column align-items-center text-center mb-5 mb-lg-0">
+
+        <h5 id="" class="label-custom mb-2">Profilkép</h5>
+
+        <img id="preview" alt="Profilkép" class="profile-img mb-3">
+
+        <div class="card-custom w-100 p-3">
+          <h5 class="title-custom mb-3">Tölts fel képet</h5>
+          <input type="file" id="kepInput" class="form-control input-custom">
         </div>
+
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-12">
-        <div class="card dark-card mb-4">
-          <div class="card-header">Edzői bemutatkozás</div>
-          <div class="card-body">
-            <textarea class="form-control dark-input" rows="4" placeholder="Írj pár szót magadról..."></textarea>
-          </div>
-          <div class="card-body">
-            <input type="text" class="form-control dark-input" rows="4" placeholder="Írj pár szót magadról...">
-          </div>
+
+      <!-- JOBB OLDAL -->
+      <form id="edzoNevjegyForm" class="col-lg-6 d-flex flex-column justify-content-center">
+        <div class="card-custom mb-4">
+          <h5 class="title-custom mb-3">Leírás</h5>
+          <input type="text" id="leirasInput" name="leiras" class="form-control input-custom"
+            placeholder="János vagyok, szeretek edzeni...">
         </div>
-        <button class="btn btn-outline-success mt-3">Mentés</button>
+
+        <div class="card-custom mb-4">
+          <h5 class="title-custom mb-3">Idézet</h5>
+          <input type="text" id="idezetInput" name="idezet" class="form-control input-custom"
+            placeholder='"Bátraké a szerencse"'>
+        </div>
+
+        <div class="card-custom mb-4">
+          <h5 class="title-custom mb-3">Kompetenciák</h5>
+          <input type="text" id="kompetenciakInput" name="kompetenciak" class="form-control input-custom"
+            placeholder="Erő, kitartás, személyi edző...">
+        </div>
+
+      </form>
+
+    </div>
+    
+    <div class="card-custom mb-4">
+      <h3 class="title-custom mb-3">Edzőterem kiválasztása</h3>
+      <div id="autocomplete"></div>
+      <div class="col card-body" id="mapBefogo">
+        <div id="map"></div>
       </div>
     </div>
+    <button id="submit" class="btn-custom mt-2">Adatok mentése</button>
+  </div>
 </body>
 
 </html>

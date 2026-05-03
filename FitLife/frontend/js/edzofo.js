@@ -1,6 +1,5 @@
 import { getKeres } from "./kozosFetch.js";
 import { navbarGeneralas } from './navbar.js';
-import { footerGeneralas } from './footer.js';
 
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
@@ -14,13 +13,11 @@ let calendarData = {
 
 const menuLinkek = [
     { nev: "Naptár szerkesztése", url: "/esznt" },
-    { nev: "Névjegy szerkesztése", url: "/trainersedit" },
-    { nev: "Adatok szerkesztésee", url: "/traineradat" },
+    { nev: "Névjegy szerkesztése", url: "/trainersedit" }
 ];
 
 document.addEventListener("DOMContentLoaded", async function () {
     navbarGeneralas(menuLinkek);
-    footerGeneralas();
     loadCalendar();
 
     const listaKontener = document.getElementById("komment-lista");

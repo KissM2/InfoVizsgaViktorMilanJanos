@@ -92,14 +92,6 @@ CREATE TABLE IF NOT EXISTS edzesterv (
     FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
 );
 
--- EDZESTERV - GYAKORLAT
-CREATE TABLE IF NOT EXISTS gyakorlatok_kivalasztasa (
-    edzesterv_id INT NOT NULL,
-    gyakorlat_id INT NOT NULL,
-    PRIMARY KEY (edzesterv_id, gyakorlat_id),
-    FOREIGN KEY (edzesterv_id) REFERENCES edzesterv(edzesterv_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
-);
 
 -- ALLERGEN
 CREATE TABLE IF NOT EXISTS allergen (
