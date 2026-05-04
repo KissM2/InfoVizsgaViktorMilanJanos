@@ -54,7 +54,7 @@ function getWeekday(d) {
 router.get("/getHB", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getHetiBeosztas(req.session.user.id);
-        res.json(data);
+        res.status(200).json(data);
     } catch {
         res.status(500).json({ message: "Hiba" });
     }
@@ -67,7 +67,7 @@ router.get("/getHB", check.loginCheck, async (req, res) => {
 router.get("/getKA", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getKulonlegesAlkalmak(req.session.user.id);
-        res.json(data);
+        res.status(200).json(data);
     } catch {
         res.status(500).json({ message: "Hiba" });
     }
@@ -92,7 +92,7 @@ router.get("/getCalendar", check.loginCheck, async (req, res) => {
             ? await db.getFoglalas(edzoId)
             : await db.getFoglalasNoNames(edzoId);
 
-        res.json({ result: { heti, kulonleges, foglalas } });
+        res.status(200).json({ result: { heti, kulonleges, foglalas } });
 
     } catch (err) {
         console.error(err);
@@ -107,7 +107,7 @@ router.get("/getCalendar", check.loginCheck, async (req, res) => {
 router.get("/myBookings", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getMyBookings(req.session.user.id);
-        res.json(data);
+        res.status(200).json(data);
     } catch {
         res.status(500).json({ message: "Hiba" });
     }
@@ -180,7 +180,7 @@ router.post("/insertHB", check.loginCheck, check.edzoCheck, async (req, res) => 
 
     await db.markInvalidKAAsDeleted(edzoId, mettol);
 
-    res.json({ message: "HB mentve" });
+    res.status(200).json({ message: "HB mentve" });
 });
 
 /* =========================
@@ -211,7 +211,7 @@ router.post("/toggleKA", check.loginCheck, check.edzoCheck, async (req, res) => 
 
         if (!existing) {
             await db.insertKulonlegesAlkalom(datum, ido, "aktiv", edzoId);
-            return res.json({ status: "aktiv" });
+            return res.status(200).json({ status: "aktiv" });
         }
 
         if (existing.statusz === "torolt") {
@@ -222,7 +222,7 @@ router.post("/toggleKA", check.loginCheck, check.edzoCheck, async (req, res) => 
 
         await db.updateKAStatus(existing.ka_id, newStatus);
 
-        res.json({ status: newStatus });
+        res.status(200).json({ status: newStatus });
 
     } catch (err) {
         console.error(err);
@@ -315,7 +315,7 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
             }
         }
 
-        res.json({ message: "OK" });
+        res.status(200).json({ message: "OK" });
 
     } catch (err) {
         console.error(err);
