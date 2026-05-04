@@ -230,7 +230,7 @@ router.post("/book", check.loginCheck,check.userCheck, async (req, res) => {
                     if (inHB) {
 
                         // 2️⃣ KA check
-                        if (await db.isBlockedByKA(edzoId, datum, ido)) {
+                        if (!await db.isBlockedByKA(edzoId, datum, ido)) {
 
                             // 3️⃣ 🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
                             const conflict = myBookings.some(f =>
@@ -243,18 +243,19 @@ router.post("/book", check.loginCheck,check.userCheck, async (req, res) => {
                             if (!conflict) {
 
                                 // 4️⃣ más user foglalta
-                                if (await db.isSlotTakenByOther(datum, ido, userId, edzoId)) continue;
+                                if (!await db.isSlotTakenByOther(datum, ido, userId, edzoId)){
 
-                                // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
-                                await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
+                                    // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
+                                    await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
 
-                                // 6️⃣ insert / update
-                                const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
+                                    // 6️⃣ insert / update
+                                    const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 
-                                if (!existing) {
-                                    await db.insertBooking(datum, ido, userId, edzoId);
-                                } else {
-                                    await db.updateBookingStatus(existing.foglalas_id, "aktiv");
+                                    if (!existing) {
+                                        await db.insertBooking(datum, ido, userId, edzoId);
+                                    } else {
+                                        await db.updateBookingStatus(existing.foglalas_id, "aktiv");
+                                    }
                                 }
                             }
                         }
