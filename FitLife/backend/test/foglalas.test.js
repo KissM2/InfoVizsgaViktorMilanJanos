@@ -53,7 +53,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
             ["14:00", "14:30"]  // Szerda (1 blokk)
         ]);
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(201);
         expect(response.body.message).toBe("HB mentve");
         expect(database.softDeleteHetiBeosztas).toHaveBeenCalled();
         expect(database.insertHetiBeosztasSingle).toHaveBeenCalledTimes(2);
@@ -82,7 +82,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
             deactivate: {}
         });
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(201);
         expect(response.body.message).toBe("OK");
         expect(database.insertBooking).toHaveBeenCalledWith(datumStr, "10:00", 1, 2);
     });
@@ -107,7 +107,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
             deactivate: {}
         });
 
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(201);
         expect(response.body.message).toBe("OK");
         expect(database.insertBooking).not.toHaveBeenCalled();
     });
