@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const database = require('../sql/database.js');
+const requireLogin = require('../middleware/requireLogin.js');
 
 //!Multer
 const multer = require('multer'); //?npm install multer
@@ -34,7 +35,7 @@ router.get('/gyakorlatok', async (request, response) => {
         response.status(500).json({ message: "Nem sikerült lekérni a gyakorlatokat." });
     }
 });
-router.get('/generalt-gyakorlatok', async (request, response) => {
+router.post('/generalt-gyakorlatok', requireLogin.loginCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         if (!userId) {

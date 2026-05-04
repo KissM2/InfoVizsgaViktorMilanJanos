@@ -31,17 +31,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (mentettTerv) {
             mentettTervFeltoltes(table, mentettTerv);
         }
-    } 
+    }
     catch (err) {
         console.log("Nincs még mentett terv, üres tábla marad.");
-    }
-    try {
-        const generaltAdatok = await getKeres(`/api/generalt-gyakorlatok`);
-        if (generaltAdatok){
-            hetiTervAjanlas = generaltAdatok;
-        }
-    } catch (err) {
-        console.log("Generálási adat nem elérhető.");
     }
     navbarGeneralas(menuLinkek);
     footerGeneralas();
@@ -138,7 +130,17 @@ function alapTablaGeneralas() {
     const tbody = document.createElement("tbody");
     table.appendChild(tbody);
     ujSorHozzaadasa(table);
-    genBtn.addEventListener("click", function () { edzestervFeltoltes(table); });
+    genBtn.addEventListener("click", async function () {
+        try {
+            const frissTerv = await postApi('/api/generalt-gyakorlatok');
+            if (frissTerv) {
+                hetiTervAjanlas = frissTerv;
+                edzestervFeltoltes(table);
+            }
+        } catch (err) {
+            alert("Hiba történt a generálás során!");
+        }
+    });
     container.appendChild(table);
     hetiResz.appendChild(container);
     teljes.appendChild(hetiResz);
