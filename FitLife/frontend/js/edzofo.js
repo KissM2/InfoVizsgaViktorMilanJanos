@@ -121,15 +121,16 @@ function getActiveHetiForDate(dateObj) {
         h.mettol_ervenyes <= datum
     );
 
-    if (valid.length === 0) return [];
+    if (valid.length) {
+        const max = valid.reduce((m, h) =>
+            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+            valid[0].mettol_ervenyes
+        );
 
-    // legfrissebb mettol kiválasztása
-    const maxMettol = valid.reduce((max, h) =>
-        h.mettol_ervenyes > max ? h.mettol_ervenyes : max
-        , valid[0].mettol_ervenyes);
-
-    // csak az adott verzió
-    return valid.filter(h => h.mettol_ervenyes === maxMettol);
+        return valid.filter(h => h.mettol_ervenyes === max);
+    } else {
+        return [];
+    }
 }
 /* =========================
    SEGÉDFÜGGVÉNYEK
@@ -169,12 +170,15 @@ function parseDateSafe(d) {
 }
 
 function isValidFrom(dateObj, mettol) {
-    if (!mettol) return true;
+    if (mettol) {
 
-    const from = parseDateSafe(mettol);
-    const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+        const from = parseDateSafe(mettol);
+        const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
 
-    return d >= from;
+        return d >= from;
+    } else {
+        return true;
+    }
 }
 
 /* =========================
