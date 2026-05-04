@@ -1,4 +1,4 @@
-import { getKeres } from '../js/kozosFetch.js';
+import { deleteKeres, getKeres, postApi } from '../js/kozosFetch.js';
 import { navbarGeneralas } from './navbar.js';
 import { footerGeneralas } from './footer.js';
 
@@ -46,7 +46,7 @@ function savedEtrendekGeneralas() {
     savedSection.classList.add("saved-ettrendek");
 
     const title = document.createElement("h3");
-    title.textContent = "Mentett étrendek";
+    title.textContent = "Étrendek";
     savedSection.appendChild(title);
 
     const list = document.createElement("div");
@@ -78,24 +78,9 @@ async function loadSavedEtrendek() {
     list.innerHTML = "";
 
     try {
-        const response = await fetch("/api/getHetiEtrendek", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            console.error(data.message);
-            list.textContent = data.message || "Nem sikerült betölteni a mentett étrendeket.";
-            return;
-        }
-
-        const hetiEtrendek = await response.json();
+        const hetiEtrendek = await getKeres("/api/getHetiEtrendek");
 
         if (!Array.isArray(hetiEtrendek) || hetiEtrendek.length === 0) {
-            list.textContent = "Nincsenek mentett étrendek.";
             return;
         }
 
@@ -223,16 +208,7 @@ function createSavedEtrendCard(csoport, index) {
 
 async function deleteSavedEtrend(csoportId, card) {
     try {
-        const response = await fetch(`/api/deleteHetiEtrend?csoport_id=${csoportId}`, {
-            method: "DELETE"
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-            console.error(data.message);
-            alert(data.message || "Nem sikerült törölni az étrendet.");
-            return;
-        }
+        deleteKeres(`/api/deleteHetiEtrend?csoport_id=${csoportId}`);
 
         card.remove();
         alert("A mentett étrend törölve lett.");
@@ -276,24 +252,7 @@ async function hetiEtrendMenteseForCard(card) {
             return;
         }
 
-        const response = await fetch("/api/saveHetiEtrend", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                hetiEtrend: hetiEtrend,
-                csoport_id: card.csoportId || null
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error(data.message);
-            alert(data.message || "Nem sikerült elmenteni az étrendet.");
-            return;
-        }
+        const data = await postApi("/api/saveHetiEtrend", { hetiEtrend: hetiEtrend, csoport_id: card.csoportId || null});
 
         card.csoportId = data.csoport_id;
         alert("Heti étrend sikeresen mentve.");
@@ -410,7 +369,7 @@ function alapTablaGeneralas() {
     });
 
     torolBtn.addEventListener("click", async function () {
-        await hetiEtrendTorles(hetiResz);
+        alapTablaGeneralas();
     });
 }
 
@@ -451,24 +410,7 @@ async function hetiEtrendMentese(hetiResz) {
             return;
         }
 
-        const response = await fetch("/api/saveHetiEtrend", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                hetiEtrend: hetiEtrend,
-                csoport_id: hetiResz.csoportId || null
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error(data.message);
-            alert(data.message || "Nem sikerült elmenteni az étrendet.");
-            return;
-        }
+        const data = await postApi("/api/saveHetiEtrend", { hetiEtrend: hetiEtrend, csoport_id: hetiResz.csoportId || null});
 
         hetiResz.csoportId = data.csoport_id;
         alert("Heti étrend sikeresen mentve.");
@@ -495,17 +437,7 @@ async function hetiEtrendTorles(hetiResz) {
         const csoportId = hetiResz.csoportId || null;
         const url = csoportId ? `/api/deleteHetiEtrend?csoport_id=${csoportId}` : "/api/deleteHetiEtrend";
 
-        const response = await fetch(url, {
-            method: "DELETE"
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error(data.message);
-            alert(data.message || "Nem sikerült törölni az étrendet.");
-            return;
-        }
+        deleteKeres(url);
 
         hetiResz.remove();
         currentHetiResz = null;

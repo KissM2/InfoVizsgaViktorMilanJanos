@@ -25,10 +25,6 @@ router.post('/kommentek', requireLogin.loginCheck, async (request, response) => 
         
         const felhasznalo_id = request.session.user.id;
 
-        if (!szoveg || !ertekeles || !edzo_id) {
-            return response.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
-        }
-
         await database.insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id);
         response.status(201).json({ message: 'Komment sikeresen elmentve!' });
     } catch (error) {
@@ -37,7 +33,7 @@ router.post('/kommentek', requireLogin.loginCheck, async (request, response) => 
 });
 
 //GET /api/getAllKommentek'
-router.get('/getAllKommentek', async (request, response) => {
+router.get('/getAllKommentek', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const kommentek = await database.selectAllKommentek();
         response.status(200).json({  
@@ -50,7 +46,7 @@ router.get('/getAllKommentek', async (request, response) => {
 });
 
 //GET /api/kommentek : egy adott edző kommentjei
-router.get('/getKommentekForAdmin', async (request, response) => {
+router.get('/getKommentekForAdmin', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const {edzo_id, user_id} = request.query;
         if (!edzo_id && !user_id){
@@ -71,7 +67,7 @@ router.get('/getKommentekForAdmin', async (request, response) => {
     }
 });
 
-router.delete('/kommentInaktivalas', async (request, response) =>{
+router.delete('/kommentInaktivalas', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const komment_id = request.query.komment_id;
         const result = await database.kommentInaktivalas(komment_id);
@@ -93,7 +89,7 @@ router.delete('/kommentInaktivalas', async (request, response) =>{
     }
 });
 
-router.post('/kommentAktivalas', async (request, response) =>{
+router.post('/kommentAktivalas', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const komment_id = request.body.komment_id;
         const result = await database.kommentAktivalas(komment_id);

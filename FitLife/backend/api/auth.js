@@ -13,8 +13,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail', 
     auth: {
-        user: 'pelda@gmail.com',
-        pass: 'pelda'
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -83,27 +83,6 @@ async function findApplicationPathByUserId(prefix, userId) {
 }
 
 //!Endpoints:
-//?GET /api/test
-router.get('/test', (request, response) => {
-    response.status(200).json({
-        message: 'Ez a végpont működik.'
-    });
-});
-
-//?GET /api/testsql
-router.get('/testsql', async (request, response) => {
-    try {
-        const selectall = await database.selectall();
-        response.status(200).json({
-            message: 'Ez a végpont működik.',
-            results: selectall
-        });
-    } catch (error) {
-        response.status(500).json({
-            message: 'Ez a végpont nem működik.'
-        });
-    }
-});
 
 //?Post /api/userRegister
 router.post('/userRegister', upload.none(), validator.validateEmailPassword ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
@@ -235,7 +214,7 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
         
         if(login[0].role == "edzo"){
             const accepted = await database.selectJelentkezoEById(login[0].id);
-            if(accepted.statusz == "elfogadva" ){
+            if(accepted[0].statusz == "elfogadva" ){
                 result = await database.getEdzoSurveyDone(login[0].id);
             }else{
                 elfogadva = false;
@@ -247,7 +226,6 @@ router.post('/login', upload.none(), validator.validateEmailPassword, async (req
         if(result){
             surveyDone = result[0].counter > 0;
         }
-
 
         return response.status(200).json({
             message: 'Sikeres bejelentkezés.',
@@ -297,7 +275,7 @@ router.get('/getAuthData', requireLogin.loginCheck, async (request, response) =>
     }
 });
 
-router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator.validateEmail ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) =>{
+router.post('/updateAuthData', requireLogin.loginCheck, upload.none(), validator.validateEmail ,validator.validateRegister, checkIfEmailUsed.checkIfEmailUsed, async (request, response) =>{
     try {
         const {
             felh_nev,
@@ -307,7 +285,7 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
             szul_datum,
         } = request.body;
 
-        database.updateLoginData(
+        await database.updateLoginData(
             felh_nev,
             email,
             telszam,
@@ -315,6 +293,7 @@ router.post('/updateAuthData', upload.none(), requireLogin.loginCheck, validator
             szul_datum,
             request.session.user.id,
         );
+        request.session.user.email = email;
 
         response.status(200).json({
             message: "Bejelentkezési adatok sikeresen frissítve"
@@ -398,7 +377,7 @@ router.post('/reset-password', upload.none(), async (request, response) => {
         response.status(500).json({ message: "Szerverhiba történt." });
     }
 });
-router.get('/getAllAuthData', async (request, response) =>{
+router.get('/getAllAuthData', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const authData = await database.selectAllLoginData();
         response.status(200).json({
@@ -449,7 +428,7 @@ router.post('/kijelentkezes', (request, response) => {
     });
 });
 
-router.get('/getErintettekForAdmin', async (request, response) =>{
+router.get('/getErintettekForAdmin', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const komment_id = request.query.komment_id;
         const authData = await database.selectLoginDataByKommentId(komment_id);
@@ -465,7 +444,7 @@ router.get('/getErintettekForAdmin', async (request, response) =>{
     }
 });
 
-router.delete('/deleteUser', async (request, response) =>{
+router.delete('/deleteUserForAdmin', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const felhasznalo_id = request.query.id;
         const result = await database.deleteFelhasznalo(felhasznalo_id);
@@ -487,7 +466,7 @@ router.delete('/deleteUser', async (request, response) =>{
     }
 });
 
-router.post('/restoreUser', async (request, response) =>{
+router.post('/restoreUser', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const felhasznalo_id = request.body.id;
         const result = await database.restoreFelhasznalo(felhasznalo_id);
@@ -509,7 +488,7 @@ router.post('/restoreUser', async (request, response) =>{
     }
 });
 
-router.post('/felhasznaloSzerepModositas', async (request, response) =>{
+router.post('/felhasznaloSzerepModositas', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         if(request.body.ujRole == 'admin'){
             return response.status(403).json({
@@ -537,7 +516,7 @@ router.post('/felhasznaloSzerepModositas', async (request, response) =>{
     }
 });
 
-router.get('/getAllAdminAuthData', async (request, response) =>{
+router.get('/getAllAdminAuthData', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) =>{
     try {
         const authData = await database.selectAllAdminLoginData();
         response.status(200).json({
@@ -552,7 +531,7 @@ router.get('/getAllAdminAuthData', async (request, response) =>{
     }
 });
 
-router.post('/adminRegister', upload.none(), validator.validateEmailPassword , checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
+router.post('/adminRegister', requireLogin.loginCheck, requireLogin.adminCheck, upload.none(), validator.validateEmailPassword , checkIfEmailUsed.checkIfEmailUsed, async (request, response) => {
     try {
         const {email, password, felh_nev} = request.body;
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -576,7 +555,7 @@ router.post('/adminRegister', upload.none(), validator.validateEmailPassword , c
     }
 });
 
-router.get('/getJelentkezok', requireLogin.adminCheck, async (request, response) => {
+router.get('/getJelentkezok', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const jelentkezok = await database.selectJelentkezok();
         response.status(200).json({
@@ -592,7 +571,7 @@ router.get('/getJelentkezok', requireLogin.adminCheck, async (request, response)
 });
 
 // Vissza adja az önéletrajzot userId alapján
-router.get('/jelentkezok/:userId/cv', requireLogin.adminCheck, async (request, response) => {
+router.get('/jelentkezok/:userId/cv', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const { userId } = request.params;
 
@@ -620,7 +599,7 @@ router.get('/jelentkezok/:userId/cv', requireLogin.adminCheck, async (request, r
 });
 
 // Vissza adja a motivációs levelet userId alapján
-router.get('/jelentkezok/:userId/cover-letter', requireLogin.adminCheck, async (request, response) => {
+router.get('/jelentkezok/:userId/cover-letter', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const { userId } = request.params;
 
@@ -647,7 +626,7 @@ router.get('/jelentkezok/:userId/cover-letter', requireLogin.adminCheck, async (
     }
 });
 
-router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, response) =>{
+router.delete('/deleteJelentkezo', requireLogin.loginCheck, requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.query.id
         const indok = request.query.indok || 'Nem felelt meg az elvárásoknak.';;
@@ -676,7 +655,7 @@ router.delete('/deleteJelentkezo', requireLogin.adminCheck, async(request, respo
     }
 });
 
-router.post('/postJelentkezoelfogadas', requireLogin.adminCheck, async(request, response) =>{
+router.post('/postJelentkezoelfogadas', requireLogin.loginCheck, requireLogin.adminCheck, async(request, response) =>{
     try {
         const id = request.body.id
         const userData = await database.selectLoginDataById(id);

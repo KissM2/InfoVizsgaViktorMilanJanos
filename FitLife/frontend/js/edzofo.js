@@ -1,6 +1,5 @@
 import { getKeres } from "./kozosFetch.js";
 import { navbarGeneralas } from './navbar.js';
-import { footerGeneralas } from './footer.js';
 
 const napok = ["Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"];
 
@@ -14,13 +13,11 @@ let calendarData = {
 
 const menuLinkek = [
     { nev: "Naptár szerkesztése", url: "/esznt" },
-    { nev: "Névjegy szerkesztése", url: "/trainersedit" },
-    { nev: "Adatok szerkesztésee", url: "/traineradat" },
+    { nev: "Névjegy szerkesztése", url: "/trainersedit" }
 ];
 
 document.addEventListener("DOMContentLoaded", async function () {
     navbarGeneralas(menuLinkek);
-    footerGeneralas();
     loadCalendar();
 
     const listaKontener = document.getElementById("komment-lista");
@@ -124,15 +121,16 @@ function getActiveHetiForDate(dateObj) {
         h.mettol_ervenyes <= datum
     );
 
-    if (valid.length === 0) return [];
+    if (valid.length) {
+        const max = valid.reduce((m, h) =>
+            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+            valid[0].mettol_ervenyes
+        );
 
-    // legfrissebb mettol kiválasztása
-    const maxMettol = valid.reduce((max, h) =>
-        h.mettol_ervenyes > max ? h.mettol_ervenyes : max
-        , valid[0].mettol_ervenyes);
-
-    // csak az adott verzió
-    return valid.filter(h => h.mettol_ervenyes === maxMettol);
+        return valid.filter(h => h.mettol_ervenyes === max);
+    } else {
+        return [];
+    }
 }
 /* =========================
    SEGÉDFÜGGVÉNYEK
@@ -172,12 +170,15 @@ function parseDateSafe(d) {
 }
 
 function isValidFrom(dateObj, mettol) {
-    if (!mettol) return true;
+    if (mettol) {
 
-    const from = parseDateSafe(mettol);
-    const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+        const from = parseDateSafe(mettol);
+        const d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
 
-    return d >= from;
+        return d >= from;
+    } else {
+        return true;
+    }
 }
 
 /* =========================

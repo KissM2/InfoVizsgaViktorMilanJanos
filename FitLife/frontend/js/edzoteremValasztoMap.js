@@ -1,5 +1,6 @@
 let map;
 export let marker;
+import { getKeres } from "./kozosFetch.js";
 import {loadGoogleMaps, felhHelyAdatokElkerese, helyAdatokLekerese, autocompleteElhelyezes} from "./maps.js";
 
 document.addEventListener('DOMContentLoaded', async function(){
@@ -36,8 +37,20 @@ async function initMap() {
     // Marker létrehozása a térképen
     marker = new AdvancedMarkerElement({
         map: map,
-        position: location
     });
+
+    // Edzőterem koordinátáinak lekérése
+    const edzoteremKoordinatak = await getKeres("/api/getEdzoTeremFromSession");
+
+    //marker áthelyezése ha van edzőterem koordináta
+    if(edzoteremKoordinatak.edzoTerem){
+        const location = {
+            lat: parseFloat(edzoteremKoordinatak.edzoTerem.y),
+            lng: parseFloat(edzoteremKoordinatak.edzoTerem.x),
+        };
+        marker.position = location;
+        map.setCenter(location)
+    }
 
     // Térképre kattintva a marker a kattintás helyére kerül
     map.addListener("click", async (e) => {

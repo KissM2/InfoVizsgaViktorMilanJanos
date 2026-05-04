@@ -6,6 +6,7 @@ const fs = require('fs/promises');
 //!Multer
 const multer = require('multer'); //?npm install multer
 const path = require('path');
+const { loginCheck, edzoCheck } = require('../middleware/requireLogin.js');
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
@@ -59,6 +60,25 @@ router.get('/edzoProfil', async (request, response) => {
         });
     }
 });
+router.get('/edzoProfilSajat', loginCheck, edzoCheck,  async (request, response) => {
+    try {
+        const azon=request.session.user.id;
+        const edzo = await database.selectTrainerById(azon);
+        if (!edzo) {
+            return response.status(404).json({
+                message: 'Adatok nem található.'
+            });
+        }
+        response.status(200).json({
+            message: 'Sikeres lekérdezés.',
+            results: edzo[0]
+        });
+    } catch (error) {
+        response.status(500).json({
+            message: 'Hiba történt a szerver oldalon.'
+        });
+    }
+});
 
 router.get('/topNegyEdzo', async (request, response) => {
     try {
@@ -78,7 +98,7 @@ router.get('/topNegyEdzo', async (request, response) => {
 router.get('/osszesEdzoKorzetben', async (request, response) => {
     try {
         const { lng, lat } = request.query;
-        const edzok = await database.selectTrainersByDist(lng, lat);
+        const edzok = await database.selectAllTrainersByDist(lng, lat);
         response.status(200).json({
             message: 'Edzők sikeresen lekérve.',
             results: edzok

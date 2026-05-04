@@ -1,6 +1,5 @@
 import { getKeres, postApi } from "./kozosFetch.js";
 import { navbarGeneralas } from './navbar.js';
-import { footerGeneralas } from './footer.js';
 
 /* ======================= */
 let aktualisEv = new Date().getFullYear();
@@ -17,14 +16,12 @@ const honapok = ["Január", "Február", "Március", "Április", "Május", "Júni
 
 const menuLinkek = [
     { nev: "Edző főoldal", url: "/edzofo" },
-    { nev: "Névjegy szerkesztés", url: "/trainersedit" },
-    { nev: "Adatok szerkesztése", url: "/traineradat" }
+    { nev: "Névjegy szerkesztés", url: "/trainersedit" }
 ];
 
 /* ======================= */
 document.addEventListener("DOMContentLoaded", async () => {
     navbarGeneralas(menuLinkek);
-    footerGeneralas();
 
     genBeo();
     await loadAll();
@@ -42,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadAll() {
     kaLista = await getKeres("/api/getKA");
     kapottbeo = await getKeres("/api/getHB");
-    console.log(kaLista)
 }
 
 /* ======================= */
@@ -52,13 +48,16 @@ function getActiveHetiForDate(datum) {
         e.mettol_ervenyes.split("T")[0] <= datum
     );
 
-    if (!valid.length) return [];
+    if (valid.length) {
+        const max = valid.reduce((m, h) =>
+            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+            valid[0].mettol_ervenyes
+        );
 
-    const max = valid.reduce((m, e) =>
-        e.mettol_ervenyes > m ? e.mettol_ervenyes : m
-        , valid[0].mettol_ervenyes);
-
-    return valid.filter(e => e.mettol_ervenyes === max);
+        return valid.filter(h => h.mettol_ervenyes === max);
+    } else {
+        return [];
+    }
 }
 
 /* ======================= */

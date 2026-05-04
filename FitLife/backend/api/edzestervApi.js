@@ -116,7 +116,7 @@ router.post('/generalt-gyakorlatok', requireLogin.loginCheck, async (request, re
         response.status(500).json({ message: "Hiba a generálás során." });
     }
 });
-router.post('/mentes-edzesterv', async (request, response) => {
+router.post('/mentes-edzesterv', requireLogin.loginCheck, async (request, response) => {
     try {
         const { adatok } = request.body;
         if (!adatok || adatok.length === 0) {
@@ -142,7 +142,7 @@ router.post('/mentes-edzesterv', async (request, response) => {
         response.status(500).json({ message: "Hiba a mentés során." });
     }
 });
-router.get('/betoltes-edzesterv', async (request, response) => {
+router.get('/betoltes-edzesterv', requireLogin.loginCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         if (!userId) {
@@ -182,7 +182,7 @@ router.get('/getIzomcsoportok', async (request, response) => {
         response.status(500).json({ message: "Hiba az izomcsoportok lekérésekor." });
     }
 });
-router.post('/postUjGyakorlat', upload.none(), async (request, response) => {
+router.post('/postUjGyakorlat', requireLogin.loginCheck, requireLogin.adminCheck, upload.none(), async (request, response) => {
     try {
         const { 
             gyakorlat_nev,
@@ -212,7 +212,7 @@ router.post('/postUjGyakorlat', upload.none(), async (request, response) => {
         response.status(500).json({ message: "Hiba az új gyakorlat felvételkor." });
     }
 });
-router.delete('/deleteGyakorlat', async (request, response) => {
+router.delete('/deleteGyakorlat', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const { id } = request.query;
 

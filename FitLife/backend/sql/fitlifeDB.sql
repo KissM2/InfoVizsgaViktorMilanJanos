@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS login (
     jelszo VARCHAR(255) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     telszam VARCHAR(30),
-    nem ENUM('férfi','nő') NOT NULL,
+    nem ENUM('férfi','nő'),
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
     reset_token VARCHAR(255) NULL,
@@ -89,17 +89,9 @@ CREATE TABLE IF NOT EXISTS edzesterv (
     sorrend INT NOT NULL,
     felhasznalo_id INT NOT NULL,
     FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id) ON DELETE CASCADE
 );
 
--- EDZESTERV - GYAKORLAT
-CREATE TABLE IF NOT EXISTS gyakorlatok_kivalasztasa (
-    edzesterv_id INT NOT NULL,
-    gyakorlat_id INT NOT NULL,
-    PRIMARY KEY (edzesterv_id, gyakorlat_id),
-    FOREIGN KEY (edzesterv_id) REFERENCES edzesterv(edzesterv_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
-);
 
 -- ALLERGEN
 CREATE TABLE IF NOT EXISTS allergen (
@@ -476,106 +468,106 @@ INSERT INTO allergen(nev) VALUES
 
 -- 7. recept tábla:
 INSERT INTO recept (nev, leiras, etkezes_tipus, zsir, protein, szenhidrat) VALUES
-('Csirkés rizstál','Hozzávalók: csirkemell, rizs, brokkoli, só, bors. Elkészítés: a rizst főzd meg, a csirkemellet kockázva süsd meg serpenyőben, párold a brokkolit majd keverd össze.','ebed',5,38,55), -- brokkoli
-('Zabkása mogyoróvajjal','Hozzávalók: zabpehely, víz vagy tej, mogyoróvaj, banán. Elkészítés: a zabot főzd krémesre, keverd bele a mogyoróvajat és a felszeletelt banánt.','reggeli',12,15,60), -- zab, földimogyoró
-('Pulykamell saláta','Hozzávalók: pulykamell, salátakeverék, paradicsom, olívaolaj. Elkészítés: grillezd a pulykát, majd szeleteld és keverd a salátához.','vacsora',6,34,10), --
-('Tojásos avokádó toast','Hozzávalók: teljes kiőrlésű kenyér, tojás, avokádó. Elkészítés: pirítsd meg a kenyeret, főzz tojást, az avokádót villával törd össze és kend a kenyérre.','reggeli',14,20,28), -- tojás, búza, avokádó
-('Tonhalas rizs','Hozzávalók: tonhalkonzerv, főtt rizs, kukorica, citromlé. Elkészítés: keverd össze az összetevőket egy tálban.','ebed',4,32,50), -- tonhal
-('Csirkés quinoa saláta','Hozzávalók: quinoa, csirkemell, uborka, paradicsom. Elkészítés: főzd meg a quinoát, süsd meg a csirkét és keverd össze a zöldségekkel.','ebed',6,36,40), --
-('Protein palacsinta','Hozzávalók: tojás, fehérjepor, zabpehely. Elkészítés: turmixold össze, majd süsd ki palacsintaként.','reggeli',7,30,20), -- tojás, zab, tej
-('Lazac brokkolival','Hozzávalók: lazacfilé, brokkoli, citrom. Elkészítés: süsd meg a lazacot sütőben, párold a brokkolit.','vacsora',14,34,6), -- hal, brokkoli
-('Csirkés wrap','Hozzávalók: tortilla, csirkemell, saláta, joghurtos öntet. Elkészítés: süsd meg a csirkét, töltsd a tortillába a salátával együtt.','ebed',7,32,40), -- búza, tej
-('Zöldséges omlett','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel együtt.','reggeli',9,22,6), -- tojás, spenót, hagyma
-('Csirkés bulgur','Hozzávalók: bulgur, csirkemell, paprika. Elkészítés: főzd meg a bulgurt, a csirkét kockázva pirítsd meg és keverd össze.','ebed',5,35,45), -- búza
-('Pulyka burger','Hozzávalók: darált pulykahús, teljes kiőrlésű zsemle, saláta. Elkészítés: süsd meg a húspogácsát, majd rakd össze a burgert.','ebed',8,32,40), -- búza
-('Túrós zabkása','Hozzávalók: zabpehely, túró, méz. Elkészítés: főzd meg a zabkását, majd keverd bele a túrót.','reggeli',6,25,50), -- zab, tej
-('Csirkés karfiolrizs','Hozzávalók: csirkemell, karfiol, fűszerek. Elkészítés: reszeld le a karfiolt rizs állagúra, pirítsd csirkével.','vacsora',5,35,12), -- karfiol
-('Makréla saláta','Hozzávalók: makréla, saláta, paradicsom. Elkészítés: a makrélát keverd a salátával.','vacsora',13,30,5), -- makréla
-('Babos csirketál','Hozzávalók: csirkemell, vörösbab, rizs. Elkészítés: főzd meg a rizst, süsd a csirkét és keverd össze a babbal.','ebed',6,38,60), -- babfélék
-('Avokádós csirke saláta','Hozzávalók: csirkemell, avokádó, saláta. Elkészítés: grillezd a csirkét és keverd össze az avokádóval.','vacsora',12,34,8), -- avokádó
-('Tonhalas tészta','Hozzávalók: teljes kiőrlésű tészta, tonhal, paradicsom. Elkészítés: főzd meg a tésztát és keverd össze tonhallal.','ebed',7,32,65), -- búza, tonhal
-('Protein joghurt gyümölccsel','Hozzávalók: natúr joghurt, fehérjepor, bogyós gyümölcs. Elkészítés: keverd össze egy tálban.','csemege',3,24,15), -- tej
-('Csirkés zöldségleves','Hozzávalók: csirkemell, sárgarépa, zeller. Elkészítés: főzd össze alaplében.','vacsora',3,20,10), -- zeller
-('Pulykás rizottó','Hozzávalók: rizs, pulykamell, hagyma. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',6,34,55), -- hagyma
-('Tofu stir fry','Hozzávalók: tofu, brokkoli, szójaszósz. Elkészítés: pirítsd össze wokban.','ebed',9,20,18), -- tofu, szójabab, brokkoli
-('Zab muffin','Hozzávalók: zabpehely, tojás, banán. Elkészítés: keverd össze és süsd muffin formában.','csemege',5,10,30), -- zab, tojás
-('Grillezett csirke saláta','Hozzávalók: csirkemell, uborka, paradicsom. Elkészítés: grillezd a csirkét és keverd a zöldségekkel.','vacsora',4,36,8), --
-('Lazac quinoa bowl','Hozzávalók: lazac, quinoa, spárga. Elkészítés: süsd meg a lazacot és tálald quinoával.','vacsora',14,35,30), -- hal, spárga
-('Csirkés kuszkusz','Hozzávalók: kuszkusz, csirkemell, paprika. Elkészítés: főzd meg a kuszkuszt és keverd a csirkével.','ebed',5,34,50), -- búza
-('Tojásos rizs','Hozzávalók: rizs, tojás, szójaszósz. Elkészítés: pirítsd össze serpenyőben.','ebed',9,20,45), -- tojás, szójabab
-('Mandulás zabkása','Hozzávalók: zabpehely, mandula, méz. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',10,15,50), -- zab, mandula
-('Csirkés brokkoli rizs','Hozzávalók: csirkemell, rizs, brokkoli. Elkészítés: párold a brokkolit és keverd a csirkével.','ebed',5,38,55), -- brokkoli
-('Protein zabgolyó','Hozzávalók: zabpehely, fehérjepor, mogyoróvaj. Elkészítés: keverd össze és formázz golyókat.','csemege',8,20,25), -- zab, földimogyoró
-('Csirkés édesburgonya tál','Hozzávalók: csirkemell, édesburgonya, olívaolaj, só, bors. Elkészítés: az édesburgonyát kockázd fel és süsd meg sütőben, a csirkemellet serpenyőben süsd aranybarnára, majd tálald együtt.','ebed',6,38,45), --
-('Protein zabturmix','Hozzávalók: zabpehely, fehérjepor, tej vagy víz, banán. Elkészítés: turmixold össze az összes hozzávalót krémes állagúra.','reggeli',4,28,50), -- zab, tej
-('Pulykás saláta','Hozzávalók: pulykamell, saláta, paradicsom, uborka. Elkészítés: grillezd a pulykamellet, majd szeleteld fel és keverd a salátával.','vacsora',4,35,8), --
-('Tojásos zabpalacsinta','Hozzávalók: zabpehely, tojás, tej. Elkészítés: turmixold össze, majd serpenyőben süsd ki palacsinta formában.','reggeli',7,24,30), -- zab, tojás, tej
-('Tonhalas kuszkusz','Hozzávalók: tonhal, kuszkusz, citromlé, paradicsom. Elkészítés: készítsd el a kuszkuszt, majd keverd össze tonhallal.','ebed',5,30,45), -- tonhal, búza
-('Grillezett csirke cukkínivel','Hozzávalók: csirkemell, cukkini, fokhagyma. Elkészítés: süsd meg a csirkét grillen, a cukkinit serpenyőben pirítsd.','vacsora',5,36,10), -- cukkini, fokhagyma
-('Protein túrókrém','Hozzávalók: túró, fehérjepor, méz. Elkészítés: keverd össze egy tálban krémesre.','csemege',3,28,12), -- tej
-('Marhahúsos rizstál','Hozzávalók: sovány darált marhahús, rizs, paprika. Elkészítés: pirítsd meg a húst, főzd meg a rizst és keverd össze.','ebed',9,40,55), --
-('Csirkés brokkoli quinoa','Hozzávalók: csirkemell, quinoa, brokkoli. Elkészítés: főzd meg a quinoát, párold a brokkolit, majd keverd össze a csirkével.','ebed',5,37,40), -- brokkoli
-('Zöldséges tofu tál','Hozzávalók: tofu, paprika, brokkoli, szójaszósz. Elkészítés: pirítsd össze wokban.','ebed',9,22,18), -- tofu, szójabab, brokkoli
-('Protein chia puding','Hozzávalók: chia mag, tej, fehérjepor. Elkészítés: keverd össze és hagyd állni hűtőben.','reggeli',8,22,15), -- tej
-('Pulykás wrap','Hozzávalók: tortilla, pulykamell, saláta. Elkészítés: grillezd a húst, majd töltsd tortillába.','ebed',7,32,42), -- búza
-('Tojásos spenótos omlett','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel.','reggeli',9,24,6), -- tojás, spenót, hagyma
-('Csirkés bulgur saláta','Hozzávalók: bulgur, csirkemell, paradicsom. Elkészítés: főzd meg a bulgurt, keverd össze csirkével és zöldségekkel.','ebed',5,34,45), -- búza
-('Lazacos avokádó saláta','Hozzávalók: lazac, avokádó, saláta. Elkészítés: süsd meg a lazacot és keverd össze az avokádóval.','vacsora',14,34,10), -- hal, avokádó
-('Babos csirke chili','Hozzávalók: csirkemell, bab, paradicsomszósz, chili. Elkészítés: főzd össze az összetevőket egy lábasban.','ebed',6,38,40), -- babfélék, chili
-('Zabos protein muffin','Hozzávalók: zabpehely, tojás, fehérjepor. Elkészítés: keverd össze és süsd muffin formában.','csemege',6,18,28), -- zab, tojás
-('Grillezett tonhal steak','Hozzávalók: tonhal steak, citrom, olívaolaj. Elkészítés: süsd meg grillen oldalanként pár percig.','vacsora',8,36,0), -- tonhal
-('Pulykás rizs tál','Hozzávalók: pulykamell, rizs, paprika. Elkészítés: süsd meg a húst, majd keverd össze a főtt rizzsel.','ebed',5,36,55), --
-('Mandulás zabkása','Hozzávalók: zabpehely, mandula, méz. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',10,16,50), -- zab, mandula
-('Csirkés karfiol stir fry','Hozzávalók: csirkemell, karfiol, szójaszósz. Elkészítés: pirítsd össze wokban.','vacsora',5,35,12), -- karfiol, szójabab
-('Tojásos rizs zöldségekkel','Hozzávalók: rizs, tojás, brokkoli, répa. Elkészítés: pirítsd össze serpenyőben.','ebed',9,22,48), -- tojás, brokkoli
-('Protein smoothie bogyós gyümölccsel','Hozzávalók: fehérjepor, tej, bogyós gyümölcs. Elkészítés: turmixold össze.','csemege',3,26,20), -- tej
-('Csirkés lencsesaláta','Hozzávalók: csirkemell, főtt lencse, paradicsom. Elkészítés: keverd össze egy tálban.','ebed',5,36,30), -- lencse
-('Makréla quinoa tál','Hozzávalók: makréla, quinoa, uborka. Elkészítés: főzd meg a quinoát, majd keverd a makrélával.','vacsora',13,30,35), -- makréla
-('Protein zabkása','Hozzávalók: zabpehely, fehérjepor, tej. Elkészítés: főzd össze krémes állagúra.','reggeli',5,30,45), -- zab, tej
-('Pulyka burger salátával','Hozzávalók: pulykahús pogácsa, saláta, paradicsom. Elkészítés: süsd meg a pogácsát és tálald salátával.','ebed',9,34,12), --
-('Csirkés zöldbab','Hozzávalók: csirkemell, zöldbab, fokhagyma. Elkészítés: pirítsd össze serpenyőben.','vacsora',5,35,10), -- zöldbab, fokhagyma
-('Tonhalas rizssaláta','Hozzávalók: tonhal, rizs, kukorica. Elkészítés: keverd össze hidegen.','ebed',5,30,50), -- tonhal
-('Avokádós tojás saláta','Hozzávalók: tojás, avokádó, saláta. Elkészítés: főzd meg a tojást, majd keverd az avokádóval.','reggeli',14,22,10), -- tojás, avokádó
-('Csirkés rizs brokkolival','Hozzávalók: csirkemell, rizs, brokkoli, só, bors. Elkészítés: a rizst főzd meg, a csirkét serpenyőben süsd meg, a brokkolit párold, majd keverd össze.','ebed',5,38,55), -- brokkoli
-('Zabkása almával','Hozzávalók: zabpehely, tej vagy víz, alma, fahéj. Elkészítés: a zabot főzd krémesre, add hozzá a reszelt almát és a fahéjat.','reggeli',4,12,55), -- zab
-('Pulykás quinoa tál','Hozzávalók: pulykamell, quinoa, paprika. Elkészítés: főzd meg a quinoát, a pulykát pirítsd meg, majd tálald együtt.','ebed',6,34,40), --
-('Tojásos avokádó saláta','Hozzávalók: tojás, avokádó, saláta. Elkészítés: főzd meg a tojást, szeleteld fel, majd keverd össze az avokádóval és salátával.','reggeli',14,22,10), -- tojás, avokádó
-('Tonhalas salátatál','Hozzávalók: tonhal, salátakeverék, paradicsom. Elkészítés: keverd össze egy tálban és locsold meg citromlével.','vacsora',6,30,8), -- tonhal
-('Protein zabturmix','Hozzávalók: zabpehely, fehérjepor, tej, banán. Elkészítés: turmixold össze krémes állagúra.','reggeli',4,28,45), -- zab, tej
-('Csirkés bulgur','Hozzávalók: bulgur, csirkemell, paprika. Elkészítés: főzd meg a bulgurt, süsd meg a csirkét és keverd össze.','ebed',5,36,50), -- búza
-('Lazac spárgával','Hozzávalók: lazacfilé, spárga, citrom. Elkészítés: a lazacot süsd meg sütőben, a spárgát párold.','vacsora',14,34,6), -- hal, spárga
-('Zabpalacsinta banánnal','Hozzávalók: zabpehely, tojás, banán. Elkészítés: turmixold össze és süsd palacsintának.','reggeli',6,20,35), -- zab, tojás
-('Pulykás saláta','Hozzávalók: pulykamell, saláta, uborka, paradicsom. Elkészítés: grillezd a pulykát és keverd a zöldségekhez.','vacsora',4,34,10), --
-('Csirkés karfiolrizs','Hozzávalók: csirkemell, karfiol, fokhagyma. Elkészítés: reszeld a karfiolt rizs állagúra, majd pirítsd össze csirkével.','vacsora',5,35,12), -- karfiol, fokhagyma
-('Protein joghurt','Hozzávalók: natúr joghurt, fehérjepor, méz. Elkészítés: keverd össze egy tálban.','csemege',3,25,12), -- tej
-('Csirkés tészta','Hozzávalók: teljes kiőrlésű tészta, csirkemell, paradicsomszósz. Elkészítés: főzd meg a tésztát, majd keverd össze csirkével és szósszal.','ebed',7,32,60), -- búza
-('Babos pulykatál','Hozzávalók: pulykamell, vörösbab, rizs. Elkészítés: főzd meg a rizst, a pulykát süsd meg és keverd a babbal.','ebed',6,38,50), -- babfélék
-('Zöldséges tofu wok','Hozzávalók: tofu, brokkoli, paprika, szójaszósz. Elkészítés: pirítsd össze wokban.','ebed',9,20,18), -- tofu, szójabab, brokkoli
-('Mandulás zabkása','Hozzávalók: zabpehely, mandula, méz. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',10,15,50), -- zab, mandula
-('Makréla saláta','Hozzávalók: makréla, saláta, paradicsom. Elkészítés: keverd össze hidegen.','vacsora',13,28,5), -- makréla
-('Csirkés quinoa','Hozzávalók: quinoa, csirkemell, uborka. Elkészítés: főzd meg a quinoát, majd keverd össze a csirkével.','ebed',6,36,40), --
-('Protein muffin','Hozzávalók: zabpehely, tojás, fehérjepor. Elkészítés: keverd össze és süsd muffin formában.','csemege',6,18,28), -- zab, tojás
-('Tonhalas rizs','Hozzávalók: tonhal, rizs, citromlé. Elkészítés: keverd össze egy tálban.','ebed',4,32,50), -- tonhal
-('Tojásos omlett spenóttal','Hozzávalók: tojás, spenót, hagyma. Elkészítés: a tojást felverve süsd meg a zöldségekkel.','reggeli',9,24,6), -- tojás, spenót, hagyma
-('Csirkés zöldbab','Hozzávalók: csirkemell, zöldbab, fokhagyma. Elkészítés: pirítsd össze serpenyőben.','vacsora',5,35,10), -- zöldbab, fokhagyma
-('Pulykás rizottó','Hozzávalók: rizs, pulykamell, hagyma. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',6,34,55), -- hagyma
-('Protein turmix','Hozzávalók: fehérjepor, tej, banán. Elkészítés: turmixold össze.','csemege',3,26,25), -- tej
-('Lazacos quinoa bowl','Hozzávalók: lazac, quinoa, uborka. Elkészítés: süsd meg a lazacot és tálald quinoával.','vacsora',14,34,30), -- hal
-('Zabos energiaszelet','Hozzávalók: zabpehely, mogyoróvaj, méz. Elkészítés: keverd össze és préseld formába.','csemege',10,12,30), -- zab, földimogyoró
-('Csirkés tortilla','Hozzávalók: tortilla, csirkemell, saláta. Elkészítés: süsd meg a csirkét és töltsd tortillába.','ebed',7,30,40), -- búza
-('Avokádós csirke saláta','Hozzávalók: csirkemell, avokádó, saláta. Elkészítés: grillezd a csirkét és keverd össze az avokádóval.','vacsora',12,34,8), -- avokádó
-('Babos csirke chili','Hozzávalók: csirkemell, bab, paradicsomszósz, chili. Elkészítés: főzd össze egy lábasban.','ebed',6,38,40), -- babfélék, chili
-('Protein zabkása','Hozzávalók: zabpehely, fehérjepor, tej. Elkészítés: főzd össze krémesre.','reggeli',5,30,45), -- zab, tej
-('Csirkés kuszkusz','Hozzávalók: kuszkusz, csirkemell, paprika. Elkészítés: készítsd el a kuszkuszt és keverd csirkével.','ebed',5,34,50), -- búza
-('Tojásos rizs','Hozzávalók: rizs, tojás, szójaszósz. Elkészítés: pirítsd össze serpenyőben.','ebed',9,20,45), -- tojás, szójabab
-('Pulyka burger','Hozzávalók: pulykahús pogácsa, teljes kiőrlésű zsemle. Elkészítés: süsd meg a pogácsát és tálald zsemlében.','ebed',9,34,35), -- búza
-('Sardínia saláta','Hozzávalók: szardínia, saláta, paradicsom. Elkészítés: keverd össze egy tálban.','vacsora',11,28,4), -- szardínia
-('Zöld smoothie','Hozzávalók: spenót, banán, víz. Elkészítés: turmixold össze.','csemege',2,4,20), -- spenót
-('Csirkés brokkoli rizs','Hozzávalók: csirkemell, rizs, brokkoli. Elkészítés: párold a brokkolit és keverd csirkével és rizzsel.','ebed',5,38,55), -- brokkoli
-('Tofu saláta','Hozzávalók: tofu, saláta, uborka. Elkészítés: keverd össze hidegen.','vacsora',8,18,8), -- tofu, szójabab
-('Makréla quinoa','Hozzávalók: makréla, quinoa. Elkészítés: főzd meg a quinoát és keverd össze makrélával.','vacsora',13,30,35), -- makréla
-('Mandulás joghurt','Hozzávalók: natúr joghurt, mandula, méz. Elkészítés: keverd össze.','csemege',8,15,12), -- tej, mandula
-('Zabpalacsinta áfonyával','Hozzávalók: zabpehely, tojás, áfonya. Elkészítés: turmixold össze és süsd ki.','reggeli',6,20,40); -- zab, tojás
+('Csirkés rizstál','Hozzávalók: csirkemell 150 g, rizs (száraz) 70 g, brokkoli 120 g, só 2 g, bors 1 g. Elkészítés: a rizst főzd meg, a csirkemellet kockázva süsd meg serpenyőben, párold a brokkolit majd keverd össze.','ebed',6,36,58),
+('Zabkása mogyoróvajjal','Hozzávalók: zabpehely 60 g, tej 200 ml, mogyoróvaj 20 g, banán 100 g. Elkészítés: a zabot főzd krémesre, keverd bele a mogyoróvajat és a felszeletelt banánt.','reggeli',15,20,73),
+('Pulykamell saláta','Hozzávalók: pulykamell 150 g, salátakeverék 80 g, paradicsom 120 g, olívaolaj 10 g. Elkészítés: grillezd a pulykát, majd szeleteld és keverd a salátához.','vacsora',12,35,8),
+('Tojásos avokádó toast','Hozzávalók: teljes kiőrlésű kenyér 70 g, tojás 2 db (100 g), avokádó 80 g. Elkészítés: pirítsd meg a kenyeret, főzz tojást, az avokádót villával törd össze és kend a kenyérre.','reggeli',21,20,35),
+('Tonhalas rizs','Hozzávalók: tonhalkonzerv saját lében (lecsepegtetve) 120 g, főtt rizs 200 g, kukorica 60 g, citromlé 10 ml. Elkészítés: keverd össze az összetevőket egy tálban.','ebed',3,33,64),
+('Csirkés quinoa saláta','Hozzávalók: quinoa (száraz) 65 g, csirkemell 140 g, uborka 100 g, paradicsom 100 g. Elkészítés: főzd meg a quinoát, süsd meg a csirkét és keverd össze a zöldségekkel.','ebed',7,38,45),
+('Protein palacsinta','Hozzávalók: tojás 2 db (100 g), fehérjepor 30 g, zabpehely 40 g. Elkészítés: turmixold össze, majd süsd ki palacsintaként.','reggeli',10,36,29),
+('Lazac brokkolival','Hozzávalók: lazacfilé 150 g, brokkoli 180 g, citrom 20 g. Elkészítés: süsd meg a lazacot sütőben, párold a brokkolit.','vacsora',20,36,13),
+('Csirkés wrap','Hozzávalók: tortilla 65 g, csirkemell 130 g, saláta 50 g, joghurtos öntet 50 g. Elkészítés: süsd meg a csirkét, töltsd a tortillába a salátával együtt.','ebed',9,36,43),
+('Zöldséges omlett','Hozzávalók: tojás 3 db (150 g), spenót 60 g, hagyma 50 g. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel együtt.','reggeli',15,22,7),
+('Csirkés bulgur','Hozzávalók: bulgur (száraz) 70 g, csirkemell 140 g, paprika 100 g. Elkészítés: főzd meg a bulgurt, a csirkét kockázva pirítsd meg és keverd össze.','ebed',5,38,57),
+('Pulyka burger','Hozzávalók: darált pulykahús 140 g, teljes kiőrlésű zsemle 75 g, saláta 40 g. Elkészítés: süsd meg a húspogácsát, majd rakd össze a burgert.','ebed',14,35,40),
+('Túrós zabkása','Hozzávalók: zabpehely 60 g, sovány túró 150 g, méz 15 g. Elkészítés: főzd meg a zabkását, majd keverd bele a túrót.','reggeli',6,32,58),
+('Csirkés karfiolrizs','Hozzávalók: csirkemell 160 g, karfiol 250 g, fűszerek 3 g, olívaolaj 5 g. Elkészítés: reszeld le a karfiolt rizs állagúra, pirítsd csirkével.','vacsora',8,40,14),
+('Makréla saláta','Hozzávalók: makréla 120 g, saláta 80 g, paradicsom 120 g. Elkészítés: a makrélát keverd a salátával.','vacsora',17,25,7),
+('Babos csirketál','Hozzávalók: csirkemell 140 g, vörösbab (főtt) 130 g, rizs (száraz) 60 g. Elkészítés: főzd meg a rizst, süsd a csirkét és keverd össze a babbal.','ebed',5,45,73),
+('Avokádós csirke saláta','Hozzávalók: csirkemell 150 g, avokádó 100 g, saláta 80 g. Elkészítés: grillezd a csirkét és keverd össze az avokádóval.','vacsora',18,37,11),
+('Tonhalas tészta','Hozzávalók: teljes kiőrlésű tészta (száraz) 80 g, tonhal saját lében (lecsepegtetve) 120 g, paradicsom 120 g. Elkészítés: főzd meg a tésztát és keverd össze tonhallal.','ebed',5,41,61),
+('Protein joghurt gyümölccsel','Hozzávalók: natúr joghurt 200 g, fehérjepor 25 g, bogyós gyümölcs 100 g. Elkészítés: keverd össze egy tálban.','csemege',6,32,24),
+('Csirkés zöldségleves','Hozzávalók: csirkemell 120 g, sárgarépa 100 g, zeller 60 g, alaplé 400 ml. Elkészítés: főzd össze alaplében.','vacsora',3,28,14),
+('Pulykás rizottó','Hozzávalók: rizs (száraz) 75 g, pulykamell 140 g, hagyma 60 g. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',5,37,65),
+('Tofu stir fry','Hozzávalók: tofu 180 g, brokkoli 150 g, szójaszósz 15 ml, olívaolaj 5 g. Elkészítés: pirítsd össze wokban.','ebed',18,25,16),
+('Zab muffin','Hozzávalók: zabpehely 50 g, tojás 1 db (50 g), banán 100 g. Elkészítés: keverd össze és süsd muffin formában.','csemege',8,13,53),
+('Grillezett csirke saláta','Hozzávalók: csirkemell 160 g, uborka 120 g, paradicsom 120 g, olívaolaj 5 g. Elkészítés: grillezd a csirkét és keverd a zöldségekkel.','vacsora',8,39,8),
+('Lazac quinoa bowl','Hozzávalók: lazac 140 g, quinoa (száraz) 55 g, spárga 120 g. Elkészítés: süsd meg a lazacot és tálald quinoával.','vacsora',21,39,38),
+('Csirkés kuszkusz','Hozzávalók: kuszkusz (száraz) 75 g, csirkemell 130 g, paprika 100 g. Elkészítés: főzd meg a kuszkuszt és keverd a csirkével.','ebed',4,36,63),
+('Tojásos rizs','Hozzávalók: rizs (száraz) 65 g, tojás 2 db (100 g), szójaszósz 15 ml. Elkészítés: pirítsd össze serpenyőben.','ebed',12,19,53),
+('Mandulás zabkása','Hozzávalók: zabpehely 60 g, mandula 20 g, méz 15 g, víz 200 ml. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',15,15,56),
+('Csirkés brokkoli rizs','Hozzávalók: csirkemell 150 g, rizs (száraz) 70 g, brokkoli 150 g. Elkészítés: párold a brokkolit és keverd a csirkével.','ebed',6,38,60),
+('Protein zabgolyó','Hozzávalók: zabpehely 45 g, fehérjepor 25 g, mogyoróvaj 15 g. Elkészítés: keverd össze és formázz golyókat.','csemege',12,30,34),
+('Csirkés édesburgonya tál','Hozzávalók: csirkemell 150 g, édesburgonya 250 g, olívaolaj 8 g, só 2 g, bors 1 g. Elkészítés: az édesburgonyát kockázd fel és süsd meg sütőben, a csirkemellet serpenyőben süsd aranybarnára, majd tálald együtt.','ebed',11,38,52),
+('Protein zabturmix','Hozzávalók: zabpehely 50 g, fehérjepor 30 g, tej 250 ml, banán 100 g. Elkészítés: turmixold össze az összes hozzávalót krémes állagúra.','reggeli',8,39,69),
+('Pulykás saláta','Hozzávalók: pulykamell 160 g, saláta 80 g, paradicsom 100 g, uborka 100 g. Elkészítés: grillezd a pulykamellet, majd szeleteld fel és keverd a salátával.','vacsora',3,37,8),
+('Tojásos zabpalacsinta','Hozzávalók: zabpehely 55 g, tojás 2 db (100 g), tej 150 ml. Elkészítés: turmixold össze, majd serpenyőben süsd ki palacsinta formában.','reggeli',16,23,45),
+('Tonhalas kuszkusz','Hozzávalók: tonhal saját lében (lecsepegtetve) 120 g, kuszkusz (száraz) 70 g, citromlé 10 ml, paradicsom 100 g. Elkészítés: készítsd el a kuszkuszt, majd keverd össze tonhallal.','ebed',3,37,57),
+('Grillezett csirke cukkínivel','Hozzávalók: csirkemell 160 g, cukkini 200 g, fokhagyma 5 g, olívaolaj 5 g. Elkészítés: süsd meg a csirkét grillen, a cukkinit serpenyőben pirítsd.','vacsora',8,40,10),
+('Protein túrókrém','Hozzávalók: sovány túró 200 g, fehérjepor 20 g, méz 15 g. Elkészítés: keverd össze egy tálban krémesre.','csemege',3,42,21),
+('Marhahúsos rizstál','Hozzávalók: sovány darált marhahús 150 g, rizs (száraz) 70 g, paprika 100 g. Elkészítés: pirítsd meg a húst, főzd meg a rizst és keverd össze.','ebed',16,38,61),
+('Csirkés brokkoli quinoa','Hozzávalók: csirkemell 145 g, quinoa (száraz) 60 g, brokkoli 150 g. Elkészítés: főzd meg a quinoát, párold a brokkolit, majd keverd össze a csirkével.','ebed',7,40,45),
+('Zöldséges tofu tál','Hozzávalók: tofu 200 g, paprika 100 g, brokkoli 120 g, szójaszósz 15 ml. Elkészítés: pirítsd össze wokban.','ebed',17,28,18),
+('Protein chia puding','Hozzávalók: chia mag 25 g, tej 200 ml, fehérjepor 25 g. Elkészítés: keverd össze és hagyd állni hűtőben.','reggeli',14,33,20),
+('Pulykás wrap','Hozzávalók: tortilla 65 g, pulykamell 130 g, saláta 50 g. Elkészítés: grillezd a húst, majd töltsd tortillába.','ebed',7,34,41),
+('Tojásos spenótos omlett','Hozzávalók: tojás 3 db (150 g), spenót 80 g, hagyma 40 g. Elkészítés: a tojásokat felverve süsd meg a zöldségekkel.','reggeli',15,23,7),
+('Csirkés bulgur saláta','Hozzávalók: bulgur (száraz) 65 g, csirkemell 140 g, paradicsom 120 g. Elkészítés: főzd meg a bulgurt, keverd össze csirkével és zöldségekkel.','ebed',5,38,54),
+('Lazacos avokádó saláta','Hozzávalók: lazac 130 g, avokádó 90 g, saláta 80 g. Elkészítés: süsd meg a lazacot és keverd össze az avokádóval.','vacsora',29,31,9),
+('Babos csirke chili','Hozzávalók: csirkemell 140 g, bab (főtt) 150 g, paradicsomszósz 120 g, chili 3 g. Elkészítés: főzd össze az összetevőket egy lábasban.','ebed',5,43,41),
+('Zabos protein muffin','Hozzávalók: zabpehely 45 g, tojás 1 db (50 g), fehérjepor 25 g. Elkészítés: keverd össze és süsd muffin formában.','csemege',8,31,33),
+('Grillezett tonhal steak','Hozzávalók: tonhal steak 160 g, citrom 20 g, olívaolaj 8 g. Elkészítés: süsd meg grillen oldalanként pár percig.','vacsora',10,38,2),
+('Pulykás rizs tál','Hozzávalók: pulykamell 150 g, rizs (száraz) 70 g, paprika 100 g. Elkészítés: süsd meg a húst, majd keverd össze a főtt rizzsel.','ebed',5,39,61),
+('Mandulás zabkása','Hozzávalók: zabpehely 55 g, mandula 25 g, méz 10 g, tej 150 ml. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',20,20,53),
+('Csirkés karfiol stir fry','Hozzávalók: csirkemell 155 g, karfiol 250 g, szójaszósz 15 ml, olívaolaj 5 g. Elkészítés: pirítsd össze wokban.','vacsora',8,39,14),
+('Tojásos rizs zöldségekkel','Hozzávalók: rizs (száraz) 60 g, tojás 2 db (100 g), brokkoli 100 g, répa 70 g. Elkészítés: pirítsd össze serpenyőben.','ebed',12,22,57),
+('Protein smoothie bogyós gyümölccsel','Hozzávalók: fehérjepor 30 g, tej 250 ml, bogyós gyümölcs 120 g. Elkészítés: turmixold össze.','csemege',6,36,28),
+('Csirkés lencsesaláta','Hozzávalók: csirkemell 140 g, főtt lencse 150 g, paradicsom 120 g. Elkészítés: keverd össze egy tálban.','ebed',5,44,35),
+('Makréla quinoa tál','Hozzávalók: makréla 120 g, quinoa (száraz) 60 g, uborka 100 g. Elkészítés: főzd meg a quinoát, majd keverd a makrélával.','vacsora',19,32,41),
+('Protein zabkása','Hozzávalók: zabpehely 60 g, fehérjepor 30 g, tej 200 ml. Elkészítés: főzd össze krémes állagúra.','reggeli',9,39,49),
+('Pulyka burger salátával','Hozzávalók: pulykahús pogácsa 160 g, saláta 80 g, paradicsom 120 g. Elkészítés: süsd meg a pogácsát és tálald salátával.','ebed',14,35,8),
+('Csirkés zöldbab','Hozzávalók: csirkemell 160 g, zöldbab 200 g, fokhagyma 5 g, olívaolaj 5 g. Elkészítés: pirítsd össze serpenyőben.','vacsora',8,41,15),
+('Tonhalas rizssaláta','Hozzávalók: tonhal saját lében (lecsepegtetve) 120 g, rizs (száraz) 65 g, kukorica 60 g. Elkészítés: keverd össze hidegen.','ebed',3,36,64),
+('Avokádós tojás saláta','Hozzávalók: tojás 2 db (100 g), avokádó 100 g, saláta 80 g. Elkészítés: főzd meg a tojást, majd keverd az avokádóval.','reggeli',25,15,12),
+('Csirkés rizs brokkolival','Hozzávalók: csirkemell 155 g, rizs (száraz) 75 g, brokkoli 130 g, só 2 g, bors 1 g. Elkészítés: a rizst főzd meg, a csirkét serpenyőben süsd meg, a brokkolit párold, majd keverd össze.','ebed',6,39,64),
+('Zabkása almával','Hozzávalók: zabpehely 60 g, tej 200 ml, alma 150 g, fahéj 2 g. Elkészítés: a zabot főzd krémesre, add hozzá a reszelt almát és a fahéjat.','reggeli',8,17,72),
+('Pulykás quinoa tál','Hozzávalók: pulykamell 145 g, quinoa (száraz) 65 g, paprika 100 g. Elkészítés: főzd meg a quinoát, a pulykát pirítsd meg, majd tálald együtt.','ebed',6,40,47),
+('Tojásos avokádó saláta','Hozzávalók: tojás 2 db (100 g), avokádó 90 g, saláta 100 g. Elkészítés: főzd meg a tojást, szeleteld fel, majd keverd össze az avokádóval és salátával.','reggeli',24,15,11),
+('Tonhalas salátatál','Hozzávalók: tonhal saját lében (lecsepegtetve) 140 g, salátakeverék 100 g, paradicsom 120 g, citromlé 10 ml. Elkészítés: keverd össze egy tálban és locsold meg citromlével.','vacsora',3,35,8),
+('Protein zabturmix','Hozzávalók: zabpehely 45 g, fehérjepor 30 g, tej 200 ml, banán 120 g. Elkészítés: turmixold össze krémes állagúra.','reggeli',7,37,65),
+('Csirkés bulgur','Hozzávalók: bulgur (száraz) 75 g, csirkemell 150 g, paprika 80 g. Elkészítés: főzd meg a bulgurt, süsd meg a csirkét és keverd össze.','ebed',5,41,61),
+('Lazac spárgával','Hozzávalók: lazacfilé 150 g, spárga 180 g, citrom 20 g. Elkészítés: a lazacot süsd meg sütőben, a spárgát párold.','vacsora',20,35,8),
+('Zabpalacsinta banánnal','Hozzávalók: zabpehely 50 g, tojás 2 db (100 g), banán 100 g. Elkészítés: turmixold össze és süsd palacsintának.','reggeli',13,20,55),
+('Pulykás saláta','Hozzávalók: pulykamell 150 g, saláta 90 g, uborka 120 g, paradicsom 120 g. Elkészítés: grillezd a pulykát és keverd a zöldségekhez.','vacsora',3,35,9),
+('Csirkés karfiolrizs','Hozzávalók: csirkemell 150 g, karfiol 260 g, fokhagyma 5 g, olívaolaj 5 g. Elkészítés: reszeld a karfiolt rizs állagúra, majd pirítsd össze csirkével.','vacsora',8,39,15),
+('Protein joghurt','Hozzávalók: natúr joghurt 200 g, fehérjepor 25 g, méz 15 g. Elkészítés: keverd össze egy tálban.','csemege',6,31,25),
+('Csirkés tészta','Hozzávalók: teljes kiőrlésű tészta (száraz) 80 g, csirkemell 130 g, paradicsomszósz 120 g. Elkészítés: főzd meg a tésztát, majd keverd össze csirkével és szósszal.','ebed',6,41,68),
+('Babos pulykatál','Hozzávalók: pulykamell 140 g, vörösbab (főtt) 130 g, rizs (száraz) 55 g. Elkészítés: főzd meg a rizst, a pulykát süsd meg és keverd a babbal.','ebed',5,43,68),
+('Zöldséges tofu wok','Hozzávalók: tofu 180 g, brokkoli 150 g, paprika 100 g, szójaszósz 15 ml. Elkészítés: pirítsd össze wokban.','ebed',15,26,19),
+('Mandulás zabkása','Hozzávalók: zabpehely 65 g, mandula 18 g, méz 12 g, víz 200 ml. Elkészítés: főzd meg a zabot és szórd meg mandulával.','reggeli',14,16,60),
+('Makréla saláta','Hozzávalók: makréla 110 g, saláta 90 g, paradicsom 120 g. Elkészítés: keverd össze hidegen.','vacsora',16,24,7),
+('Csirkés quinoa','Hozzávalók: quinoa (száraz) 70 g, csirkemell 140 g, uborka 120 g. Elkészítés: főzd meg a quinoát, majd keverd össze a csirkével.','ebed',7,38,48),
+('Protein muffin','Hozzávalók: zabpehely 40 g, tojás 1 db (50 g), fehérjepor 30 g. Elkészítés: keverd össze és süsd muffin formában.','csemege',8,34,30),
+('Tonhalas rizs','Hozzávalók: tonhal saját lében (lecsepegtetve) 130 g, rizs (száraz) 70 g, citromlé 10 ml. Elkészítés: keverd össze egy tálban.','ebed',3,37,56),
+('Tojásos omlett spenóttal','Hozzávalók: tojás 3 db (150 g), spenót 70 g, hagyma 50 g. Elkészítés: a tojást felverve süsd meg a zöldségekkel.','reggeli',15,23,7),
+('Csirkés zöldbab','Hozzávalók: csirkemell 150 g, zöldbab 220 g, fokhagyma 5 g, olívaolaj 6 g. Elkészítés: pirítsd össze serpenyőben.','vacsora',9,39,16),
+('Pulykás rizottó','Hozzávalók: rizs (száraz) 70 g, pulykamell 150 g, hagyma 70 g. Elkészítés: pirítsd meg a húst, add hozzá a rizst és főzd puhára.','ebed',5,40,62),
+('Protein turmix','Hozzávalók: fehérjepor 30 g, tej 250 ml, banán 120 g. Elkészítés: turmixold össze.','csemege',6,36,43),
+('Lazacos quinoa bowl','Hozzávalók: lazac 130 g, quinoa (száraz) 60 g, uborka 100 g. Elkészítés: süsd meg a lazacot és tálald quinoával.','vacsora',20,37,41),
+('Zabos energiaszelet','Hozzávalók: zabpehely 45 g, mogyoróvaj 20 g, méz 15 g. Elkészítés: keverd össze és préseld formába.','csemege',14,12,44),
+('Csirkés tortilla','Hozzávalók: tortilla 60 g, csirkemell 130 g, saláta 60 g. Elkészítés: süsd meg a csirkét és töltsd tortillába.','ebed',7,35,38),
+('Avokádós csirke saláta','Hozzávalók: csirkemell 140 g, avokádó 120 g, saláta 80 g. Elkészítés: grillezd a csirkét és keverd össze az avokádóval.','vacsora',21,35,12),
+('Babos csirke chili','Hozzávalók: csirkemell 150 g, bab (főtt) 130 g, paradicsomszósz 150 g, chili 3 g. Elkészítés: főzd össze egy lábasban.','ebed',5,45,40),
+('Protein zabkása','Hozzávalók: zabpehely 55 g, fehérjepor 30 g, tej 250 ml. Elkészítés: főzd össze krémesre.','reggeli',10,41,48),
+('Csirkés kuszkusz','Hozzávalók: kuszkusz (száraz) 70 g, csirkemell 150 g, paprika 100 g. Elkészítés: készítsd el a kuszkuszt és keverd csirkével.','ebed',5,41,60),
+('Tojásos rizs','Hozzávalók: rizs (száraz) 70 g, tojás 2 db (100 g), szójaszósz 15 ml. Elkészítés: pirítsd össze serpenyőben.','ebed',12,20,57),
+('Pulyka burger','Hozzávalók: pulykahús pogácsa 150 g, teljes kiőrlésű zsemle 65 g. Elkészítés: süsd meg a pogácsát és tálald zsemlében.','ebed',13,35,34),
+('Sardínia saláta','Hozzávalók: szardínia 120 g, saláta 90 g, paradicsom 120 g. Elkészítés: keverd össze egy tálban.','vacsora',14,30,7),
+('Zöld smoothie','Hozzávalók: spenót 60 g, banán 120 g, víz 250 ml. Elkészítés: turmixold össze.','csemege',1,4,31),
+('Csirkés brokkoli rizs','Hozzávalók: csirkemell 145 g, rizs (száraz) 75 g, brokkoli 160 g. Elkészítés: párold a brokkolit és keverd csirkével és rizzsel.','ebed',6,38,65),
+('Tofu saláta','Hozzávalók: tofu 180 g, saláta 90 g, uborka 120 g. Elkészítés: keverd össze hidegen.','vacsora',14,25,9),
+('Makréla quinoa','Hozzávalók: makréla 120 g, quinoa (száraz) 60 g. Elkészítés: főzd meg a quinoát és keverd össze makrélával.','vacsora',19,32,40),
+('Mandulás joghurt','Hozzávalók: natúr joghurt 200 g, mandula 20 g, méz 10 g. Elkészítés: keverd össze.','csemege',16,16,23),
+('Zabpalacsinta áfonyával','Hozzávalók: zabpehely 55 g, tojás 2 db (100 g), áfonya 100 g. Elkészítés: turmixold össze és süsd ki.','reggeli',13,20,51);
 
 -- 8. izomcsoport tábla:
 INSERT INTO izomcsoport (izom_id, nev) VALUES 
@@ -844,3 +836,179 @@ INSERT INTO felhasznalo_edzesi_napok(felhasznalo_id, nap_sorszam) VALUES
 (5,2),(5,4),(5,6),
 (6,2),(6,4),(6,6),
 (7,2),(7,4),(7,6);
+
+-- hb
+
+INSERT INTO heti_beosztas (weekday, start, end, mettol_ervenyes, edzo_id, statusz) VALUES
+
+(0,'10:00:00','12:00:00','2026-05-04',8,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',8,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',8,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',8,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',8,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',9,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',9,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',9,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',9,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',9,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',10,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',10,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',10,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',10,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',10,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',11,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',11,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',11,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',11,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',11,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',12,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',12,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',12,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',12,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',12,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',13,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',13,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',13,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',13,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',13,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',14,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',14,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',14,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',14,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',14,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',15,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',15,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',15,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',15,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',15,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',16,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',16,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',16,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',16,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',16,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',17,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',17,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',17,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',17,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',17,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',18,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',18,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',18,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',18,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',18,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',19,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',19,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',19,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',19,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',19,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',20,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',20,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',20,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',20,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',20,'aktiv'),
+
+(0,'10:00:00','12:00:00','2026-05-04',21,'aktiv'),
+(1,'10:00:00','12:00:00','2026-05-04',21,'aktiv'),
+(2,'14:00:00','16:00:00','2026-05-04',21,'aktiv'),
+(3,'14:00:00','16:00:00','2026-05-04',21,'aktiv'),
+(4,'09:00:00','11:00:00','2026-05-04',21,'aktiv');
+
+-- ka
+
+INSERT INTO kulonleges_alkalom (datum, ido, statusz, edzo_id) VALUES
+
+('2026-05-05','11:00:00','aktiv',8),
+('2026-05-05','11:30:00','aktiv',8),
+('2026-05-06','15:00:00','aktiv',8),
+
+('2026-05-05','11:00:00','aktiv',9),
+('2026-05-05','11:30:00','aktiv',9),
+('2026-05-06','15:00:00','aktiv',9),
+
+('2026-05-05','11:00:00','aktiv',10),
+('2026-05-05','11:30:00','aktiv',10),
+('2026-05-06','15:00:00','aktiv',10),
+
+('2026-05-05','11:00:00','aktiv',11),
+('2026-05-05','11:30:00','aktiv',11),
+('2026-05-06','15:00:00','aktiv',11),
+
+('2026-05-05','11:00:00','aktiv',12),
+('2026-05-05','11:30:00','aktiv',12),
+('2026-05-06','15:00:00','aktiv',12),
+
+('2026-05-05','11:00:00','aktiv',13),
+('2026-05-05','11:30:00','aktiv',13),
+('2026-05-06','15:00:00','aktiv',13),
+
+('2026-05-05','11:00:00','aktiv',14),
+('2026-05-05','11:30:00','aktiv',14),
+('2026-05-06','15:00:00','aktiv',14),
+
+('2026-05-05','11:00:00','aktiv',15),
+('2026-05-05','11:30:00','aktiv',15),
+('2026-05-06','15:00:00','aktiv',15),
+
+('2026-05-05','11:00:00','aktiv',16),
+('2026-05-05','11:30:00','aktiv',16),
+('2026-05-06','15:00:00','aktiv',16),
+
+('2026-05-05','11:00:00','aktiv',17),
+('2026-05-05','11:30:00','aktiv',17),
+('2026-05-06','15:00:00','aktiv',17),
+
+('2026-05-05','11:00:00','aktiv',18),
+('2026-05-05','11:30:00','aktiv',18),
+('2026-05-06','15:00:00','aktiv',18),
+
+('2026-05-05','11:00:00','aktiv',19),
+('2026-05-05','11:30:00','aktiv',19),
+('2026-05-06','15:00:00','aktiv',19),
+
+('2026-05-05','11:00:00','aktiv',20),
+('2026-05-05','11:30:00','aktiv',20),
+('2026-05-06','15:00:00','aktiv',20),
+
+('2026-05-05','11:00:00','aktiv',21),
+('2026-05-05','11:30:00','aktiv',21),
+('2026-05-06','15:00:00','aktiv',21);
+
+-- foglalas
+
+INSERT INTO foglalas (datum, ido, statusz, felhasznalo_id, edzo_id) VALUES
+
+( '2026-05-05','10:00:00','aktiv',1,8),
+( '2026-05-05','10:30:00','aktiv',1,8),
+( '2026-05-06','14:00:00','aktiv',2,8),
+
+( '2026-05-05','10:00:00','aktiv',2,9),
+( '2026-05-05','10:30:00','aktiv',2,9),
+( '2026-05-06','14:00:00','aktiv',3,9),
+
+( '2026-05-05','10:00:00','aktiv',3,10),
+( '2026-05-05','10:30:00','aktiv',3,10),
+( '2026-05-06','14:00:00','aktiv',4,10),
+
+( '2026-05-05','10:00:00','aktiv',4,11),
+( '2026-05-05','10:30:00','aktiv',4,11),
+( '2026-05-06','14:00:00','aktiv',5,11),
+
+( '2026-05-05','10:00:00','aktiv',5,12),
+( '2026-05-05','10:30:00','aktiv',5,12),
+( '2026-05-06','14:00:00','aktiv',6,12),
+
+( '2026-05-05','10:00:00','aktiv',6,13),
+( '2026-05-05','10:30:00','aktiv',6,13),
+( '2026-05-06','14:00:00','aktiv',7,13);
