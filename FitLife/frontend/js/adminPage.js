@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async function(){
     document.getElementById('megerositesBtn').addEventListener('click', async function(event){            
         switch (event.target.dataset.action) {
             case 'deleteUser': {
-                const response = await deleteKeres('/api/deleteUser?id=' + event.target.value);
+                const response = await deleteKeres('/api/deleteUserForAdmin?id=' + event.target.value);
                 if(response.message == 'Felhasználó törlése sikeres.'){
                     const felhasznalok = await getKeres('/api/getAllAuthData');
                     userTablaFeltoltes(felhasznalok.result);
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async function(){
                 break;
             }
             case 'deleteAdmin': {
-                const response = await deleteKeres('/api/deleteUser?id=' + event.target.value);
+                const response = await deleteKeres('/api/deleteUserForAdmin?id=' + event.target.value);
                 if(response.message == 'Felhasználó törlése sikeres.'){
                     const adminok = await getKeres('/api/getAllAdminAuthData');
                     adminTablaFeltoltes(adminok.result);
