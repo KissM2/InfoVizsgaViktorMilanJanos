@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function loadAll() {
     kaLista = await getKeres("/api/getKA");
     kapottbeo = await getKeres("/api/getHB");
-    console.log(kaLista)
 }
 
 /* ======================= */
