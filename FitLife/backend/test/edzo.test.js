@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const database = require('../sql/database.js');
 
-const edzoProfilRouter = require('../api/edzoProfil.js'); 
+const edzoProfilRouter = require('../api/edzoProfil.js');
 const kommentekRouter = require('../api/kommentek.js');
 const receptekRouter = require('../api/receptekApi.js');
 
@@ -12,10 +12,10 @@ jest.mock('../sql/database.js');
 const app = express();
 app.use(express.json());
 
-app.use(session({ 
-    secret: 'teszt', 
-    resave: false, 
-    saveUninitialized: true 
+app.use(session({
+    secret: 'teszt',
+    resave: false,
+    saveUninitialized: true
 }));
 
 // Teszt-login: Beállítjuk a felhasználót (kommenteléshez kell)
@@ -86,9 +86,8 @@ describe('Edző, Komment és Admin funkciók Tesztelése', () => {
     });
 
     it('4. POST /api/postUjRecept - Admin: Új recept felvétele (JSON tömbbel)', async () => {
-        await agent.get('/test-login-admin'); // Belépés adminként
-        
-        // A te kódod konkrétan ezt a stringet várja vissza a sikeres tranzakciónál
+        await agent.get('/test-login-admin'); // Belépés adminként   
+
         database.insertRecept.mockResolvedValue("sikeres recept rögzítés");
 
         const response = await agent.post('/api/postUjRecept')
@@ -99,7 +98,7 @@ describe('Edző, Komment és Admin funkciók Tesztelése', () => {
             .field('protein', '15')
             .field('szenhidrat', '40')
             // A form-data-ban a tömböt stringként (JSON) küldi a frontend
-            .field('allergenek', '[{"allergen_id": 2}]'); 
+            .field('allergenek', '[{"allergen_id": 2}]');
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Recept sikeresen rögzítve.');

@@ -3,17 +3,17 @@ const express = require('express');
 const session = require('express-session');
 const database = require('../sql/database.js');
 
-const foglalasRouter = require('../api/naptarakApi.js'); 
+const foglalasRouter = require('../api/naptarakApi.js');
 
 jest.mock('../sql/database.js');
 
 const app = express();
 app.use(express.json());
 
-app.use(session({ 
-    secret: 'teszt', 
-    resave: false, 
-    saveUninitialized: true 
+app.use(session({
+    secret: 'teszt',
+    resave: false,
+    saveUninitialized: true
 }));
 
 app.get('/test-login-user', (req, res) => {
@@ -39,7 +39,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
     });
 
     it('1. POST /api/insertHB - Új heti beosztás mentése (Edzőként)', async () => {
-        await agent.get('/test-login-edzo'); 
+        await agent.get('/test-login-edzo');
 
         database.checkHetiBeosztasExists.mockResolvedValue(true);
         database.softDeleteHetiBeosztas.mockResolvedValue();
@@ -55,22 +55,22 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe("HB mentve");
-        expect(database.softDeleteHetiBeosztas).toHaveBeenCalled(); 
-        expect(database.insertHetiBeosztasSingle).toHaveBeenCalledTimes(2); 
+        expect(database.softDeleteHetiBeosztas).toHaveBeenCalled();
+        expect(database.insertHetiBeosztasSingle).toHaveBeenCalledTimes(2);
     });
 
     it('2. POST /api/book - Időpont sikeres foglalása (Felhasználóként)', async () => {
-        await agent.get('/test-login-user'); 
+        await agent.get('/test-login-user');
 
         const holnap = new Date();
-        holnap.setDate(holnap.getDate() + 2); 
+        holnap.setDate(holnap.getDate() + 2);
         const datumStr = holnap.toISOString().slice(0, 10);
 
-        database.getMyBookings.mockResolvedValue([]); 
-        database.isInHB.mockResolvedValue(true); 
+        database.getMyBookings.mockResolvedValue([]);
+        database.isInHB.mockResolvedValue(true);
         database.isBlockedByKA.mockResolvedValue(false);
-        database.isSlotTakenByOther.mockResolvedValue(false); 
-        database.getOwnBooking.mockResolvedValue(null); 
+        database.isSlotTakenByOther.mockResolvedValue(false);
+        database.getOwnBooking.mockResolvedValue(null);
         database.deleteInactiveElsewhereAtSameTime.mockResolvedValue();
         database.insertBooking.mockResolvedValue();
 
@@ -88,7 +88,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
     });
 
     it('3. POST /api/book - Foglalás megtagadása, ha már más lefoglalta', async () => {
-        await agent.get('/test-login-user'); 
+        await agent.get('/test-login-user');
 
         const holnap = new Date();
         holnap.setDate(holnap.getDate() + 2);
@@ -97,7 +97,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
         database.getMyBookings.mockResolvedValue([]);
         database.isInHB.mockResolvedValue(true);
         database.isBlockedByKA.mockResolvedValue(false);
-        database.isSlotTakenByOther.mockResolvedValue(true); 
+        database.isSlotTakenByOther.mockResolvedValue(true);
 
         const response = await agent.post('/api/book').send({
             edzo_id: 2,
@@ -108,15 +108,15 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
         });
 
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe("OK"); 
-        expect(database.insertBooking).not.toHaveBeenCalled(); 
+        expect(response.body.message).toBe("OK");
+        expect(database.insertBooking).not.toHaveBeenCalled();
     });
 
     it('4. POST /api/toggleKA - Kivett nap beállítása elutasítva (túl korai)', async () => {
-        await agent.get('/test-login-edzo'); 
+        await agent.get('/test-login-edzo');
 
         const holnap = new Date();
-        holnap.setDate(holnap.getDate() + 1); 
+        holnap.setDate(holnap.getDate() + 1);
         const datumStr = holnap.toISOString().slice(0, 10);
 
         const response = await agent.post('/api/toggleKA').send({
@@ -124,7 +124,7 @@ describe('Naptár és Foglalási Rendszer Tesztelése', () => {
             ido: "12:00"
         });
 
-        expect(response.status).toBe(400); 
+        expect(response.status).toBe(400);
         expect(response.body.message).toBe("KA csak 4 hét múlva");
     });
 });

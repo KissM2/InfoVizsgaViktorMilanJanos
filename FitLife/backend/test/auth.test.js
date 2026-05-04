@@ -40,7 +40,7 @@ describe('Auth Router Végpontok Tesztelése', () => {
     it('1. POST /api/userRegister - Sikeresen regisztrál egy új felhasználót', async () => {
         // MOCKOLÁS: Megmondjuk a dublőrnek, mit válaszoljon a middleware-nek és a route-nak
         database.checkUser.mockResolvedValue([]);
-        database.login.mockResolvedValue([]); 
+        database.login.mockResolvedValue([]);
         database.insertLogin.mockResolvedValue({ insertId: 100 });
         bcrypt.hash.mockResolvedValue('titkositott_jelszo_teszt');
 
@@ -57,7 +57,7 @@ describe('Auth Router Végpontok Tesztelése', () => {
 
         expect(response.status).toBe(201);
         expect(response.body.message).toBe('Sikeres felhasználó rögzítés.');
-        expect(database.insertLogin).toHaveBeenCalledTimes(1); 
+        expect(database.insertLogin).toHaveBeenCalledTimes(1);
     });
 
     // 2. Teszt: /api/edzoRegister
@@ -86,10 +86,10 @@ describe('Auth Router Végpontok Tesztelése', () => {
 
     // 3. Teszt: /api/login
     it('3. POST /api/login - Sikeres bejelentkezés', async () => {
-        database.login.mockResolvedValue([{ 
-            id: 1, 
-            jelszo: 'titkositott_jelszo_teszt', 
-            role: 'felhasznalo' 
+        database.login.mockResolvedValue([{
+            id: 1,
+            jelszo: 'titkositott_jelszo_teszt',
+            role: 'felhasznalo'
         }]);
         bcrypt.compare.mockResolvedValue(true);
         database.getUserSurveyDone.mockResolvedValue([{ counter: 1 }]);
