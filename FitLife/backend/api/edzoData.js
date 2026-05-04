@@ -50,7 +50,7 @@ async function deleteOldImage(filename) {
 
 //!Edző adatainak mentése
 //? POST /api/edzoDataInsert
-router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData, loginCheck.loginCheck, async (request, response) => {
+router.post('/edzoDataInsert',  loginCheck.loginCheck, loginCheck.edzoCheck, upload.single('kep'), checkEdzoData.checkEdzoData, async (request, response) => {
     try {
         const {
             edzoterem_cim_lat,
@@ -85,7 +85,7 @@ router.post('/edzoDataInsert', upload.single('kep'), checkEdzoData.checkEdzoData
 });
 
 //? POST /api/edzoDataUpdate
-router.post('/edzoDataUpdate', loginCheck.loginCheck, upload.single('kep'), checkEdzoData.checkEdzoData, async (request, response) => {
+router.post('/edzoDataUpdate', loginCheck.loginCheck, loginCheck.edzoCheck, upload.single('kep'), checkEdzoData.checkEdzoData, async (request, response) => {
     try {
         const {
             edzoterem_cim_lat,

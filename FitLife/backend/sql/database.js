@@ -207,7 +207,7 @@ async function updateStatuszElfogadva(id) {
 
 //select
 async function selectAllTrainers() {
-    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE statusz LIKE "elfogadva";`;
+    const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet FROM edzo INNER JOIN login ON edzo.edzo_id = login.id WHERE statusz LIKE "elfogadva" AND login.deleted_at IS NULL;`;
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -217,7 +217,7 @@ async function selectEdzoTerem(id) {
     return rows;
 }
 async function selectAllEdzoterem() {
-    const query = "SELECT DISTINCT edzo.edzoterem_cim FROM edzo";
+    const query = "SELECT DISTINCT edzo.edzoterem_cim FROM edzo INNER JOIN login on login.id = edzo.edzo_id WHERE login.deleted_at IS NULL AND edzo.statusz LIKE 'elfogadva'";
     const [rows] = await pool.execute(query);
     return rows;
 }
@@ -233,7 +233,7 @@ async function selectAllTrainersByDist(lng, lat) {
             ROUND(ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?))) AS tavolsag 
         FROM edzo 
         INNER JOIN login ON edzo.edzo_id = login.id
-        WHERE  edzo.statusz LIKE "elfogadva"
+        WHERE edzo.statusz LIKE "elfogadva" AND login.deleted_at IS NULL
         ORDER BY tavolsag ASC`;
 
     const [rows] = await pool.execute(query, [lng, lat]);
@@ -250,7 +250,7 @@ async function selectTrainersByDist(lng, lat) {
             edzo.idezet
         FROM edzo
         INNER JOIN login ON edzo.edzo_id = login.id
-        where ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 26`;
+        where login.deleted_at IS NULL AND ST_Distance_Sphere(edzo.edzoterem_cim, POINT(?, ?)) < 26`;
     
     const [rows] = await pool.execute(query, [lng, lat]);
     return rows;
@@ -259,7 +259,7 @@ async function selectAllTrainersByName(name) {
     const query = `SELECT login.id, login.felh_nev AS nev, edzo.kep, edzo.leiras AS kompetenciak, edzo.edzoterem_cim, edzo.idezet 
                     FROM edzo 
                         INNER JOIN login ON edzo.edzo_id = login.id 
-                    WHERE edzo.statusz LIKE "elfogadva" AND login.felh_nev LIKE ?`;
+                    WHERE edzo.statusz LIKE "elfogadva" AND login.deleted_at IS NULL AND login.felh_nev LIKE ?`;
     const [rows] = await pool.execute(query, [`%${name}%`]);
     return rows;
 }
@@ -1118,7 +1118,7 @@ INNER JOIN (
     WHERE statusz = 'aktiv'
 ) global
 
-WHERE k.statusz = 'aktiv'
+WHERE k.statusz = 'aktiv' AND l.deleted_at IS NULL
 
 GROUP BY e.edzo_id, e.kep
 

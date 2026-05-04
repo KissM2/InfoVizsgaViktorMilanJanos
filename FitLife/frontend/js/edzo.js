@@ -8,7 +8,7 @@ let currentDate = new Date();
 let myUserId = null;
 let toActivate = [];   // új foglalások
 let toDeactivate = []; // lemondások
-let edzoId="";
+let edzoId = "";
 let calendarData = {
     heti: [],
     kulonleges: [],
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 idezet: adat.idezet,
                 leiras: adat.leiras,
                 eredmenyek: [
-                    "Kompetenciák: "+adat.kompetenciak,
+                    "Kompetenciák: " + adat.kompetenciak,
                     "Email: " + adat.email,
                     "Telefon: " + adat.telszam,
                     "Átlagos értékelés: " + atlag
@@ -234,14 +234,16 @@ function getActiveHetiForDate(datum) {
         h.mettol_ervenyes <= datum
     );
 
-    if (!valid.length) return [];
+    if (valid.length) {
+        const max = valid.reduce((m, h) =>
+            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+            valid[0].mettol_ervenyes
+        );
 
-    const max = valid.reduce((m, h) =>
-        h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
-        valid[0].mettol_ervenyes
-    );
-
-    return valid.filter(h => h.mettol_ervenyes === max);
+        return valid.filter(h => h.mettol_ervenyes === max);
+    } else {
+        return [];
+    }
 }
 
 /* ========================= HEADER ========================= */

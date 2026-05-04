@@ -24,7 +24,7 @@ router.get('/receptek', async (request, response) => {
         response.status(500).json({ message: "Nem sikerült lekérni a recepteket." });
     }
 });
-router.get('/szamitott-kaloria', requireLogin.loginCheck, async (request, response) => {
+router.get('/szamitott-kaloria', requireLogin.loginCheck, requireLogin.userCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         const adatok = await database.getUserPhysicalData(userId);
@@ -46,7 +46,7 @@ router.get('/szamitott-kaloria', requireLogin.loginCheck, async (request, respon
         response.status(500).json({ message: "Szerverhiba a számítás során." });
     }
 });
-router.post('/postUjRecept', upload.none(), async (request, response) => {
+router.post('/postUjRecept', requireLogin.loginCheck, requireLogin.adminCheck, upload.none(), async (request, response) => {
     try {
         const {
             nev,
@@ -79,7 +79,7 @@ router.post('/postUjRecept', upload.none(), async (request, response) => {
         response.status(500).json({ message: "Nem sikerült rögzíteni a receptet." });
     }
 });
-router.delete('/deleteRecept', async (request, response) => {
+router.delete('/deleteRecept', requireLogin.loginCheck, requireLogin.adminCheck, async (request, response) => {
     try {
         const receptId = request.query.id;
         const result = await database.deleteRecept(receptId);
@@ -93,7 +93,7 @@ router.delete('/deleteRecept', async (request, response) => {
     }
 });
 
-router.post('/generateHetiEtrend', requireLogin.loginCheck, async (request, response) => {
+router.post('/generateHetiEtrend', requireLogin.loginCheck, requireLogin.userCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
 
@@ -141,7 +141,7 @@ router.post('/generateHetiEtrend', requireLogin.loginCheck, async (request, resp
     }
 });
 
-router.post('/saveHetiEtrend', requireLogin.loginCheck, async (request, response) => {
+router.post('/saveHetiEtrend', requireLogin.loginCheck, requireLogin.userCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         const { hetiEtrend, csoport_id } = request.body;
@@ -161,7 +161,7 @@ router.post('/saveHetiEtrend', requireLogin.loginCheck, async (request, response
     }
 });
 
-router.get('/getHetiEtrendek', requireLogin.loginCheck, async (request, response) => {
+router.get('/getHetiEtrendek', requireLogin.loginCheck, requireLogin.userCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         const hetiEtrendek = await database.getAllHetiEtrendekByUser(userId);
@@ -172,7 +172,7 @@ router.get('/getHetiEtrendek', requireLogin.loginCheck, async (request, response
     }
 });
 
-router.delete('/deleteHetiEtrend', requireLogin.loginCheck, async (request, response) => {
+router.delete('/deleteHetiEtrend', requireLogin.loginCheck, requireLogin.userCheck, async (request, response) => {
     try {
         const userId = request.session.user.id;
         const csoportId = request.query.csoport_id ? Number(request.query.csoport_id) : null;
