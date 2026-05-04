@@ -21,7 +21,7 @@ export const loadGoogleMaps = () =>
         r=new Set,e=new URLSearchParams,
         u=()=>h||(h=new Promise(async(f,n)=>{
           await (a=m.createElement("script"));
-          e.set("key","AIzaSyDITAIt4gACYnu0Gj3xByRMi9mL7gc2yyQ");
+          e.set("key","AIzaSyAI5NJjwyN5a_2_W8IyrR5uRLI2aY7Bea4");
           e.set("v","weekly");
           e.set("callback",c+".maps."+q);
           a.src="https://maps.googleapis.com/maps/api/js?"+e;
