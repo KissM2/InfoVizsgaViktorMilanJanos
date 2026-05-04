@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS edzesterv (
     sorrend INT NOT NULL,
     felhasznalo_id INT NOT NULL,
     FOREIGN KEY (felhasznalo_id) REFERENCES felhasznalo(felhasznalo_id),
-    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id)
+    FOREIGN KEY (gyakorlat_id) REFERENCES gyakorlat(gyakorlat_id) ON DELETE CASCADE
 );
 
 
