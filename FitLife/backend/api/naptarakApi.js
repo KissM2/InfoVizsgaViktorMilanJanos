@@ -6,7 +6,10 @@ const check = require('../middleware/requireLogin.js');
 /* =========================
    SEGÉD
 ========================= */
-
+function toMinutes(t) {
+    const [h, m] = t.split(":").map(Number);
+    return h * 60 + m;
+}
 function normalizeTime(t) {
     return t.slice(0, 5); // "01:00:00" → "01:00"
 }
@@ -114,7 +117,7 @@ router.get("/myBookings", check.loginCheck, async (req, res) => {
    HB INSERT
 ========================= */
 
-router.post("/insertHB", check.loginCheck,check.edzoCheck, async (req, res) => {
+router.post("/insertHB", check.loginCheck, check.edzoCheck, async (req, res) => {
 
     const edzoId = req.session.user.id;
     const data = req.body;
@@ -126,25 +129,53 @@ router.post("/insertHB", check.loginCheck,check.edzoCheck, async (req, res) => {
 
     for (let i = 0; i < data.length; i++) {
 
-        const slots = data[i];
-        if (!slots.length) continue;
+        let slots = data[i];
 
-        let start = normalizeTime(slots[0]);
-        let prev = normalizeTime(slots[0]);
+        if (Array.isArray(slots) && slots.length > 0) {
 
-        for (let j = 1; j < slots.length; j++) {
+            // 1️⃣ szűrés (hibás értékek kidobása)
+            slots = slots.filter(t => typeof t === "string" && t.length >= 5);
 
-            const curr = normalizeTime(slots[j]);
+            if (slots.length > 0) {
 
-            if (curr !== prev) {
-                await db.insertHetiBeosztasSingle(i, start, prev, mettol, edzoId);
-                start = curr;
+                // 2️⃣ normalizálás
+                slots = slots.map(t => t.slice(0, 5));
+
+                // 3️⃣ duplikátum törlés
+                slots = [...new Set(slots)];
+
+                // 4️⃣ rendezés
+                slots.sort((a, b) => a.localeCompare(b));
+
+                // 5️⃣ blokkosítás
+                let start = slots[0];
+                let prev = slots[0];
+
+                for (let j = 1; j < slots.length; j++) {
+
+                    const curr = slots[j];
+
+                    const prevMin = toMinutes(prev);
+                    const currMin = toMinutes(curr);
+
+                    if (currMin !== prevMin + 30) {
+
+                        if (start && prev) {
+                            await db.insertHetiBeosztasSingle(i, start, prev, mettol, edzoId);
+                        }
+
+                        start = curr;
+                    }
+
+                    prev = curr;
+                }
+
+                // utolsó blokk
+                if (start && prev) {
+                    await db.insertHetiBeosztasSingle(i, start, prev, mettol, edzoId);
+                }
             }
-
-            prev = curr;
         }
-
-        await db.insertHetiBeosztasSingle(i, start, prev, mettol, edzoId);
     }
 
     await db.markInvalidKAAsDeleted(edzoId, mettol);
@@ -156,7 +187,7 @@ router.post("/insertHB", check.loginCheck,check.edzoCheck, async (req, res) => {
    KA TOGGLE
 ========================= */
 
-router.post("/toggleKA", check.loginCheck,check.edzoCheck, async (req, res) => {
+router.post("/toggleKA", check.loginCheck, check.edzoCheck, async (req, res) => {
 
     try {
 
@@ -203,7 +234,7 @@ router.post("/toggleKA", check.loginCheck,check.edzoCheck, async (req, res) => {
    BOOKING
 ========================= */
 
-router.post("/book", check.loginCheck,check.userCheck, async (req, res) => {
+router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
     try {
         const userId = req.session.user.id;
         const edzoId = req.body.edzo_id; // 🔥 frontendből jön
@@ -243,7 +274,7 @@ router.post("/book", check.loginCheck,check.userCheck, async (req, res) => {
                             if (!conflict) {
 
                                 // 4️⃣ más user foglalta
-                                if (!await db.isSlotTakenByOther(datum, ido, userId, edzoId)){
+                                if (!await db.isSlotTakenByOther(datum, ido, userId, edzoId)) {
 
                                     // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
                                     await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
