@@ -13,10 +13,10 @@ async function checkEdzoData(request, response, next) {
         const kep = request.file;
         const userId = request.session.user.id;
 
-        // 🔽 lekérjük a régi képet
+        //  lekérjük a régi képet
         const oldImage = await database.getEdzoImage(userId);
 
-        // 🔽 alap mezők ellenőrzése
+        //  alap mezők ellenőrzése
         if (
             !leiras ||
             !kompetenciak ||
@@ -29,7 +29,7 @@ async function checkEdzoData(request, response, next) {
             });
         }
 
-        // 🔥 KÉP LOGIKA
+        //  KÉP LOGIKA
         // ha nincs új kép ÉS nincs régi → hiba
         if (!kep && !oldImage) {
             return response.status(400).json({

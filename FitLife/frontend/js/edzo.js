@@ -158,7 +158,6 @@ async function loadCalendar() {
     const res = await getKeres(`/api/getCalendar?id=+${edzoId}`);
     calendarData = res?.result || res;
 
-    console.log("📦 calendar:", calendarData);
 }
 async function loadMyBookings() {
     myBookings = await getKeres("/api/myBookings");
@@ -234,16 +233,14 @@ function getActiveHetiForDate(datum) {
         h.mettol_ervenyes <= datum
     );
 
-    if (valid.length) {
-        const max = valid.reduce((m, h) =>
-            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
-            valid[0].mettol_ervenyes
-        );
+    if (!valid.length) return [];
 
-        return valid.filter(h => h.mettol_ervenyes === max);
-    } else {
-        return [];
-    }
+    const max = valid.reduce((m, h) =>
+        h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+        valid[0].mettol_ervenyes
+    );
+
+    return valid.filter(h => h.mettol_ervenyes === max);
 }
 
 /* ========================= HEADER ========================= */
@@ -369,12 +366,6 @@ function generalWeek() {
 
             grid.appendChild(cell);
 
-            /* ===== DEBUG ===== */
-            // console.log({
-            //     datum,
-            //     ido,
-            //     sajat
-            // });
         }
     }
 
@@ -517,8 +508,6 @@ function generateModal() {
 
             grid.appendChild(cell);
 
-            /* ===== DEBUG ===== */
-            // console.log({ datum, ido, heti, ka, sajat, sajatMashol, foglaltMas });
         }
     }
 
@@ -559,9 +548,6 @@ function toggleSlot(cell, key, isAlreadyBooked) {
             cell.classList.add("foglaltSajat");
         }
     }
-
-    console.log("ACTIVATE:", toActivate);
-    console.log("DEACTIVATE:", toDeactivate);
 }
 
 /* ========================= SAVE ========================= */
@@ -589,8 +575,6 @@ async function saveBooking() {
         if (!payload.deactivate[datum]) payload.deactivate[datum] = [];
         payload.deactivate[datum].push(ido);
     });
-
-    console.log("PAYLOAD:", payload);
 
     await postApi("/api/book", payload);
 

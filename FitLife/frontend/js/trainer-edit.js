@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         e.preventDefault();
         let formData = new FormData(document.getElementById('edzoNevjegyForm'));
         const fileInput = document.getElementById('kepInput');
-        console.log(fileInput.files[0]);
         if (fileInput.files.length > 0) {
             formData.append('kep', fileInput.files[0]);
         }

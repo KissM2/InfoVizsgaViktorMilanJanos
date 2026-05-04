@@ -133,21 +133,21 @@ router.post("/insertHB", check.loginCheck, check.edzoCheck, async (req, res) => 
 
         if (Array.isArray(slots) && slots.length > 0) {
 
-            // 1️⃣ szűrés (hibás értékek kidobása)
+            //  szűrés (hibás értékek kidobása)
             slots = slots.filter(t => typeof t === "string" && t.length >= 5);
 
             if (slots.length > 0) {
 
-                // 2️⃣ normalizálás
+                //  normalizálás
                 slots = slots.map(t => t.slice(0, 5));
 
-                // 3️⃣ duplikátum törlés
+                //  duplikátum törlés
                 slots = [...new Set(slots)];
 
-                // 4️⃣ rendezés
+                //  rendezés
                 slots.sort((a, b) => a.localeCompare(b));
 
-                // 5️⃣ blokkosítás
+                //  blokkosítás
                 let start = slots[0];
                 let prev = slots[0];
 
@@ -237,7 +237,7 @@ router.post("/toggleKA", check.loginCheck, check.edzoCheck, async (req, res) => 
 router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
     try {
         const userId = req.session.user.id;
-        const edzoId = req.body.edzo_id; // 🔥 frontendből jön
+        const edzoId = req.body.edzo_id; //  frontendből jön
 
         const { activate = {}, deactivate = {} } = req.body;
 
@@ -245,7 +245,7 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
         const myBookings = await db.getMyBookings(userId);
 
         /* =========================
-           ➕ AKTIVÁLÁS
+            AKTIVÁLÁS
         ========================= */
         for (const datum in activate) {
 
@@ -256,14 +256,14 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
                 for (const idoRaw of activate[datum]) {
 
                     const ido = normalizeTime(idoRaw);
-                    // 1️⃣ HB check
+                    //  HB check
                     const inHB = await db.isInHB(edzoId, datum, weekday, ido);
                     if (inHB) {
 
-                        // 2️⃣ KA check
+                        //  KA check
                         if (!await db.isBlockedByKA(edzoId, datum, ido)) {
 
-                            // 3️⃣ 🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
+                            //  🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
                             const conflict = myBookings.some(f =>
                                 f.statusz === "aktiv" &&
                                 f.datum === datum &&
@@ -273,13 +273,13 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
 
                             if (!conflict) {
 
-                                // 4️⃣ más user foglalta
+                                //  más user foglalta
                                 if (!await db.isSlotTakenByOther(datum, ido, userId, edzoId)) {
 
-                                    // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
+                                    //  csak ugyanazt a slotot takarítjuk
                                     await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
 
-                                    // 6️⃣ insert / update
+                                    //  insert / update
                                     const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 
                                     if (!existing) {
@@ -296,7 +296,7 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
         }
 
         /* =========================
-           ➖ DEAKTIVÁLÁS
+            DEAKTIVÁLÁS
         ========================= */
         for (const datum in deactivate) {
 

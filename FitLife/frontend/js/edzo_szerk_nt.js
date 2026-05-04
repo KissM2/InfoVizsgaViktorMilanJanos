@@ -48,16 +48,14 @@ function getActiveHetiForDate(datum) {
         e.mettol_ervenyes.split("T")[0] <= datum
     );
 
-    if (valid.length) {
-        const max = valid.reduce((m, h) =>
-            h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
-            valid[0].mettol_ervenyes
-        );
+    if (!valid.length) return [];
 
-        return valid.filter(h => h.mettol_ervenyes === max);
-    } else {
-        return [];
-    }
+    const max = valid.reduce((m, h) =>
+        h.mettol_ervenyes > m ? h.mettol_ervenyes : m,
+        valid[0].mettol_ervenyes
+    );
+
+    return valid.filter(h => h.mettol_ervenyes === max);
 }
 
 /* ======================= */

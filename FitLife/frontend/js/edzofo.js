@@ -109,7 +109,6 @@ async function loadCalendar() {
         ...h,
         weekday: Number(h.weekday)
     }));
-    console.log(calendarData)
 
     generalWeek();
 }
