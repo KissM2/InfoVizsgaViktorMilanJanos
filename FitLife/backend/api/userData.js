@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 //?Post /api/userData
-router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, checkUser.checkEdzesiNapok, async (request, response) =>{
+router.post('/userDataInsert', loginCheck.loginCheck, loginCheck.userCheck, upload.single("file"), checkUser.checkUserData, checkUser.checkAllergiak, checkUser.checkPreferenciak, checkUser.checkEdzesiNapok, async (request, response) =>{
     try {
 
         const { 
@@ -63,7 +63,7 @@ router.post('/userDataInsert', upload.single("file") ,loginCheck.loginCheck, che
 });
 
 //?Post /api/userDataUpdate
-router.post('/userDataUpdate', upload.none() ,checkUser.checkUserData, loginCheck.loginCheck, async (request, response) =>{
+router.post('/userDataUpdate', loginCheck.loginCheck, loginCheck.userCheck, upload.none() ,checkUser.checkUserData, async (request, response) =>{
     try {
 
         const { 
@@ -97,7 +97,7 @@ router.post('/userDataUpdate', upload.none() ,checkUser.checkUserData, loginChec
     }
 });
 
-router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
+router.get('/getUserData', loginCheck.loginCheck, loginCheck.userCheck, async (request, response) =>{
     try {
         const id = request.session.user.id;
         const userData = await database.selectFelhDataById(id);
@@ -113,7 +113,7 @@ router.get('/getUserData', loginCheck.loginCheck, async (request, response) =>{
     }
 });
 
-router.post('/postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, async (request,response) =>{
+router.post('/postAllergiak', loginCheck.loginCheck, loginCheck.userCheck, checkUser.checkAllergiak, async (request,response) =>{
     try {
         const {etelAllergiak} = request.body;
 
@@ -148,7 +148,7 @@ router.post('/postAllergiak', loginCheck.loginCheck, checkUser.checkAllergiak, a
     }
 });
 
-router.post('/postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenciak, async (request,response) =>{
+router.post('/postPreferenciak', loginCheck.loginCheck, loginCheck.userCheck, checkUser.checkPreferenciak, async (request,response) =>{
     try {
         const {etelPreferenciak} = request.body;
 
@@ -183,7 +183,7 @@ router.post('/postPreferenciak', loginCheck.loginCheck, checkUser.checkPreferenc
     }
 });
 
-router.get('/getAllergiasRa', loginCheck.loginCheck, async (request, response) =>{
+router.get('/getAllergiasRa', loginCheck.loginCheck, loginCheck.userCheck, async (request, response) =>{
     try {
         const allergiak = await database.selectAorPById(request.session.user.id, 'a');
         const preferenciak = await database.selectAorPById(request.session.user.id, 'p');
@@ -201,7 +201,7 @@ router.get('/getAllergiasRa', loginCheck.loginCheck, async (request, response) =
     }
 });
 
-router.get('/getEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+router.get('/getEdzesiNapok', loginCheck.loginCheck, loginCheck.userCheck, async (request, response) =>{
     try {
         const userId = request.session.user.id;
         const edzesiNapok = await database.getUserEdzesNapok(userId);
@@ -218,7 +218,7 @@ router.get('/getEdzesiNapok', loginCheck.loginCheck, async (request, response) =
     }
 });
 
-router.post('/postEdzesiNapok', loginCheck.loginCheck, async (request, response) =>{
+router.post('/postEdzesiNapok', loginCheck.loginCheck, loginCheck.userCheck, async (request, response) =>{
     try {
         const userId = request.session.user.id;
         const {edzesiNapok} = request.body;

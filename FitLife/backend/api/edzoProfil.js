@@ -6,7 +6,7 @@ const fs = require('fs/promises');
 //!Multer
 const multer = require('multer'); //?npm install multer
 const path = require('path');
-const { loginCheck } = require('../middleware/requireLogin.js');
+const { loginCheck, edzoCheck } = require('../middleware/requireLogin.js');
 
 const storage = multer.diskStorage({
     destination: (request, file, callback) => {
@@ -60,7 +60,7 @@ router.get('/edzoProfil', async (request, response) => {
         });
     }
 });
-router.get('/edzoProfilSajat',loginCheck, async (request, response) => {
+router.get('/edzoProfilSajat', loginCheck, edzoCheck,  async (request, response) => {
     try {
         const azon=request.session.user.id;
         const edzo = await database.selectTrainerById(azon);

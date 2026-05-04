@@ -1,3 +1,5 @@
+const database = require('../sql/database.js');
+
 async function loginCheck(request, response, next) {
     try {
         if (!request.session.user || !request.session.user.id) {
@@ -31,8 +33,9 @@ async function adminCheck(request, response, next) {
 
 async function edzoCheck(request, response, next) {
     try {
-
-        if (request.session.user.role !== 'edzo') {
+        const result = await database.selectJelentkezoEById(request.session.user.id);
+        console.log(result);
+        if (request.session.user.role !== 'edzo' || result[0].statusz !== "elfogadva") {
             return response.status(403).json({
                 message: "Nincs jogosultsága ehhez a művelethez."
             });
@@ -65,5 +68,7 @@ async function userCheck(request, response, next) {
 
 module.exports = {
     loginCheck,
-    adminCheck
+    adminCheck,
+    edzoCheck,
+    userCheck,
 }

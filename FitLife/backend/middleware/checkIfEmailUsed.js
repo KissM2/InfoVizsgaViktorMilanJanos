@@ -5,7 +5,7 @@ async function checkIfEmailUsed(request, response, next) {
         const { email } = request.body;
 
         if(request.session.user && email == request.session.user.email){
-            next();
+            return next();
         }
 
         const checkUser = await db.checkUser(email);

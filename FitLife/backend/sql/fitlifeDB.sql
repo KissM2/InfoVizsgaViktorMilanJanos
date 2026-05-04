@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS login (
     jelszo VARCHAR(255) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     telszam VARCHAR(30),
-    nem ENUM('férfi','nő') NOT NULL,
+    nem ENUM('férfi','nő'),
     role ENUM('felhasznalo','edzo','admin') NOT NULL DEFAULT 'felhasznalo',
     szul_datum DATE,
     reset_token VARCHAR(255) NULL,
