@@ -25,10 +25,6 @@ router.post('/kommentek', requireLogin.loginCheck, async (request, response) => 
         
         const felhasznalo_id = request.session.user.id;
 
-        if (!szoveg || !ertekeles || !edzo_id) {
-            return response.status(400).json({ message: 'Minden mező kitöltése kötelező!' });
-        }
-
         await database.insertKomment(szoveg, ertekeles, edzo_id, felhasznalo_id);
         response.status(201).json({ message: 'Komment sikeresen elmentve!' });
     } catch (error) {
