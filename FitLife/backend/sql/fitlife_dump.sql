@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2026. Máj 04. 22:11
+-- Létrehozás ideje: 2026. Máj 04. 23:11
 -- Kiszolgáló verziója: 10.4.28-MariaDB
 -- PHP verzió: 8.2.4
 
@@ -20,17 +20,14 @@ SET time_zone = "+00:00";
 --
 -- Adatbázis: `fitlife`
 --
+CREATE DATABASE IF NOT EXISTS `fitlife` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_hungarian_ci;
+USE `fitlife`;
 
 -- --------------------------------------------------------
 
 --
 -- Tábla szerkezet ehhez a táblához `allergen`
 --
-CREATE DATABASE IF NOT EXISTS fitlife
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_hungarian_ci;
-
-USE fitlife;
 
 CREATE TABLE `allergen` (
   `allergen_id` int(11) NOT NULL,
@@ -454,7 +451,7 @@ CREATE TABLE `felhasznalo` (
 --
 
 INSERT INTO `felhasznalo` (`felhasznalo_id`, `testsuly`, `magassag`, `edzesre_forditott_ido`, `napi_kaloria_bevitel`, `cel_alak_id`, `cel_testsuly`, `EKM_id`) VALUES
-(1, 85, 180, 250, 1491, 1, 80, 2),
+(1, 85, 180, 60, 2500, 1, 80, 2),
 (2, 95, 185, 45, 3000, 2, 85, 1),
 (3, 60, 165, 90, 1800, 3, 58, 2),
 (4, 78, 175, 120, 2800, 4, 85, 3),
@@ -958,8 +955,7 @@ INSERT INTO `komment` (`komment_id`, `szoveg`, `ertekeles`, `statusz`, `edzo_id`
 (53, 'A HIIT edzései kinyírtak, de imádom!', 5, 'aktiv', 21, 6),
 (54, 'A 10 perces videói után is napokig izomlázam van, hihetetlen hatékony.', 5, 'aktiv', 21, 1),
 (55, 'Nincs pihenő, csak folyamatos pörgés. Pont ez kellett.', 5, 'aktiv', 21, 3),
-(56, '', 4, 'aktiv', 21, 7),
-(57, 'dasd', 5, 'aktiv', 16, 1);
+(56, '', 4, 'aktiv', 21, 7);
 
 -- --------------------------------------------------------
 
@@ -1049,7 +1045,7 @@ CREATE TABLE `login` (
 --
 
 INSERT INTO `login` (`id`, `felh_nev`, `jelszo`, `email`, `telszam`, `nem`, `role`, `szul_datum`, `reset_token`, `reset_expires`, `deleted_at`) VALUES
-(1, 'teszt_elek', '$2b$10$sCZBYi8ramaVwCPP8jkWp.JXp5SLEEZgqzRmolS.ELhpOTLqRU/qa', 'elek@gmail.com', '+36201112233', 'férfi', 'felhasznalo', '1995-05-10', NULL, NULL, '2026-05-04'),
+(1, 'teszt_elek', '$2b$10$85wY6ThuC9.OkKaXnkoK4ezXmmluG0v3fIkK7AYRYBUHguDGsDM5O', 'elek@gmail.com', '+36201112233', 'férfi', 'felhasznalo', '1995-05-10', NULL, NULL, NULL),
 (2, 'kovacs_bela', '$2b$10$z5TWZ0KF1ulKMLV/XCH0vOfOOcbGD47RUfpJ6JOLphs0wU.lLPM5G', 'fitlife123123@gmail.com', '+36202223344', 'férfi', 'felhasznalo', '1988-11-20', NULL, NULL, NULL),
 (3, 'nagy_anna', '$2b$10$GdvOHW2kXCrNeo5Bozby1OZHkjjtr20J0yClzi9Az8BwcIDTezf5u', 'anna@gmail.com', '+36203334455', 'nő', 'felhasznalo', '2000-01-15', NULL, NULL, NULL),
 (4, 'szabo_peti', '$2b$10$kz/bxutu/RMIKsD4ou2rre1.Y.zj2jYgn3N4F79dSq1YyqTEsBYtC', 'peti@gmail.com', '+36204445566', 'férfi', 'felhasznalo', '1992-07-30', NULL, NULL, NULL),
@@ -1400,7 +1396,7 @@ ALTER TABLE `izomcsoport`
 -- AUTO_INCREMENT a táblához `komment`
 --
 ALTER TABLE `komment`
-  MODIFY `komment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `komment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT a táblához `kulonleges_alkalom`
