@@ -34,7 +34,6 @@ async function adminCheck(request, response, next) {
 async function edzoCheck(request, response, next) {
     try {
         const result = await database.selectJelentkezoEById(request.session.user.id);
-        console.log(result);
         if (request.session.user.role !== 'edzo' || result[0].statusz !== "elfogadva") {
             return response.status(403).json({
                 message: "Nincs jogosultsága ehhez a művelethez."

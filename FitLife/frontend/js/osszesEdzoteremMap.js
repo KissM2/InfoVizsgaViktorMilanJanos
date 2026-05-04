@@ -38,7 +38,6 @@ async function edzoteremMarkerekElhelyezese(map) {
     const edzoteremAdatok = (await getKeres("/api/getAllEdzoterem")).edzoteremAdatok;
 
     edzoteremAdatok.forEach(edzoterem => {
-        console.log(edzoterem);
         let location = {
             lat: parseFloat(edzoterem.edzoterem_cim.y),
             lng: parseFloat(edzoterem.edzoterem_cim.x)

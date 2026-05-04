@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const coords = await felhHelyAdatokElkerese();
             const adatok = await getKeres(`/api/osszesEdzoKorzetben?lng=${coords.lng}&lat=${coords.lat}`);
-            console.log(adatok);
             if (adatok) {
                 renderGrid(gridContainer, adatok.results);
             }
