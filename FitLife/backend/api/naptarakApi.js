@@ -180,7 +180,7 @@ router.post("/insertHB", check.loginCheck, check.edzoCheck, async (req, res) => 
 
     await db.markInvalidKAAsDeleted(edzoId, mettol);
 
-    res.status(200).json({ message: "HB mentve" });
+    res.status(201).json({ message: "HB mentve" });
 });
 
 /* =========================
@@ -211,7 +211,7 @@ router.post("/toggleKA", check.loginCheck, check.edzoCheck, async (req, res) => 
 
         if (!existing) {
             await db.insertKulonlegesAlkalom(datum, ido, "aktiv", edzoId);
-            return res.status(200).json({ status: "aktiv" });
+            return res.status(201).json({ status: "aktiv" });
         }
 
         if (existing.statusz === "torolt") {
@@ -315,7 +315,7 @@ router.post("/book", check.loginCheck, check.userCheck, async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: "OK" });
+        res.status(201).json({ message: "OK" });
 
     } catch (err) {
         console.error(err);
