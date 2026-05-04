@@ -11,7 +11,9 @@
     "author": "Kardos Krisztián",
     "license": "ISC",
     "devDependencies": {
-        "nodemon": "^3.1.10"
+        "jest": "^30.3.0",
+        "nodemon": "^3.1.10",
+        "supertest": "^7.2.2"
     },
     "dependencies": {
         "bcrypt": "^6.0.0",
