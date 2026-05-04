@@ -242,26 +242,32 @@ function userTablaFeltoltes(felhasznalok){
         }
 
         let cvCella = document.createElement('td');
-        let cvLink = document.createElement('a');
-        cvLink.classList.add('btn', 'btn-primary');
-        cvLink.textContent = 'CV letöltése';
-
-        //lekérjük a felhasználó önéletrajzát
-        cvLink.href = "/api/jelentkezok/" + user.id + "/cv";
-        cvLink.download = true;
-        cvLink.target = '_blank';
-        cvCella.appendChild(cvLink);
-
         let clCella = document.createElement('td');
-        let clLink = document.createElement('a');
-        clLink.classList.add('btn', 'btn-primary');
-        clLink.textContent = 'Motivációs levél letöltése';
+        if( user.role == "edzo"){
+            let cvLink = document.createElement('a');
+            cvLink.classList.add('btn', 'btn-primary');
+            cvLink.textContent = 'CV letöltése';
 
-        //lekérjük a felhasználó motivációs levelét
-        clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
-        clLink.download = true;
-        clLink.target = '_blank';
-        clCella.appendChild(clLink);
+            //lekérjük a felhasználó önéletrajzát
+            cvLink.href = "/api/jelentkezok/" + user.id + "/cv";
+            cvLink.download = true;
+            cvLink.target = '_blank';
+            cvCella.appendChild(cvLink);
+            
+            let clLink = document.createElement('a');
+            clLink.classList.add('btn', 'btn-primary');
+            clLink.textContent = 'Motivációs levél letöltése';
+
+            //lekérjük a felhasználó motivációs levelét
+            clLink.href = "/api/jelentkezok/" + user.id + "/cover-letter";
+            clLink.download = true;
+            clLink.target = '_blank';
+            clCella.appendChild(clLink);
+        }else{
+            cvCella.textContent = "nincs önéletrajz"
+            clCella.textContent = "nincs motivációs levél"
+        }
+        
 
         let megerositesCella = document.createElement('td');
         let megerosites = document.createElement('button');
@@ -331,9 +337,8 @@ function userTablaFeltoltes(felhasznalok){
             }            
         });
 
-        cvCella.appendChild(cvLink);
+
         sor.appendChild(cvCella);
-        clCella.appendChild(clLink);
         sor.appendChild(clCella);
         megerositesCella.appendChild(megerosites);
         sor.appendChild(megerositesCella);
