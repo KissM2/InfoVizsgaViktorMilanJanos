@@ -85,28 +85,25 @@ router.post('/generalt-gyakorlatok', requireLogin.loginCheck, async (request, re
 
                 if (aznapiIzomE || kardioE) {
                     let alapPont = szabalyok[aktualisGyakorlat.tipus];
-                    if (alapPont !== undefined) {
-                        let randomFaktor = Math.floor(Math.random() * 4);
-                        let vegsoPont = alapPont + randomFaktor;
-
-                        if (vegsoPont > 0) {
-                            napiAjanlas.push({
-                                gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
-                                nev: aktualisGyakorlat.gyakorlat_nev,
-                                leiras: aktualisGyakorlat.leiras,
-                                kor: aktualisGyakorlat.kor,
-                                ismetles: aktualisGyakorlat.ismetles,
-                                tipus: aktualisGyakorlat.tipus,
-                                izomcsoport_nev: aktualisGyakorlat.izomcsoport_nev,
-                                pontszam: vegsoPont
-                            });
-                        }
+                    
+                    if (alapPont !== undefined && alapPont >= 0) { 
+                        napiAjanlas.push({
+                            gyakorlat_id: aktualisGyakorlat.gyakorlat_id,
+                            nev: aktualisGyakorlat.gyakorlat_nev,
+                            leiras: aktualisGyakorlat.leiras,
+                            kor: aktualisGyakorlat.kor,
+                            ismetles: aktualisGyakorlat.ismetles,
+                            tipus: aktualisGyakorlat.tipus,
+                            izomcsoport_nev: aktualisGyakorlat.izomcsoport_nev,
+                            pontszam: alapPont
+                        });
                     }
                 }
             }
-            napiAjanlas.sort(function (a, b) {
-                return b.pontszam - a.pontszam;
-            });
+            
+            napiAjanlas.sort(() => Math.random() - 0.5);
+            napiAjanlas.sort((a, b) => b.pontszam - a.pontszam);
+            
             let levagottLista = napiAjanlas.slice(0, napiGyakorlatDb);
             hetiTerv[aktualisNap] = levagottLista;
         }
