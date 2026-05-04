@@ -65,5 +65,7 @@ async function userCheck(request, response, next) {
 
 module.exports = {
     loginCheck,
-    adminCheck
+    adminCheck,
+    userCheck,
+    edzoCheck
 }

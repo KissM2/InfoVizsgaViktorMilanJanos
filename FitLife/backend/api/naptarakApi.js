@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../sql/database.js');
-const loginCheck = require('../middleware/requireLogin.js');
+const check = require('../middleware/requireLogin.js');
 
 /* =========================
    SEGÉD
@@ -48,7 +48,7 @@ function getWeekday(d) {
    GET HB
 ========================= */
 
-router.get("/getHB", loginCheck.loginCheck, async (req, res) => {
+router.get("/getHB", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getHetiBeosztas(req.session.user.id);
         res.json(data);
@@ -61,7 +61,7 @@ router.get("/getHB", loginCheck.loginCheck, async (req, res) => {
    GET KA
 ========================= */
 
-router.get("/getKA", loginCheck.loginCheck, async (req, res) => {
+router.get("/getKA", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getKulonlegesAlkalmak(req.session.user.id);
         res.json(data);
@@ -74,7 +74,7 @@ router.get("/getKA", loginCheck.loginCheck, async (req, res) => {
    GET CALENDAR
 ========================= */
 
-router.get("/getCalendar", loginCheck.loginCheck, async (req, res) => {
+router.get("/getCalendar", check.loginCheck, async (req, res) => {
     try {
         const user = req.session.user;
 
@@ -101,7 +101,7 @@ router.get("/getCalendar", loginCheck.loginCheck, async (req, res) => {
    MY BOOKINGS
 ========================= */
 
-router.get("/myBookings", loginCheck.loginCheck, async (req, res) => {
+router.get("/myBookings", check.loginCheck, async (req, res) => {
     try {
         const data = await db.getMyBookings(req.session.user.id);
         res.json(data);
@@ -114,7 +114,7 @@ router.get("/myBookings", loginCheck.loginCheck, async (req, res) => {
    HB INSERT
 ========================= */
 
-router.post("/insertHB", loginCheck.loginCheck, async (req, res) => {
+router.post("/insertHB", check.loginCheck,check.edzoCheck, async (req, res) => {
 
     const edzoId = req.session.user.id;
     const data = req.body;
@@ -156,7 +156,7 @@ router.post("/insertHB", loginCheck.loginCheck, async (req, res) => {
    KA TOGGLE
 ========================= */
 
-router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
+router.post("/toggleKA", check.loginCheck,check.edzoCheck, async (req, res) => {
 
     try {
 
@@ -203,7 +203,7 @@ router.post("/toggleKA", loginCheck.loginCheck, async (req, res) => {
    BOOKING
 ========================= */
 
-router.post("/book", loginCheck.loginCheck, async (req, res) => {
+router.post("/book", check.loginCheck,check.userCheck, async (req, res) => {
     try {
         const userId = req.session.user.id;
         const edzoId = req.body.edzo_id; // 🔥 frontendből jön
@@ -218,43 +218,47 @@ router.post("/book", loginCheck.loginCheck, async (req, res) => {
         ========================= */
         for (const datum in activate) {
 
-            if (!isWithinAllowedRange(datum)) continue;
+            if (isWithinAllowedRange(datum)) {
 
-            const weekday = getWeekday(datum);
+                const weekday = getWeekday(datum);
 
-            for (const idoRaw of activate[datum]) {
+                for (const idoRaw of activate[datum]) {
 
-                const ido = normalizeTime(idoRaw);
-                // 1️⃣ HB check
-                const inHB = await db.isInHB(edzoId, datum, weekday, ido);
-                if (!inHB) continue;
+                    const ido = normalizeTime(idoRaw);
+                    // 1️⃣ HB check
+                    const inHB = await db.isInHB(edzoId, datum, weekday, ido);
+                    if (inHB) {
 
-                // 2️⃣ KA check
-                if (await db.isBlockedByKA(edzoId, datum, ido)) continue;
+                        // 2️⃣ KA check
+                        if (await db.isBlockedByKA(edzoId, datum, ido)) {
 
-                // 3️⃣ 🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
-                const conflict = myBookings.some(f =>
-                    f.statusz === "aktiv" &&
-                    f.datum === datum &&
-                    f.ido === ido &&
-                    f.edzo_id !== edzoId
-                );
+                            // 3️⃣ 🔴 saját foglalás más edzőnél UGYANEBBEN AZ IDŐBEN
+                            const conflict = myBookings.some(f =>
+                                f.statusz === "aktiv" &&
+                                f.datum === datum &&
+                                f.ido === ido &&
+                                f.edzo_id !== edzoId
+                            );
 
-                if (conflict) continue;
+                            if (!conflict) {
 
-                // 4️⃣ más user foglalta
-                if (await db.isSlotTakenByOther(datum, ido, userId, edzoId)) continue;
+                                // 4️⃣ más user foglalta
+                                if (await db.isSlotTakenByOther(datum, ido, userId, edzoId)) continue;
 
-                // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
-                await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
+                                // 5️⃣ 🔥 csak ugyanazt a slotot takarítjuk
+                                await db.deleteInactiveElsewhereAtSameTime(userId, edzoId, datum, ido);
 
-                // 6️⃣ insert / update
-                const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
+                                // 6️⃣ insert / update
+                                const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 
-                if (!existing) {
-                    await db.insertBooking(datum, ido, userId, edzoId);
-                } else {
-                    await db.updateBookingStatus(existing.foglalas_id, "aktiv");
+                                if (!existing) {
+                                    await db.insertBooking(datum, ido, userId, edzoId);
+                                } else {
+                                    await db.updateBookingStatus(existing.foglalas_id, "aktiv");
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -264,16 +268,17 @@ router.post("/book", loginCheck.loginCheck, async (req, res) => {
         ========================= */
         for (const datum in deactivate) {
 
-            if (!isWithinAllowedRange(datum)) continue;
+            if (isWithinAllowedRange(datum)) {
 
-            for (const idoRaw of deactivate[datum]) {
+                for (const idoRaw of deactivate[datum]) {
 
-                const ido = normalizeTime(idoRaw);
+                    const ido = normalizeTime(idoRaw);
 
-                const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
+                    const existing = await db.getOwnBooking(datum, ido, userId, edzoId);
 
-                if (existing && existing.statusz === "aktiv") {
-                    await db.updateBookingStatus(existing.foglalas_id, "inaktiv");
+                    if (existing && existing.statusz === "aktiv") {
+                        await db.updateBookingStatus(existing.foglalas_id, "inaktiv");
+                    }
                 }
             }
         }
