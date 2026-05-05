@@ -63,13 +63,13 @@ router.post('/edzoDataInsert',  loginCheck.loginCheck, loginCheck.edzoCheck, upl
         const kep = request.file.filename;
 
         database.updateEdzo(
-            request.session.user.id,
             edzoterem_cim_lng,
             edzoterem_cim_lat,
             kep,
             idezet,
             leiras,
-            kompetenciak
+            kompetenciak,
+            request.session.user.id,
         );
 
         response.status(200).json({
