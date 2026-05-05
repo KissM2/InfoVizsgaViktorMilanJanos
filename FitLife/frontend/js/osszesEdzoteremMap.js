@@ -115,7 +115,7 @@ async function infoAblakLetrehozas(map, marker, location) {
 }
 
 async function edzoDivGeneralas(location) {
-    const adatok = await getKeres('/api/osszesEdzoKorzetben?lng=' + location.lng + '&lat=' + location.lat);    
+    const adatok = await getKeres('/api/osszesEdzoKorzetbenMapra?lng=' + location.lng + '&lat=' + location.lat);    
     let EdzoLista = adatok.results;
     let edzoDiv = renderGrid(EdzoLista);
     return edzoDiv;
