@@ -63,8 +63,8 @@ router.post('/edzoDataInsert',  loginCheck.loginCheck, loginCheck.edzoCheck, upl
         const kep = request.file.filename;
 
         database.updateEdzo(
-            edzoterem_cim_lng,
             edzoterem_cim_lat,
+            edzoterem_cim_lng,  
             kep,
             idezet,
             leiras,
